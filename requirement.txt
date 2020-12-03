@@ -1,0 +1,26 @@
+05.13-17 工作计划
+1. APPAPI for node access
+1.1 运行模式：developed using JS, run as a node service, started either with node appapi.js or pm2 start app.json
+1.2 功能：
+1.2.1 发放免费的ETH或者FAX
+
+2. SWARM文件存取
+http://192.168.0.173:8500/
+2.1 上传
+2.2 下载
+2.3 发送
+
+3. WHISPER消息
+3.1 申请和记录SHH的ID
+3.2 根据钱包地址查询SHH ID；
+3.3 发送消息；
+3.4 接收消息；
+3.5 代收消息和离线通知；
+
+4. ENS
+4.1 登记钱包地址
+4.2 查询已登记的钱包地址；
+
+5. NEW APP framework
+5.1.name: callus
+5.2 http://www.callus.app

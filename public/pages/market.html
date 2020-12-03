@@ -1,0 +1,146 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+  <title>Token-IM, Instant Messaging for Blockchain, 基于以太坊代币的即时通讯DAPP</title>
+  <link rel="stylesheet" href="../css/bootstrap.3.3.7.min.css">
+  <link rel="stylesheet" href="../css/callus-common.css">
+  <script type="text/javascript" src="https://widget.aicoin.net.cn/chart/js/aicoin.js"></script>
+</head>
+
+<body>
+
+  <div class="navbar navbar-fixed-top scrolling-navbar indigo">
+    <div class="container">
+      <a href="../">
+        <div class="nav-logo">
+          <div class="logo-img"></div>
+          <div class="logo-title">Token-IM</div>
+        </div>
+      </a>
+      <div class="page-title">市场行情</div>
+    </div>
+  </div>
+
+  <div class="context-body">
+    <div class="container markets-div">
+      <h2 style="text-align:center; font-weight:600; color:#1890ff">加密货币交易行情</h2>
+      <div id='markets_container' style="height:510px"></div>
+
+      <h2 style="text-align:center; font-weight:600; color:#1890ff">通讯社交</h2>
+      <div id='communication_module' style="height:200px"></div>
+
+      <h2 style="text-align:center; font-weight:600; color:#1890ff">网络</h2>
+      <div id='network_module' style="height:95px"></div>
+
+      <h2 style="text-align:center; font-weight:600; color:#1890ff">存储</h2>
+      <div id='storage_module' style="height:176px"></div>
+
+    </div>
+
+
+    <!-- footer -->
+    <div class="footer text-center">
+      <div>
+        <img src="../image/eth-icon.png" alt="" style="width:80px; height:80px">
+        <span style="color:#ffffff">Token-IM</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    new AICoin.markets({
+      "symbols": [
+        // "bitfinexbtcusd",
+        "huobiprobtcusdt",
+        "bitfinexethusd",
+        // "okexeosweekusd",
+        // "okexxrpbtc",
+        "bittrexxrpbtc",
+        "huobiproeosusdt",
+        "huobiproltcusdt",
+        "huobiprotrxusdt",
+        "huobiproxlmusdt",
+        "huobiprobchusdt",
+        "huobiprobsvusdt",
+        "huobieosbtc",
+        "huobiprozrxbtc",
+        "huobiproxmreth",
+        "huobiprozecusdt",
+        "huobiprodashusdt",
+      ],
+      "columns": [
+        "degree",
+        "vol",
+        "buy",
+        "sell",
+        "hight",
+        "low"
+      ],
+      "style": "tr%7Bheight%3A34px%3B%7D",
+      "container": "markets_container",
+      "lang": "zh"
+    })
+
+    new AICoin.markets({
+      "symbols": [
+        "binancesnteth",
+        "huobiprotopht",
+        "huobiproskmht",
+        "huobiproyeebtc",
+        "huobiprochateth",
+      ],
+      "columns": [
+        "degree",
+        "vol",
+        "buy",
+        "sell",
+        "hight",
+        "low"
+      ],
+      "style": "tr%7Bheight%3A34px%3B%7D",
+      "container": "communication_module",
+      "lang": "zh"
+    })
+
+    new AICoin.markets({
+      "symbols": [
+        "huobipronknusdt",
+      ],
+      "columns": [
+        "degree",
+        "vol",
+        "buy",
+        "sell",
+        "hight",
+        "low"
+      ],
+      "style": "tr%7Bheight%3A34px%3B%7D",
+      "container": "network_module",
+      "lang": "zh"
+    })
+
+    new AICoin.markets({
+      "symbols": [
+        "binancescbtc",
+        "huobiprostorjusdt",
+        "gatefilusdt",
+      ],
+      "columns": [
+        "degree",
+        "vol",
+        "buy",
+        "sell",
+        "hight",
+        "low"
+      ],
+      "style": "tr%7Bheight%3A34px%3B%7D",
+      "container": "storage_module",
+      "lang": "zh"
+    })
+  </script>
+</body>
+
+</html>

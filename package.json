@@ -1,0 +1,51 @@
+{
+  "private": true,
+  "scripts": {
+    "start": "umi dev",
+    "build": "umi build",
+    "test": "umi test",
+    "lint": "eslint {src,mock,tests}/**/*.{js,jsx} --fix",
+    "precommit": "lint-staged"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^4.3.0",
+    "antd": "^4.9.1",
+    "crypto-js": "^4.0.0",
+    "dva": "^2.4.1",
+    "eth-ens-namehash": "^2.0.8",
+    "ethereumjs-tx": "^2.1.2",
+    "ethereumjs-wallet": "^1.0.1",
+    "qs": "^6.9.4",
+    "react": "^17.0.1",
+    "react-copy-to-clipboard": "^5.0.2",
+    "react-dom": "^17.0.1",
+    "react-draggable": "^4.4.3",
+    "truffle": "4.1.14",
+    "truffle-contract": "3.0.6",
+    "web3": "0.20.1",
+    "webrtc-adapter": "^7.7.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^9.0.0",
+    "eslint": "^5.4.0",
+    "eslint-config-umi": "^1.4.0",
+    "eslint-plugin-flowtype": "^2.50.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.11.1",
+    "husky": "^0.14.3",
+    "lint-staged": "^7.2.2",
+    "react-test-renderer": "^16.7.0",
+    "umi": "^2.7.7",
+    "umi-plugin-react": "^1.8.4"
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  }
+}
