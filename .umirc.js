@@ -11,6 +11,7 @@ export default {
         { path: '/', component: '../pages/index' },
         { path: '/register', component: '../pages/register' },
         { path: '/regSuccess', component: '../pages/regSuccess' },
+        { path: '/home', component: '../pages/home/HomePage' },
         { path: '/status', component: '../pages/status' },
       ]
     }
@@ -21,7 +22,7 @@ export default {
       antd: true,
       dva: true,
       dynamicImport: { webpackChunkName: true },
-      title: 'tokenim-app',
+      title: 'Token-IM, Instant Messaging for Blockchain',
       dll: false,
       locale: {
         enable: true,

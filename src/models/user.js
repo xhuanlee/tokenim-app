@@ -1,4 +1,5 @@
 import { message as ant_message } from 'antd'
+import { formatMessage } from 'umi-plugin-locale';
 export default {
   namespace: 'user',
 
@@ -90,13 +91,13 @@ export default {
       const visitorMode = yield select(state => state.account.visitorMode);
       const address = yield select(state => state.account.address);
       const wallet = yield select(state => state.account.wallet);
-      if (wallet && wallet._privKey) {
-        window.App.getRegisterReward(address, wallet._privKey);
+      if (wallet && wallet.privateKey) {
+        window.App.getRegisterReward(address, wallet.privateKey);
       } else if (visitorMode) {
-        ant_message.warning('获取奖励失败，游客无法获取奖励')
+        ant_message.warning(formatMessage({ id: 'user.visitor_reward_forbidden' }));
         yield put({ type: 'saveUserState', payload: { registerRewardLoading: false } });
       } else {
-        alert('账号异常，请重新登陆')
+        alert(formatMessage({ id: 'user.account_error' }))
         yield put({ type: 'saveUserState', payload: { registerRewardLoading: false } });
       }
     },
@@ -106,13 +107,13 @@ export default {
       const visitorMode = yield select(state => state.account.visitorMode);
       const address = yield select(state => state.account.address);
       const wallet = yield select(state => state.account.wallet);
-      if (wallet && wallet._privKey) {
-        window.App.getLoginReward(address, wallet._privKey);
+      if (wallet && wallet.privateKey) {
+        window.App.getLoginReward(address, wallet.privateKey);
       } else if (visitorMode) {
-        ant_message.warning('获取奖励失败，游客无法获取奖励')
+        ant_message.warning(formatMessage({ id: 'user.visitor_reward_forbidden' }))
         yield put({ type: 'saveUserState', payload: { loginRewardLoading: false } });
       } else {
-        alert('账号异常，请重新登陆')
+        alert(formatMessage({ id: 'user.account_error' }))
         yield put({ type: 'saveUserState', payload: { loginRewardLoading: false } });
       }
     },
@@ -123,13 +124,13 @@ export default {
       const account = yield select(state => state.account);
       const wallet = yield select(state => state.account.wallet);
       const { address } = account;
-      if (wallet && wallet._privKey) {
-        window.App.transferEther(address, to, ether, wallet._privKey);
+      if (wallet && wallet.privateKey) {
+        window.App.transferEther(address, to, ether, wallet.privateKey);
       } else if (visitorMode) {
-        ant_message.warning('游客模式下，无法发起交易')
+        ant_message.warning(formatMessage({ id: 'user.visitor_transaction_forbidden' }))
         yield put({ type: 'saveUserState', payload: { transEtherLoading: false } });
       } else {
-        alert('账号异常，请重新登陆')
+        alert(formatMessage({ id: 'user.account_error' }))
         yield put({ type: 'saveUserState', payload: { transEtherLoading: false } });
       }
     },
@@ -140,13 +141,13 @@ export default {
       const account = yield select(state => state.account);
       const wallet = yield select(state => state.account.wallet);
       const { address } = account;
-      if (wallet && wallet._privKey) {
-        window.App.transferFax(address, to, fax, wallet._privKey);
+      if (wallet && wallet.privateKey) {
+        window.App.transferFax(address, to, fax, wallet.privateKey);
       } else if (visitorMode) {
-        ant_message.warning('游客模式下，无法发起交易')
+        ant_message.warning(formatMessage({ id: 'user.visitor_transaction_forbidden' }))
         yield put({ type: 'saveUserState', payload: { transFaxLoading: false } });
       } else {
-        alert('账号异常，请重新登陆')
+        alert(formatMessage({ id: 'user.account_error' }))
         yield put({ type: 'saveUserState', payload: { transFaxLoading: false } });
       }
     },
@@ -159,13 +160,13 @@ export default {
       const wallet = yield select(state => state.account.wallet);
       const { address } = account;
       const value = saleTokenPrice * faxNumber;
-      if (wallet && wallet._privKey) {
-        window.App.buyFax(address, faxNumber, value, wallet._privKey);
+      if (wallet && wallet.privateKey) {
+        window.App.buyFax(address, faxNumber, value, wallet.privateKey);
       } else if (visitorMode) {
-        ant_message.warning('游客模式下，无法发起交易')
+        ant_message.warning(formatMessage({ id: 'user.visitor_transaction_forbidden' }))
         yield put({ type: 'saveUserState', payload: { buyFaxLoading: false } });
       } else {
-        alert('账号异常，请重新登陆')
+        alert(formatMessage({ id: 'user.account_error' }))
         yield put({ type: 'saveUserState', payload: { buyFaxLoading: false } });
       }
     },
@@ -176,13 +177,13 @@ export default {
       const account = yield select(state => state.account);
       const wallet = yield select(state => state.account.wallet);
       const { address } = account;
-      if (wallet && wallet._privKey) {
-        window.App.approve(address, contract, faxNumber, wallet._privKey);
+      if (wallet && wallet.privateKey) {
+        window.App.approve(address, contract, faxNumber, wallet.privateKey);
       } else if (visitorMode) {
-        ant_message.warning('游客模式下，无法发起交易')
+        ant_message.warning(formatMessage({ id: 'user.visitor_transaction_forbidden' }))
         yield put({ type: 'saveUserState', payload: { approveLoading: false } });
       } else {
-        alert('账号异常，请重新登陆')
+        alert(formatMessage({ id: 'user.account_error' }))
         yield put({ type: 'saveUserState', payload: { approveLoading: false } });
       }
     },
@@ -280,10 +281,10 @@ export default {
       const wallet = yield select(state => state.account.wallet);
       const { address } = account;
       yield put({ type: 'addPendingMessage', payload: { from: address, to, message, time: (new Date()).getTime() } });
-      if (wallet && wallet._privKey) {
-        window.App.sendMessage(address, to, message, wallet._privKey);
+      if (wallet && wallet.privateKey) {
+        window.App.sendMessage(address, to, message, wallet.privateKey);
       } else {
-        alert('账号异常，请重新登陆')
+        alert(formatMessage({ id: 'user.account_error' }))
       }
     },
 

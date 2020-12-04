@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'dva'
 import { Form, Input, Button } from 'antd';
+import { formatMessage } from 'umi-plugin-locale';
 import { UserOutlined, InteractionOutlined } from '@ant-design/icons';
 
 const FormItem = Form.Item;
@@ -17,20 +18,20 @@ class TransFax extends Component {
   render() {
     return (
       <Form ref={this.formRef}>
-        <h3>FAX转账</h3>
+        <h3>{formatMessage({ id: 'transfer.transfer_fax' })}</h3>
         <FormItem name="address">
-          <Input prefix={<UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="请输入账户地址" />
+          <Input prefix={<UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder={formatMessage({ id: 'transfer.input_account' })} />
         </FormItem>
         <FormItem name="fax">
           <Input
             prefix={<InteractionOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-            placeholder="FAX代币数目"
+            placeholder={formatMessage({ id: 'transfer.fax_amount' })}
             addonAfter="FAX"
           />
         </FormItem>
         <div style={{ display: 'flex', justifyContent:'flex-end'}}>
           <Button type='primary' onClick={this.transferFax} >
-            确定转账
+            {formatMessage({ id: 'transfer.confirm' })}
           </Button>
         </div>
       </Form>

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Avatar } from 'antd';
 import { CaretLeftOutlined, CaretRightOutlined } from '@ant-design/icons';
 
-import { shortenAddress, stringToColour } from '../../../../app/util'
+import { shortenAddress, stringToColour } from '@/app/util'
 
 function formateTime(date) {
   const now = new Date();

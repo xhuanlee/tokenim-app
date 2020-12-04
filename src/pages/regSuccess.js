@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { routerRedux } from 'dva/router';
 import { connect } from 'dva';
-import { Alert, Tooltip, Button, Form } from 'antd'
+import { Alert, Tooltip, Button, Form } from 'antd';
+import { formatMessage } from 'umi-plugin-locale';
 import { CheckCircleOutlined, CopyOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { copyToClipboard, download } from '@/app/util'
 import styles from './index.css';
@@ -38,7 +39,7 @@ class RegisterPage extends Component {
   downloadKeystore = () => {
     const { wallet, registerKeystore } = this.props.account;
     if (!wallet) {
-      alert('没有可用的钱包');
+      alert(formatMessage({ id: 'regSuccess.no_wallet' }));
     } else {
       download(wallet.getV3Filename(), registerKeystore);
     }
@@ -50,16 +51,16 @@ class RegisterPage extends Component {
       registerAddress === undefined || registerAddress === ''
         ? <div className={styles.container}>
           <div style={{ textAlign: 'center' }}>
-            <h3 style={{ color: 'rgb(89,89,89)', fontWeight: 600 }}>跳转中...</h3>
+            <h3 style={{ color: 'rgb(89,89,89)', fontWeight: 600 }}>{formatMessage({ id: 'regSuccess.redirecting' })}</h3>
           </div>
         </div>
         : <div className={styles.container}>
           <div style={{ textAlign: 'center' }}>
             <CheckCircleOutlined style={{ fontSize: 70, color: 'rgb(82, 196, 26)' }} />
-            <h3 style={{ color: 'rgb(89,89,89)', fontWeight: 600 }}>恭喜，注册成功！你的账户信息为:</h3>
+            <h3 style={{ color: 'rgb(89,89,89)', fontWeight: 600 }}>{formatMessage({ id: 'regSuccess.congratulation' })}</h3>
             {registerENSName
               ? <div style={{ marginTop: 20 }}>
-                <div style={{ textAlign: 'left', marginLeft: 5, fontSize: 15, fontWeight: 'bold' }}>ENS用户名:</div>
+                <div style={{ textAlign: 'left', marginLeft: 5, fontSize: 15, fontWeight: 'bold' }}>{formatMessage({ id: 'ens_username' })}:</div>
                 <Alert type="info"
                        message={<div style={{
                          wordBreak: 'break-all',
@@ -89,7 +90,7 @@ class RegisterPage extends Component {
                 }}>
                   {registerAddress}
                   <div style={{ position: 'absolute', right: 0, bottom: 0, cursor: 'point' }}>
-                    <Tooltip title="拷贝地址">
+                    <Tooltip title={formatMessage({ id: 'regSuccess.copy_address' })}>
                       <CopyOutlined onClick={() => copyToClipboard(registerAddress)} />
                     </Tooltip>
                   </div>
@@ -98,10 +99,10 @@ class RegisterPage extends Component {
             <FormItem style={{ marginTop: 24 }}>
               <Button onClick={this.goback} style={{ width: '45%', marginRight: '10%', }}>
                 <ArrowLeftOutlined theme="outlined" />
-                返回
+                {formatMessage({ id: 'return' })}
               </Button>
               <Button type="primary" onClick={this.gotoLogin} style={{ width: '45%' }}>
-                立即登陆
+                {formatMessage({ id: 'regSuccess.login_immediately' })}
               </Button>
             </FormItem>
           </div>

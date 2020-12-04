@@ -1,16 +1,16 @@
 import React, { Component, createRef } from 'react';
 import { connect } from 'dva';
 import { Layout, Avatar, List, Modal, Input, Alert, Tooltip, Button } from 'antd';
+import ReactDraggable from 'react-draggable';
+import { formatMessage } from 'umi-plugin-locale';
 import { LoadingOutlined, CloseCircleOutlined, CheckCircleOutlined, HomeOutlined, UserOutlined,
   UserAddOutlined, InteractionOutlined, TeamOutlined, PhoneOutlined } from '@ant-design/icons';
-import ReactDraggable from 'react-draggable';
-
 import MyAccountRow from './sider/MyAccountInfo'
 import ChatBox from './content/chatbox/ChatBox'
 import HomeTab from './HomeTab'
 import { shortenAddress, formatTime } from '@/app/util'
 import { MediaStatus, MediaType } from '@/models/media';
-import IMApp from '../../app';
+import IMApp from '@/app/index';
 import {
   createSessionDescription, getSDPOptions, getUserMediaOptions, sendAccept,
   sendAnswer, sendCandidate,
@@ -20,6 +20,7 @@ import {
   sendReject,
   SignalType, WebrtcConfig
 } from '@/app/webrtc';
+import NeedLogin from '@/pages/home/NeedLogin';
 
 const { Content, Sider } = Layout;
 
@@ -51,8 +52,8 @@ class HomePage extends Component {
 
   componentDidMount() {
     // 清除首页样式
-    document.getElementById('container').style = '';
-    document.getElementById('root').style = '';
+    // document.getElementById('container').style = '';
+    // document.getElementById('root').style = '';
     if (document.getElementById('AiCoin')) {
       document.getElementById('AiCoin').style.display = 'none'
     }
@@ -108,7 +109,7 @@ class HomePage extends Component {
       this.setState({ newDialogModal: false });
       this.setChatToUser({ ensName, address: queryENSAddress, shhPubKey: queryShhPubKey, time })
     } else {
-      alert('地址/shh公钥格式不正确')
+      alert(formatMessage({ id: 'home.shh_format_error' }));
     }
   }
 
@@ -121,7 +122,7 @@ class HomePage extends Component {
       this.setState({ newDialogModal: false });
       this.setChatToUser({ address: queryAddress, nickName, shhPubKey: queryShhPubKeyByAddress, time })
     } else {
-      alert('地址/shh公钥格式不正确')
+      alert(formatMessage({ id: 'home.shh_format_error' }));
     }
   }
 
@@ -143,7 +144,7 @@ class HomePage extends Component {
       this.setState({ ensName: queryENSName, nameError: '' })
       this.props.dispatch({ type: 'account/getEnsUserData', payload: queryENSName })
     } else {
-      this.setState({ nameError: 'ENS名称格式错误', ensName: queryENSName })
+      this.setState({ nameError: formatMessage({ id: 'home.ens_name_format_error' }), ensName: queryENSName })
     }
   }
 
@@ -225,6 +226,11 @@ class HomePage extends Component {
 
   onIceCandidateStateChange = (e) => {
     console.log('onIceCandidateStateChange: ', e);
+    if (this.peer.iceConnectionState === "failed") {
+      this.props.dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.error } });
+    } else if (this.peer?.iceConnectionState === 'connected') {
+      this.props.dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.active } });
+    }
   }
 
   // webrtc:7
@@ -240,7 +246,7 @@ class HomePage extends Component {
     this.peer = new RTCPeerConnection(WebrtcConfig);
     this.peer.onicecandidate = this.onIceCandidate;
     this.peer.ontrack = this.gotRemoteStream;
-    this.peer.onIceCandidateStateChange = this.onIceCandidateStateChange;
+    this.peer.oniceconnectionstatechange  = this.onIceCandidateStateChange;
   }
 
   loadCacheCandidate = async () => {
@@ -428,273 +434,275 @@ class HomePage extends Component {
     const { queryENSAvaiable, queryENSLoading, queryENSAddress, queryShhPubKey, queryShhPubKeyByAddress } = this.props.account;
     const { loginAddress } = this.props.account;
 
-    const errorMessage = addFromEns && ensName ? nameError ? nameError : (queryENSAvaiable || !ensName) ? '该名称尚未注册' : '' : '';
-    const queryENSAddressTip = queryENSAddress || (queryENSAvaiable ? 'ENS用户名未注册' : '');
+    const errorMessage = addFromEns && ensName ? nameError ? nameError : (queryENSAvaiable || !ensName) ? formatMessage({ id: 'home.ens_name_not_register_error' }) : '' : '';
+    const queryENSAddressTip = queryENSAddress || (queryENSAvaiable ? formatMessage({ id: 'home.ens_name_not_register' }) : '');
 
     const ensNameCheck = ensName
       ? queryENSLoading
-        ? <Tooltip title="查询中...">
+        ? <Tooltip title={formatMessage({ id: 'home.searching' })}>
           <LoadingOutlined style={{ color: '#1890ff' }} />
         </Tooltip>
         : queryENSAvaiable
-          ? <Tooltip title="ENS名称未注册">
+          ? <Tooltip title={formatMessage({ id: 'home.ens_name_not_register' })}>
             <CloseCircleOutlined style={{ color: '#f5222d' }} />
           </Tooltip>
-          : <Tooltip title="已注册">
+          : <Tooltip title={formatMessage({ id: 'home.registered' })}>
             <CheckCircleOutlined style={{ color: '#52c41a' }} />
           </Tooltip>
       : null;
 
     return (
-      <div style={{ height: '100vh', backgroundColor: 'rgb(213,216,225)' }}>
-        <Layout style={{ height: '100vh', width: 1000, margin: 'auto', backgroundColor: 'rgb(213,216,225)' }}>
-          <Sider width={200} style={{
-            margin: '10px 0px',
-            backgroundColor: '#ffffff',
-            overflowX: 'hidden',
-            overflowY: 'auto',
-          }}>
-            <MyAccountRow />
-
-            <div style={{
-              margin: '5px 0px',
-              display: 'flex',
-              flexDirection: 'row',
-              borderBottom: '1px solid #e8e8e8',
-              borderTop: '1px solid #e8e8e8',
-              height: 50,
-              alignItems: 'center',
-              backgroundColor: 'rgba(40,40,40, 0.7)',
-              color: '#fff',
+      <NeedLogin>
+        <div style={{ height: '100vh', backgroundColor: 'rgb(213,216,225)' }}>
+          <Layout style={{ height: '100vh', width: 1000, margin: 'auto', backgroundColor: 'rgb(213,216,225)' }}>
+            <Sider width={200} style={{
+              margin: '10px 0px',
+              backgroundColor: '#ffffff',
+              overflowX: 'hidden',
+              overflowY: 'auto',
             }}>
-              <div style={{ flex: 1, textAlign: 'center', borderRight: '1px solid #e8e8e8' }}>
-                <HomeOutlined style={{ fontSize: 22, }} onClick={this.openHomeTab} />
-                {/* <p>个人信息页</p> */}
-              </div>
-              <div style={{ flex: 1, textAlign: 'center', borderRight: '1px solid #e8e8e8' }}>
-                <UserAddOutlined style={{ fontSize: 22 }} onClick={this.openNewMessageModal} />
-                {/* <p>新建对话</p> */}
-              </div>
-              <div style={{ flex: 1, textAlign: 'center', }}>
-                <InteractionOutlined style={{ fontSize: 22 }} onClick={this.openNewTransferModal} />
-                {/* <p>发起转账</p> */}
-              </div>
-            </div>
+              <MyAccountRow />
 
-            {/* public chat */}
-            <List.Item
-              onClick={() => this.setChatToUser({ isGroup: true })}
-              style={{
-                paddingLeft: 10,
-                paddingRight: 10,
-                width: 200,
-                height: 70,
+              <div style={{
+                margin: '5px 0px',
+                display: 'flex',
+                flexDirection: 'row',
                 borderBottom: '1px solid #e8e8e8',
-                backgroundColor: chatUser && chatUser.isGroup ? '#e6f7ff' : '',
+                borderTop: '1px solid #e8e8e8',
+                height: 50,
+                alignItems: 'center',
+                backgroundColor: 'rgba(40,40,40, 0.7)',
+                color: '#fff',
               }}>
-              <List.Item.Meta
-                avatar={<Avatar icon={<TeamOutlined />} style={{ backgroundColor: '#40a9ff' }} />}
-                title="公共聊天室"
-                description="公开"
-              />
-            </List.Item>
-
-            <List
-              itemLayout="horizontal"
-              dataSource={friends}
-              renderItem={friend => (
-                <List.Item
-                  onClick={() => this.setChatToUser(friend)}
-                  style={{
-                    paddingLeft: 10,
-                    paddingRight: 10,
-                    width: 200,
-                    height: 70,
-                    backgroundColor: chatUser && chatUser.address === friend.address ? '#e6f7ff' : '',
-                  }}>
-                  <List.Item.Meta
-                    avatar={<Avatar>{friend.ensName && friend.ensName[0] || friend.nickName && friend.nickName[0] || '0x'}</Avatar>}
-                    title={friend.ensName || friend.nickName || shortenAddress(friend.address, 10)}
-                    description={formatTime(friend.time)}
-                  />
-                </List.Item>
-              )}
-            />
-          </Sider>
-          <Layout style={{ overflowY: 'hidden', height: '100vh', backgroundColor: 'rgb(213,216,225)' }}>
-            <Content style={{ background: '#fff', margin: '10px 3px', overflowY: 'auto' }}>
-              {chatUser
-                ? <ChatBox chatTo={chatUser} startAudio={this.startAudio} startVideo={this.startVideo} />
-                : <HomeTab address={loginAddress} token={faxBalance} ether={etherBalance} />
-              }
-            </Content>
-          </Layout>
-        </Layout>
-
-
-        <Modal
-          title="添加对话"
-          visible={newDialogModal}
-          onOk={this.createDialog}
-          onCancel={this.cancelDialogModal}
-          okText="添加"
-          cancelText="取消"
-        >
-          <div style={{ display: 'flex' }}>
-            <div style={{ flex: 1, justifyContent: 'center', display: 'flex', cursor: 'pointer' }} onClick={() => this.setState({ addFromEns: true })}>
-              <div style={{ textAlign: 'center', width: 90, color: addFromEns ? 'rgb(24, 144, 255)' : '', borderBottom: addFromEns ? '1px solid rgba(24, 144, 255, 0.5)' : '0px' }}>
-                ENS用户名
-              </div>
-            </div>
-            <div style={{ flex: 1, justifyContent: 'center', display: 'flex', cursor: 'pointer' }} onClick={() => this.setState({ addFromEns: false })} >
-              <div style={{ textAlign: 'center', width: 90, color: !addFromEns ? 'rgb(24, 144, 255)' : '', borderBottom: !addFromEns ? '1px solid rgba(24, 144, 255, 0.5)' : '0px' }}>
-                钱包地址
-              </div>
-            </div>
-          </div>
-
-          {addFromEns
-            ? <div>
-              <div style={{ display: 'flex', margin: '20px 20px 5px 20px' }}>
-                <Input
-                  prefix={<UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-                  placeholder="请输入对方ENS名称"
-                  addonAfter=".fax"
-                  suffix={ensNameCheck}
-                  defaultValue={ensName}
-                  width={200}
-                  onChange={this.onENSNameChange}
-                />
-              </div>
-              <div style={{ display: 'flex', margin: '20px 20px 5px 20px' }}>
-                <Input.TextArea
-                  placeholder="Please input whisper public key"
-                  defaultValue={queryShhPubKey}
-                  width={200}
-                  onChange={this.onWhisperChange}
-                />
-              </div>
-              {errorMessage
-                ? <div style={{ margin: '5px 20' }}>
-                  <Alert message={errorMessage} type="error" />
+                <div style={{ flex: 1, textAlign: 'center', borderRight: '1px solid #e8e8e8' }}>
+                  <HomeOutlined style={{ fontSize: 22, }} onClick={this.openHomeTab} />
+                  {/* <p>个人信息页</p> */}
                 </div>
-                : <div style={{ margin: '5px 20px' }}>
+                <div style={{ flex: 1, textAlign: 'center', borderRight: '1px solid #e8e8e8' }}>
+                  <UserAddOutlined style={{ fontSize: 22 }} onClick={this.openNewMessageModal} />
+                  {/* <p>新建对话</p> */}
+                </div>
+                <div style={{ flex: 1, textAlign: 'center', }}>
+                  <InteractionOutlined style={{ fontSize: 22 }} onClick={this.openNewTransferModal} />
+                  {/* <p>发起转账</p> */}
+                </div>
+              </div>
+
+              {/* public chat */}
+              <List.Item
+                onClick={() => this.setChatToUser({ isGroup: true })}
+                style={{
+                  paddingLeft: 10,
+                  paddingRight: 10,
+                  width: 200,
+                  height: 70,
+                  borderBottom: '1px solid #e8e8e8',
+                  backgroundColor: chatUser && chatUser.isGroup ? '#e6f7ff' : '',
+                }}>
+                <List.Item.Meta
+                  avatar={<Avatar icon={<TeamOutlined />} style={{ backgroundColor: '#40a9ff' }} />}
+                  title={formatMessage({ id: 'home.public_room' })}
+                  description={formatMessage({ id: 'home.public_description' })}
+                />
+              </List.Item>
+
+              <List
+                itemLayout="horizontal"
+                dataSource={friends}
+                renderItem={friend => (
+                  <List.Item
+                    onClick={() => this.setChatToUser(friend)}
+                    style={{
+                      paddingLeft: 10,
+                      paddingRight: 10,
+                      width: 200,
+                      height: 70,
+                      backgroundColor: chatUser && chatUser.address === friend.address ? '#e6f7ff' : '',
+                    }}>
+                    <List.Item.Meta
+                      avatar={<Avatar>{friend.ensName && friend.ensName[0] || friend.nickName && friend.nickName[0] || '0x'}</Avatar>}
+                      title={friend.ensName || friend.nickName || shortenAddress(friend.address, 10)}
+                      description={formatTime(friend.time)}
+                    />
+                  </List.Item>
+                )}
+              />
+            </Sider>
+            <Layout style={{ overflowY: 'hidden', height: '100vh', backgroundColor: 'rgb(213,216,225)' }}>
+              <Content style={{ background: '#fff', margin: '10px 3px', overflowY: 'auto' }}>
+                {chatUser
+                  ? <ChatBox chatTo={chatUser} startAudio={this.startAudio} startVideo={this.startVideo} />
+                  : <HomeTab address={loginAddress} token={faxBalance} ether={etherBalance} />
+                }
+              </Content>
+            </Layout>
+          </Layout>
+
+
+          <Modal
+            title={formatMessage({ id: 'home.add_dialogue' })}
+            visible={newDialogModal}
+            onOk={this.createDialog}
+            onCancel={this.cancelDialogModal}
+            okText={formatMessage({ id: 'add' })}
+            cancelText={formatMessage({ id: 'cancel' })}
+          >
+            <div style={{ display: 'flex' }}>
+              <div style={{ flex: 1, justifyContent: 'center', display: 'flex', cursor: 'pointer' }} onClick={() => this.setState({ addFromEns: true })}>
+                <div style={{ textAlign: 'center', width: 90, color: addFromEns ? 'rgb(24, 144, 255)' : '', borderBottom: addFromEns ? '1px solid rgba(24, 144, 255, 0.5)' : '0px' }}>
+                  {formatMessage({ id: 'home.ens_username' })}
+                </div>
+              </div>
+              <div style={{ flex: 1, justifyContent: 'center', display: 'flex', cursor: 'pointer' }} onClick={() => this.setState({ addFromEns: false })} >
+                <div style={{ textAlign: 'center', width: 90, color: !addFromEns ? 'rgb(24, 144, 255)' : '', borderBottom: !addFromEns ? '1px solid rgba(24, 144, 255, 0.5)' : '0px' }}>
+                  {formatMessage({ id: 'home.wallet_address' })}
+                </div>
+              </div>
+            </div>
+
+            {addFromEns
+              ? <div>
+                <div style={{ display: 'flex', margin: '20px 20px 5px 20px' }}>
+                  <Input
+                    prefix={<UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
+                    placeholder={formatMessage({ id: 'home.input_other_ens_name' })}
+                    addonAfter=".fax"
+                    suffix={ensNameCheck}
+                    defaultValue={ensName}
+                    width={200}
+                    onChange={this.onENSNameChange}
+                  />
+                </div>
+                <div style={{ display: 'flex', margin: '20px 20px 5px 20px' }}>
+                  <Input.TextArea
+                    placeholder="Please input whisper public key"
+                    defaultValue={queryShhPubKey}
+                    width={200}
+                    onChange={this.onWhisperChange}
+                  />
+                </div>
+                {errorMessage
+                  ? <div style={{ margin: '5px 20' }}>
+                    <Alert message={errorMessage} type="error" />
+                  </div>
+                  : <div style={{ margin: '5px 20px' }}>
+                    <Alert message={<div>
+                      <div>{formatMessage({ id: 'home.alert_address' })}<br />{queryENSAddressTip}</div>
+                      <hr style={{ borderBottom: '1px solid #91d5ff', borderTop: '0px' }} />
+                      <div>{formatMessage({ id: 'home.alert_shh_pubkey' })} <br />{queryShhPubKey}</div>
+                    </div>
+                    } type="info" />
+                  </div>}
+              </div>
+              : <div>
+                <div style={{ display: 'flex', margin: 20 }}>
+                  <span style={{ width: 80 }}>{formatMessage({ id: 'home.my_nickname' })}</span>
+                  <Input
+                    placeholder={formatMessage({ id: 'home.set_my_nickname' })}
+                    style={{ width: 380 }}
+                    onChange={(e) => this.setState({ nickName: e.target.value })}
+                    defaultValue={nickName}
+                  />
+                </div>
+                <div style={{ display: 'flex', margin: '20px 20px 5px' }}>
+                  <span style={{ width: 80 }}>地址:<span style={{ color: '#f5222d' }}>*</span></span>
+                  <Input
+                    placeholder={formatMessage({ id: 'home.input_other_address' })}
+                    style={{ width: 380 }}
+                    onChange={this.onAddressChange}
+                    defaultValue={chatAddress}
+                  />
+                </div>
+                <div style={{ display: 'flex', margin: '20px 20px 5px' }}>
+                  <span style={{ width: 80 }}>Whisper:<span style={{ color: '#f5222d' }}>*</span></span>
+                  <Input.TextArea
+                    placeholder="Please input whisper public key"
+                    defaultValue={queryShhPubKeyByAddress}
+                    width={380}
+                    onChange={this.onWhisperChange}
+                  />
+                </div>
+
+                <div style={{ margin: '20px 20px 20px' }}>
                   <Alert message={<div>
-                    <div>钱包地址: <br />{queryENSAddressTip}</div>
-                    <hr style={{ borderBottom: '1px solid #91d5ff', borderTop: '0px' }} />
-                    <div>Whisper公钥: <br />{queryShhPubKey}</div>
+                    <div>{formatMessage({ id: 'home.alert_shh_pubkey' })} <br />{queryShhPubKeyByAddress}</div>
                   </div>
                   } type="info" />
-                </div>}
-            </div>
-            : <div>
-              <div style={{ display: 'flex', margin: 20 }}>
-                <span style={{ width: 80 }}>昵称:</span>
-                <Input
-                  placeholder="为当前地址设置昵称"
-                  style={{ width: 380 }}
-                  onChange={(e) => this.setState({ nickName: e.target.value })}
-                  defaultValue={nickName}
-                />
-              </div>
-              <div style={{ display: 'flex', margin: '20px 20px 5px' }}>
-                <span style={{ width: 80 }}>地址:<span style={{ color: '#f5222d' }}>*</span></span>
-                <Input
-                  placeholder="请输入对方地址"
-                  style={{ width: 380 }}
-                  onChange={this.onAddressChange}
-                  defaultValue={chatAddress}
-                />
-              </div>
-              <div style={{ display: 'flex', margin: '20px 20px 5px' }}>
-                <span style={{ width: 80 }}>Whisper:<span style={{ color: '#f5222d' }}>*</span></span>
-                <Input.TextArea
-                  placeholder="Please input whisper public key"
-                  defaultValue={queryShhPubKeyByAddress}
-                  width={380}
-                  onChange={this.onWhisperChange}
-                />
-              </div>
-
-              <div style={{ margin: '20px 20px 20px' }}>
-                <Alert message={<div>
-                  <div>Whisper公钥: <br />{queryShhPubKeyByAddress}</div>
                 </div>
-                } type="info" />
-              </div>
-            </div>}
-        </Modal>
+              </div>}
+          </Modal>
 
-        <Modal
-          title="发起转账"
-          visible={newTranferModal}
-          onOk={this.confirmTransFax}
-          onCancel={this.cancelTransferModal}
-          okText="确认"
-          cancelText="取消"
-        >
-          <div style={{ display: 'flex', margin: 20 }}>
-            <span style={{ width: 100 }}>当前账户余额:</span>
-            <span>{faxBalance} FAX</span>
-          </div>
+          <Modal
+            title={formatMessage({ id: 'home.launch_transfer' })}
+            visible={newTranferModal}
+            onOk={this.confirmTransFax}
+            onCancel={this.cancelTransferModal}
+            okText={formatMessage({ id: 'confirm' })}
+            cancelText={formatMessage({ id: 'cancel' })}
+          >
+            <div style={{ display: 'flex', margin: 20 }}>
+              <span style={{ width: 100 }}>{formatMessage({ id: 'home.current_balance' })}</span>
+              <span>{faxBalance} FAX</span>
+            </div>
 
-          <div style={{ display: 'flex', margin: 20 }}>
-            <span style={{ width: 80 }}>地址:</span>
-            <Input placeholder="请输入对方地址" style={{ width: 380 }} onChange={(e) => this.setState({ to: e.target.value })} />
-            <span style={{ color: '#f5222d' }}>*</span>
-          </div>
-          <div style={{ display: 'flex', margin: 20 }}>
-            <span style={{ width: 80 }}>转账数量:</span>
-            <Input placeholder="请输入FAX转账数量" style={{ width: 380 }} addonAfter="FAX" onChange={(e) => this.setState({ fax: e.target.value })} />
-            <span style={{ color: '#f5222d' }}>*</span>
-          </div>
-        </Modal>
+            <div style={{ display: 'flex', margin: 20 }}>
+              <span style={{ width: 80 }}>{formatMessage({ id: 'home.address' })}</span>
+              <Input placeholder={formatMessage({ id: 'home.input_other_address' })} style={{ width: 380 }} onChange={(e) => this.setState({ to: e.target.value })} />
+              <span style={{ color: '#f5222d' }}>*</span>
+            </div>
+            <div style={{ display: 'flex', margin: 20 }}>
+              <span style={{ width: 80 }}>{formatMessage({ id: 'home.transfer_amount' })}</span>
+              <Input placeholder={formatMessage({ id: 'home.input_transfer_fax_amount' })} style={{ width: 380 }} addonAfter="FAX" onChange={(e) => this.setState({ fax: e.target.value })} />
+              <span style={{ color: '#f5222d' }}>*</span>
+            </div>
+          </Modal>
 
-        <Modal
-          visible={!!mType}
-          mask={false}
-          destroyOnClose
-          title={
-            <div
-              style={{
-                width: '100%',
-                cursor: 'move',
-              }}
-              onMouseOver={() => {
-                if (this.state.disabled) {
+          <Modal
+            visible={!!mType}
+            mask={false}
+            destroyOnClose
+            title={
+              <div
+                style={{
+                  width: '100%',
+                  cursor: 'move',
+                }}
+                onMouseOver={() => {
+                  if (this.state.disabled) {
+                    this.setState({
+                      disabled: false,
+                    });
+                  }
+                }}
+                onMouseOut={() => {
                   this.setState({
-                    disabled: false,
+                    disabled: true,
                   });
+                }}
+              >
+                {chatUser && (chatUser.ensName || chatUser.nickName)} [{status}]
+              </div>
+            }
+            closable={false}
+            maskClosable={false}
+            footer={null}
+            bodyStyle={{ padding: 0 }}
+            width={800}
+            modalRender={(modal) => <ReactDraggable disabled={this.state.disabled}>{modal}</ReactDraggable>}
+          >
+            <div style={{ width: '100%', height: '100%', backgroundColor: 'black', position: 'relative' }}>
+              <video ref={this.videoRef} style={{ width: '100%' }} autoPlay></video>
+              <div style={{ position: 'absolute', bottom: 16, right: 16 }}>
+                {
+                  status === MediaStatus.ring ?
+                    <Button type="primary" shape="circle" size="large" icon={<PhoneOutlined />} onClick={this.acceptInvite} style={{ marginRight: 16 }} /> : null
                 }
-              }}
-              onMouseOut={() => {
-                this.setState({
-                  disabled: true,
-                });
-              }}
-            >
-              {chatUser && (chatUser.ensName || chatUser.nickName)}
+                <Button type="primary" danger shape="circle" size="large" icon={<PhoneOutlined />} onClick={this.endMedia} />
+              </div>
             </div>
-          }
-          closable={false}
-          maskClosable={false}
-          footer={null}
-          bodyStyle={{ padding: 0 }}
-          width={800}
-          modalRender={(modal) => <ReactDraggable disabled={this.state.disabled}>{modal}</ReactDraggable>}
-        >
-          <div style={{ width: '100%', height: '100%', backgroundColor: 'black', position: 'relative' }}>
-            <video ref={this.videoRef} style={{ width: '100%' }} autoPlay></video>
-            <div style={{ position: 'absolute', bottom: 16, right: 16 }}>
-              {
-                status === MediaStatus.ring ?
-                  <Button type="primary" shape="circle" size="large" icon={<PhoneOutlined />} onClick={this.acceptInvite} style={{ marginRight: 16 }} /> : null
-              }
-              <Button type="primary" danger shape="circle" size="large" icon={<PhoneOutlined />} onClick={this.endMedia} />
-            </div>
-          </div>
-        </Modal>
-      </div>
+          </Modal>
+        </div>
+      </NeedLogin>
     );
   }
 }

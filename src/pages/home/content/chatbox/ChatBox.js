@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'dva';
 import { Button, Icon, Modal } from 'antd';
 import { message as ant_message } from 'antd';
+import { formatMessage } from 'umi-plugin-locale';
 import { PictureOutlined, PhoneOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import MessageRow from './MessageRow';
 import GroupMessagRow from './GroupMessageRow';
 
-import { formatTime } from '../../../../app/util';
-import { MediaType } from '../../../../models/media';
+import { formatTime } from '@/app/util';
 class ChatBox extends Component {
   constructor(props) {
     super(props);
@@ -23,11 +23,11 @@ class ChatBox extends Component {
     const { shhPubKey, address, isGroup } = this.props.chatTo;
     const { visitorMode } = this.props.account;
     if (visitorMode) {
-      ant_message.warning("游客模式下，无法发送消息");
+      ant_message.warning(formatMessage({ id: 'chat.visitor_forbidden_message' }));
       return;
     }
     if (!currentMessage) {
-      alert('消息不能为空')
+      alert(formatMessage({ id: 'chat.message_not_null' }))
     } else {
       if (isGroup) {
         this.props.dispatch({ type: 'user/sendGroupMessage', payload: { currentMessage } })
@@ -89,7 +89,7 @@ class ChatBox extends Component {
 
     const { visitorMode } = this.props.account;
     if (visitorMode) {
-      ant_message.warning("游客模式下，无法发送消息");
+      ant_message.warning(formatMessage({ id: 'chat.visitor_forbidden_message' }));
       return;
     }
     if (imageFile && imageFile.name) {
@@ -126,17 +126,17 @@ class ChatBox extends Component {
         ? <div>
           {isGroup
             ? <div style={{ height: 60, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
-              <h3 style={{ marginBottom: 0 }}>公共聊天室</h3>
+              <h3 style={{ marginBottom: 0 }}>{formatMessage({ id: 'chat.public_room' })}</h3>
             </div>
             : <div style={{ height: 60, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
-              <h3 style={{ marginBottom: 0 }}>{ensName || nickName || '无昵称'}</h3>
+              <h3 style={{ marginBottom: 0 }}>{ensName || nickName || formatMessage({ id: 'chat.no_nick_name' })}</h3>
               <p>({address})</p>
             </div>}
 
           <div id='chat' style={{ overflowY: 'auto', height: 'calc(100vh - 20px - 70px - 30px - 150px)', minHeight: 50, backgroundColor: 'rgb(238, 238, 238)', padding: 20 }}>
             {!isGroup
               ? <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <div style={{ textAlign: 'center', width: 180, backgroundColor: '#fff', borderRadius: 10 }}>{formatTime(time)}加入对话</div>
+                <div style={{ textAlign: 'center', width: 180, backgroundColor: '#fff', borderRadius: 10 }}>{formatTime(time)}{formatMessage({ id: 'chat.join_chat' })}</div>
               </div>
               : null}
             {isGroup
@@ -193,7 +193,7 @@ class ChatBox extends Component {
                 backgroundColor: 'rgba(9, 146, 8, 0.6)',
                 color: '#fff'
               }}>
-              发送消息
+              {formatMessage({ id: 'chat.send_message' })}
             </Button >
           </div>
 

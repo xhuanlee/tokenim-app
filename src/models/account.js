@@ -1,3 +1,4 @@
+import { formatMessage } from 'umi-plugin-locale';
 import { routerRedux } from 'dva/router'
 import { showNotification } from '../app/util'
 import Wallet from 'ethereumjs-wallet'
@@ -121,7 +122,7 @@ export default {
 
       } catch (e) {
         console.log(e)
-        showNotification('importPrivateKey', 'error', '导入失败，请检查private key格式', 8)
+        showNotification('importPrivateKey', 'error', formatMessage({ id: 'account.import_pk_format_error' }), 8)
         return;
       }
 
@@ -141,7 +142,7 @@ export default {
         localStorage.setItem('WalletListAES', JSON.stringify(WalletObj));
         showNotification('importPrivateKey', 'success')
       } else {
-        showNotification('importPrivateKey', 'error', '导入private key 出错', 8)
+        showNotification('importPrivateKey', 'error', formatMessage({ id: 'account.import_pk_error' }), 8)
       }
 
     },
@@ -175,7 +176,7 @@ export default {
         yield put({ type: 'saveAccountState', payload: { importKeystoreLoading: false, importKeystoreError: false } })
         yield put(routerRedux.push('/'));
       } else {
-        alert('导入失败，请检查keystore格式')
+        alert(formatMessage({ id: 'account.import_keystore_format_error' }));
         yield put({ type: 'saveAccountState', payload: { importKeystoreLoading: false, importKeystoreError: true } })
       }
 

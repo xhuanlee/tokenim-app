@@ -1,4 +1,5 @@
 import { message, notification } from 'antd';
+import { formatMessage } from 'umi-plugin-locale';
 
 export const LOCALE_CN = 'zh-CN';
 export const LOCALE_EN = 'en-US';
@@ -85,24 +86,24 @@ export const copyToClipboard = (str) => {
   el.select();
   document.execCommand('copy');
   document.body.removeChild(el);
-  message.info('地址拷贝成功!');
+  message.info(formatMessage({ id: 'copy_address_success' }));
 };
 
 const notificationKey = {
-  'init': '初始化',
-  'initContract': '合约初始化',
-  'login': '登陆',
-  'newAccount': '新建账户',
-  'transFax': 'Fax交易',
-  'buyFax': '购买FAX',
-  'approve': '批准FAX',
-  'importKeystore': '导入Keystore',
-  'importPrivateKey': '导入Private Key',
+  'init': formatMessage({ id: 'init' }),
+  'initContract': formatMessage({ id: 'init_ontract' }),
+  'login': formatMessage({ id: 'login' }),
+  'newAccount': formatMessage({ id: 'new_account' }),
+  'transFax': formatMessage({ id: 'transfer_fax' }),
+  'buyFax': formatMessage({ id: 'buy_fax' }),
+  'approve': formatMessage({ id: 'approve' }),
+  'importKeystore': formatMessage({ id: 'import_keystore' }),
+  'importPrivateKey': formatMessage({ id: 'import_privateKey' }),
 
-  'newMessage': '新消息',
-  'transEther': '以太币交易',
-  'transactionDone': '以太币交易',
-  'receiveTransaction': '收到新交易',
+  'newMessage': formatMessage({ id: 'new_message' }),
+  'transEther': formatMessage({ id: 'trans_ether' }),
+  'transactionDone': formatMessage({ id: 'transaction_done' }),
+  'receiveTransaction': formatMessage({ id: 'receive_transaction' }),
 }
 
 export const showNotification = (key, type, description, duration) => {
@@ -110,15 +111,15 @@ export const showNotification = (key, type, description, duration) => {
     case 'error':
       notification.error({
         key: key,
-        message: notificationKey[key] + '出错',
-        description: description || '详情请查看控制台',
+        message: formatMessage({ id: key }) + formatMessage({ id: 'notification_error' }),
+        description: description || formatMessage({ id: 'notification_error_des' }),
         duration: duration || null,
       })
       return;
     case 'success':
       notification.success({
         key: key,
-        message: notificationKey[key] + '成功',
+        message: formatMessage({ id: key }) + formatMessage({ id: 'notification_success' }),
         description: description || '',
         duration: duration || 5,
       })
@@ -126,7 +127,7 @@ export const showNotification = (key, type, description, duration) => {
     default:
       notification.info({
         key: key,
-        message: notificationKey[key],
+        message: formatMessage({ id: key }),
         description: description || '',
         duration: duration || 5,
       })
@@ -166,7 +167,7 @@ export const stringToColour = (str) => {
 
 export function formatLocale(locale) {
 
-  if (locale && (locale.toLowerCase() === 'en' || locale.toLowerCase() === 'en-US' || locale.toLowerCase() === 'english')) {
+  if (locale && (locale.toLowerCase() === 'en' || locale.toLowerCase() === 'en-us' || locale.toLowerCase() === 'english')) {
     return LOCALE_EN;
   }
 

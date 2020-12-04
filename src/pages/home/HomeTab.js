@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'dva'
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { Button, Typography, Table, Modal, Alert, Input, message } from 'antd'
+import { Button, Typography, Table, Modal, Alert, Input, message } from 'antd';
+import { formatMessage } from 'umi-plugin-locale';
 import {
   KeyOutlined, InfoCircleOutlined, LockOutlined, SwapOutlined, SyncOutlined, CopyOutlined,
   InteractionOutlined, ShoppingCartOutlined, AuditOutlined, FileSearchOutlined
@@ -13,7 +14,7 @@ import TransFax from './content/component/TransFax'
 import BuyFax from './content/component/BuyFax'
 import ApproveContract from './content/component/ApproveContract'
 
-import { converEther } from '../../app/util'
+import { converEther } from '@/app/util'
 
 const { Title } = Typography;
 
@@ -73,7 +74,7 @@ class HomeTab extends Component {
 
     // 无可用钱包
     if (!(loginPkAes && loginPkMd5)) {
-      this.setState({ passwordOK: false, passwordError: '未找到可用钱包', privateKey: '' })
+      this.setState({ passwordOK: false, passwordError: formatMessage({ id: 'home.no_usable_wallet' }), privateKey: '' })
       return;
     }
 
@@ -83,7 +84,7 @@ class HomeTab extends Component {
       const privateKey = wallet.getPrivateKeyString && wallet.getPrivateKeyString();
       this.setState({ passwordOK: true, privateKey })
     } else {
-      this.setState({ passwordOK: false, passwordError: '密码错误' })
+      this.setState({ passwordOK: false, passwordError: formatMessage({ id: 'home.wrong_password' }) })
     }
 
   }
@@ -100,18 +101,18 @@ class HomeTab extends Component {
         <CopyToClipboard text={shhPubKey} onCopy={() => message.success('Copied')}><Button type="dashed" shape="circle" icon={<CopyOutlined />} /></CopyToClipboard>
         {shhPubKey}
       </>
-      : '离线';
+      : formatMessage({ id: 'home.offline' });
     return (
       <div style={{ margin: 20 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Title level={4}>我的账户信息</Title>
+          <Title level={4}>{formatMessage({ id: 'home.my_account_info' })}</Title>
           <Button type="primary" shape="circle" icon={<SyncOutlined />} onClick={this.refresh} />
         </div>
         <hr style={{ borderColor: 'rgb(232,232,232)' }} />
         <div style={{ float: 'right' }}>
           <Button onClick={this.openExportModal} type="primary">
             <KeyOutlined />
-            导出私钥
+            {formatMessage({ id: 'home.export_pk' })}
           </Button>
         </div>
         <div style={{ marginTop: 20, marginLeft: 30, marginBottom: 40 }}>
@@ -125,7 +126,7 @@ class HomeTab extends Component {
               { title: '属性值', dataIndex: 'val', key: 'val', ellipsis: true },
             ]}
             dataSource={[
-              { key: 'address', row: '账户地址', val: address || '无可用钱包地址' },
+              { key: 'address', row: formatMessage({ id: 'home.table_account_address' }), val: address || formatMessage({ id: 'home.no_usable_wallet' }) },
               { key: 'token', row: 'Fax Token', val: token },
               { key: 'ether', row: 'Ether', val: displayEther },
               { key: 'shh', row: 'Whisper', val: shhStatus },
@@ -133,14 +134,14 @@ class HomeTab extends Component {
           />
         </div>
 
-        <Title level={4}>账户操作</Title>
+        <Title level={4}>{formatMessage({ id: 'home.account_operation' })}</Title>
         <hr style={{ borderColor: 'rgb(232,232,232)' }} />
         <div style={{ margin: 30, display: 'flex' }}>
-          <IconButton current={operation} okey='transEther' action={this.toggleOperation} icon={<SwapOutlined style={{ fontSize: '30px' }} />} text="以太币转账" />
-          <IconButton current={operation} okey='transFax' action={this.toggleOperation} icon={<InteractionOutlined style={{ fontSize: '30px' }} />} text="FAX转账" />
-          <IconButton current={operation} okey='buyFax' action={this.toggleOperation} icon={<ShoppingCartOutlined style={{ fontSize: '30px' }} />} text="购买FAX" />
-          <IconButton current={operation} okey='approveContract' action={this.toggleOperation} icon={<AuditOutlined style={{ fontSize: '30px' }} />} text="批准合约额度" />
-          <IconButton current={operation} okey='openContractPage' action={this.openContractStatePage} icon={<FileSearchOutlined style={{ fontSize: '30px' }} />} text="查看合约状态" />
+          <IconButton current={operation} okey='transEther' action={this.toggleOperation} icon={<SwapOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.transfer_eth' })} />
+          <IconButton current={operation} okey='transFax' action={this.toggleOperation} icon={<InteractionOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.transfer_fax' })} />
+          <IconButton current={operation} okey='buyFax' action={this.toggleOperation} icon={<ShoppingCartOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.buy_fax' })} />
+          <IconButton current={operation} okey='approveContract' action={this.toggleOperation} icon={<AuditOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.approve_contract_quota' })} />
+          <IconButton current={operation} okey='openContractPage' action={this.openContractStatePage} icon={<FileSearchOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.check_contract_status' })} />
         </div>
         <div style={{ marginLeft: 50, marginRight: 220 }}>
           {operation
@@ -156,29 +157,29 @@ class HomeTab extends Component {
             : null}
         </div>
         <Modal
-          title="导出私钥"
+          title={formatMessage({ id: 'home.export_pk' })}
           visible={exportPk}
           onOk={this.exportPrivateKey}
           onCancel={this.closeExportModal}
-          okText={passwordOK ? "完成" : "下一步"}
-          cancelText="取消"
+          okText={passwordOK ? formatMessage({ id: 'home.finish' }) : formatMessage({ id: 'home.next_step' })}
+          cancelText={formatMessage({ id: 'cancel' })}
           destroyOnClose={true}
         >
           <Alert message={
             <div>
               <InfoCircleOutlined />
-              <span>请妥善保管好您的私钥，这关系到您账户的所有数字资产安全，不要透露给任何人！</span>
+              <span>{formatMessage({ id: 'home.export_pk_notice' })}</span>
             </div>
           } type="info" />
           <div style={{ margin: "20px 0" }}>
             <div style={{ marginBottom: 10 }}>
-              <span>请输入账户密码，然后点击下一步</span>
+              <span>{formatMessage({ id: 'home.input_password_notice' })}</span>
             </div>
             <div style={{ width: 250 }}>
               <Input
                 prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                 type="password"
-                placeholder="请输入账户密码"
+                placeholder={formatMessage({ id: 'home.input_password' })}
                 onChange={this.onPasswordChange}
               />
             </div>

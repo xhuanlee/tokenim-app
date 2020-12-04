@@ -6,3 +6,10 @@
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+.beian {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  transform: translateX(-50%);
+}

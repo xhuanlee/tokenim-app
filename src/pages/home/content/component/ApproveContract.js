@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'dva'
 import { Form, Input, Button, Select, Alert } from 'antd';
+import { formatMessage } from 'umi-plugin-locale';
 import { AuditOutlined } from '@ant-design/icons';
 
 const FormItem = Form.Item;
@@ -34,25 +35,25 @@ class ApproveContract extends Component {
     const { faxBalance } = this.props.user;
     return (
       <div>
-        <h3>批准合约额度</h3>
+        <h3>{formatMessage({ id: 'approve.contract_quota' })}</h3>
         <FormItem>
           <Select onChange={this.changeContract} style={{ width: 480 }}>
-            <Option value={saleAddress}>兑换合约：{saleAddress}</Option>
-            <Option value={imAddress}>即时通讯：{imAddress}</Option>
+            <Option value={saleAddress}>{formatMessage({ id: 'approve.exchange_contract' })}：{saleAddress}</Option>
+            <Option value={imAddress}>{formatMessage({ id: 'approve.im_messaging' })}：{imAddress}</Option>
           </Select>
         </FormItem>
         <FormItem style={{ width: 480 }}>
           <Input
             prefix={<AuditOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-            placeholder="请输入准许合约花费的FAX数量"
+            placeholder={formatMessage({ id: 'approve.input_approve_fax_amount' })}
             onChange={this.changeFaxNumber}
             addonAfter="FAX"
           />
-          <Alert message={<div>当前账户FAX个数：{faxBalance}</div>} type="info" />
+          <Alert message={<div>{formatMessage({ id: 'approve.account_fax_amount' })}：{faxBalance}</div>} type="info" />
         </FormItem>
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Button type='primary' onClick={this.approve} >
-            确定批准
+            {formatMessage({ id: 'approve.confirm_approve' })}
           </Button>
         </div>
       </div>

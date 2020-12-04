@@ -14,8 +14,12 @@ export const dva = {
 };
 
 const { search } = window.location;
-let { locale = 'zh-CN' } = qs.parse(search, { ignoreQueryPrefix: true });
+let { locale } = qs.parse(search, { ignoreQueryPrefix: true });
 console.log(`locale from query: ${locale}`);
+if (!locale || locale.trim() === '') {
+  locale = localStorage.getItem('umi_locale');
+  console.log(`locale from localStorage: ${locale}`);
+}
 locale = formatLocale(locale);
 console.log(`set locale to: ${locale}`);
 setLocale(locale);

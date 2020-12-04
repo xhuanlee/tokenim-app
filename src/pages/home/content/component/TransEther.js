@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'dva'
 import { Form, Input, Button, Spin, Select, Alert } from 'antd';
+import { formatMessage } from 'umi-plugin-locale';
 import { UserOutlined, SwapOutlined } from '@ant-design/icons';
 
 const FormItem = Form.Item;
@@ -20,9 +21,9 @@ class TransEther extends Component {
     const { address, number, unit } = this.state;
     const ether = number * unit;
     if (ether > 0) {
-      this.props.dispatch({ type: 'user/transEther', payload: { to: address, ether } })
+      this.props.dispatch({ type: 'user/transEther', payload: { to: address, ether } });
     } else {
-      alert('转账金额不能为空')
+      alert(formatMessage({ id: 'transfer.not_null' }));
     }
   }
   render() {
@@ -36,19 +37,19 @@ class TransEther extends Component {
 
     return (
       <div>
-        <h3>以太币转账</h3>
+        <h3>{formatMessage({ id: 'transfer.transfer_eth' })}</h3>
         <Spin spinning={transEtherLoading}>
           <FormItem>
             <Input
               prefix={<UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-              placeholder="请输入账户地址"
+              placeholder={formatMessage({ id: 'transfer.input_account' })}
               onChange={(e) => this.setState({ address: e.target.value })}
             />
           </FormItem>
           <FormItem>
             <Input
               prefix={<SwapOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-              placeholder="以太币数量"
+              placeholder={formatMessage({ id: 'transfer.eth_amount' })}
               addonAfter={selectAfter}
               onChange={(e) => this.setState({ number: e.target.value })}
             />
@@ -56,7 +57,7 @@ class TransEther extends Component {
           </FormItem>
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button type='primary' onClick={this.transferEther} >
-              确定转账
+              {formatMessage({ id: 'transfer.confirm' })}
           </Button>
           </div>
         </Spin>

@@ -1,4 +1,5 @@
 import { notification } from 'antd';
+import { formatMessage } from 'umi-plugin-locale';
 import { routerRedux } from 'dva/router';
 import { FaxTokenImAPI } from './api';
 import { showNotification, sendRequest, shortenAddress, converEther } from './util';
@@ -449,10 +450,10 @@ const IMApp = {
         if (msg) {
           console.log(msg)
           const displayName = msg.name || shortenAddress(msg.from, 18);
-          const title = msg.group ? `公共聊天组` : `${displayName}`
-          const type = msg.type === 'image' ? '图片' : '新消息';
+          const title = msg.group ? formatMessage({ id: 'public_group' }) : `${displayName}`
+          const type = msg.type === 'image' ? formatMessage({ id: 'image' }) : formatMessage({ id: 'new_message' });
           if (!IMApp.loginAddress || msg.from !== IMApp.loginAddress) {
-            showNotification('newMessage', 'info', `收到来自${title}${type}`)
+            showNotification('newMessage', 'info', `${formatMessage({ id: 'receive_from' })}${title}${type}`)
           }
           window.g_app._store.dispatch({ type: 'user/receiveNewMessage', payload: msg })
         }
@@ -468,13 +469,13 @@ const IMApp = {
       const toAddress = shortenAddress(to, 18);
       const etherValue = converEther(value).value;
       const etherUnit = converEther(value).unit;
-      showNotification('transactionDone', 'success', `成功向 ${toAddress} \n 转出 ${etherValue} ${etherUnit}`)
+      showNotification('transactionDone', 'success', `${formatMessage({ id: 'success_transfer' })} ${etherValue} \n ${formatMessage({ id: 'to' })}${etherUnit} ${toAddress}`)
       window.g_app._store.dispatch({ type: 'user/getBalance' })
     } else if (address === to) {
       const fromAddress = shortenAddress(from, 18);
       const etherValue = converEther(value).value;
       const etherUnit = converEther(value).unit;
-      showNotification('receiveTransaction', 'info', `收到来自 ${fromAddress}的交易， 以太币数量：${etherValue} ${etherUnit}`)
+      showNotification('receiveTransaction', 'info', `${formatMessage({ id: 'receive_from' })} ${fromAddress}， ${formatMessage({ id: 'eth_account' })} ${etherValue}：${etherValue} ${etherUnit}`)
       window.g_app._store.dispatch({ type: 'user/getBalance' })
     } else {
       console.log(`unknow transaction`)
@@ -525,7 +526,7 @@ const IMApp = {
       if (err) {
         console.log(`register ens error.`);
         console.log(err);
-        showNotification('newAccount', 'error', '注册ENS名字出错，详情查看控制台');
+        showNotification('newAccount', 'error', formatMessage({ id: 'ens_register_error_notice' }));
         window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { registerENSLoading: false, registerError: true } })
       } else if (res.err !== 0) {
         console.log(`register ens error.`);
@@ -699,15 +700,15 @@ const IMApp = {
         IMApp.getShhSymKey();
         FaxTokenImAPI.setupNewTransactionListener(address, (filter) => { IMApp.transactionFilter = filter }, IMApp.newTransactionArrive)
         window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { wallet, loginLoading: false, loginPkAes: aes_pk, loginPkMd5: md5_pk, auth: true, loginAddress: address, address, visitorMode: false } })
-        showNotification('login', 'success')
+        showNotification('login', 'success');
         window.g_app._store.dispatch(routerRedux.push('/home'))
       } else {
-        showNotification('login', 'error', '密码验证错误')
+        showNotification('login', 'error', formatMessage({ id: 'password_error_notice' }));
         window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { wallet, loginLoading: false, loginPkAes: aes_pk, loginPkMd5: md5_pk } })
       }
     } else {
       console.log(`no keystore found fro ${address}`);
-      showNotification('login', 'error', '未找到对应账号的密钥信息')
+      showNotification('login', 'error', formatMessage({ id: 'no_keystore_notice' }))
       window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { loginLoading: false } })
     }
   },
@@ -719,7 +720,7 @@ const IMApp = {
     }).catch((err) => {
       console.log(`can't find address for ${ensName}.fax`)
       console.log(err)
-      showNotification('login', 'error', `${ensName}.fax地址解析出错`)
+      showNotification('login', 'error', `${ensName}.fax ${formatMessage({ id: 'address_resolve_error_notice' })}`);
       window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { loginLoading: false, ensLoading: false, loginError: true } })
     });
   },
@@ -760,7 +761,7 @@ const IMApp = {
   transferEther: (address, to, ether, privateKey) => {
     FaxTokenImAPI.transferEther(address, to, ether, privateKey).then((tx) => {
       window.g_app._store.dispatch({ type: 'user/saveUserState', payload: { transEtherLoading: false } })
-      showNotification('transactionDone', 'info', '交易已发出，等待矿工打包中');
+      showNotification('transactionDone', 'info', formatMessage({ id: 'transaction_send_notice' }));
       window.g_app._store.dispatch({ type: 'user/getBalance' })
     }).catch((err) => {
       console.log(`transfer ether from ${address} to ${to} error`)
@@ -772,7 +773,7 @@ const IMApp = {
   transferFax: (address, to, fax, privateKey) => {
     FaxTokenImAPI.transfer(address, to, fax, privateKey).then((tx) => {
       window.g_app._store.dispatch({ type: 'user/saveUserState', payload: { transFaxLoading: false } })
-      showNotification('transFax', 'success', '交易成功');
+      showNotification('transFax', 'success', formatMessage({ id: 'transaction_success_notice' }));
       window.g_app._store.dispatch({ type: 'user/getBalance' })
     }).catch((err) => {
       console.log(`transfer token from ${address} to ${to} error`)
@@ -784,7 +785,7 @@ const IMApp = {
   buyFax: (address, faxNumber, value, privateKey) => {
     FaxTokenImAPI.buyFax(address, faxNumber, value, privateKey).then((tx) => {
       window.g_app._store.dispatch({ type: 'user/saveUserState', payload: { transFaxLoading: false } })
-      showNotification('buyFax', 'success', `成功购买${faxNumber}个FAX`);
+      showNotification('buyFax', 'success', `${formatMessage({ id: 'success_buy' })}${faxNumber}个FAX`);
       window.g_app._store.dispatch({ type: 'user/getBalance' })
     }).catch((err) => {
       console.log(`buy ${faxNumber} Fax token for ${address} error`)
@@ -796,7 +797,7 @@ const IMApp = {
   approve: (address, contract, faxNumber, privateKey) => {
     FaxTokenImAPI.approve(address, contract, faxNumber, privateKey).then((tx) => {
       window.g_app._store.dispatch({ type: 'user/saveUserState', payload: { approveLoading: false } })
-      showNotification('approve', 'success', `批准成功`);
+      showNotification('approve', 'success', formatMessage({ id: 'approve_success' }));
       window.g_app._store.dispatch({ type: 'user/getBalance' })
     }).catch((err) => {
       console.log(`approve from ${address} to ${contract} , fax ${faxNumber} error`)
