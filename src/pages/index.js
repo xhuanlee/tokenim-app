@@ -153,7 +153,7 @@ class LoginPage extends PureComponent {
 
     const locale = localStorage.getItem('umi_locale');
     const oLocale = locale === LOCALE_EN ? LOCALE_CN : LOCALE_EN;
-    const oLocaleDes = locale === LOCALE_EN ? '中文' : 'english';
+    const oLocaleDes = locale === LOCALE_EN ? 'chinese' : 'english';
 
     return (
       <>
@@ -300,7 +300,7 @@ class LoginPage extends PureComponent {
             </FormItem>
           </Modal>
         </div>
-        <p className={styles.beian}>Copyright © 2020 <a href="https://www.allcomchina.com/">上海傲通网络科技有限公司</a> |<a href="http://www.beian.miit.gov.cn" target="_blank"> 沪ICP备14021271号-4</a></p>
+        <p className={styles.beian}>Copyright © 2020 <a href="https://www.allcomchina.com/">{formatMessage({ id: 'allcom' })}</a> |<a href="http://www.beian.miit.gov.cn" target="_blank"> 沪ICP备14021271号-4</a></p>
       </>
     );
   }

@@ -1,4 +1,5 @@
 export default {
+  'allcom': 'Shanghai Allcom Network Technologies, Inc',
   'return': 'Return',
   'login': 'Login',
   'register': 'Register',

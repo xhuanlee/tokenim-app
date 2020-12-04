@@ -1,4 +1,5 @@
 export default {
+  'allcom': '上海傲通全称上海傲通网络科技有限公司',
   'return': '返回',
   'login': '登陆',
   'register': '注册',
@@ -44,7 +45,7 @@ export default {
   'notification_error': '出错',
   'notification_error_des': '详情请查看控制台',
   'notification_success': '成功',
-  
+
   'index.white_paper': '白皮书',
   'index.faq': 'FAQ',
   'index.download': '下载',
@@ -98,13 +99,13 @@ export default {
   'register.fax_amount': 'FAX 数量',
   'register.password': '密码（用来加密你的私钥）',
   'register.input_account_password': '请输入账户密码',
-  
+
   'regSuccess.no_wallet': '没有可用的钱包',
   'regSuccess.redirecting': '跳转中...',
   'regSuccess.congratulation': '恭喜，注册成功！你的账户信息为:',
   'regSuccess.copy_address': '拷贝地址',
   'regSuccess.login_immediately': '立即登陆',
-  
+
   'status.search_account_info': '查询账户信息',
   'status.account_format_error': '账户格式错误',
   'status.input_ens': '请输入账户地址/ENS名称',
@@ -130,21 +131,21 @@ export default {
   'status.fax_domain_owner': 'fax域名所有者',
   'status.resolve_contract_address': '解析合约地址',
   'status.domain_resolve_contract': '域名解析合约',
-  
+
   'chat.visitor_forbidden_message': '游客模式下，无法发送消息',
   'chat.message_not_null': '消息不能为空',
   'chat.public_room': '公共聊天室',
   'chat.no_nick_name': '无昵称',
   'chat.join_chat': '加入对话',
   'chat.send_message': '发送消息',
-  
+
   'approve.contract_quota': '批准合约额度',
   'approve.exchange_contract': '兑换合约',
   'approve.im_messaging': '即时通讯',
   'approve.input_approve_fax_amount': '请输入准许合约花费的FAX数量',
   'approve.account_fax_amount': '当前账户FAX个数',
   'approve.confirm_approve': '确定批准',
-  
+
   'byFax.buy_fax': '请输入需要购买的FAX数量',
   'byFax.input_buy_amount': '购买FAX',
   'byFax.related_message': '相关信息',
@@ -152,7 +153,7 @@ export default {
   'byFax.contract_fax_amount': '合约剩余FAX数量',
   'byFax.fax_price': 'FAX价格',
   'byFax.eth_fee': 'Ether费用',
-  
+
   'transfer.not_null': '转账金额不能为空',
   'transfer.transfer_eth': '以太币转账',
   'transfer.input_account': '请输入账户地址',
@@ -160,7 +161,7 @@ export default {
   'transfer.confirm': '确定转账',
   'transfer.transfer_fax': 'FAX转账',
   'transfer.fax_amount': 'FAX代币数目',
-  
+
   'account.logout_title': '是否登出',
   'account.logout_content': '请点击确定，登出账号',
   'account.visitor': '游客',
@@ -177,7 +178,7 @@ export default {
   'account.import_pk_format_error': '导入失败，请检查private key格式',
   'account.import_keystore_format_error': '导入失败，请检查keystore格式',
   'account.import_pk_error': '导入private key 出错',
-  
+
   'home.shh_format_error': '地址/shh公钥格式不正确',
   'home.ens_name_format_error': 'ENS名称格式错误',
   'home.ens_name_not_register_error': '该名称尚未注册',
@@ -219,9 +220,9 @@ export default {
   'home.export_pk_notice': '请妥善保管好您的私钥，这关系到您账户的所有数字资产安全，不要透露给任何人！',
   'home.input_password_notice': '请输入账户密码，然后点击下一步',
   'home.input_password': '请输入账户密码',
-  
+
   'user.visitor_reward_forbidden': '获取奖励失败，游客无法获取奖励',
   'user.account_error': '账号异常，请重新登陆',
   'user.visitor_transaction_forbidden': '游客模式下，无法发起交易',
-  
+
 }
