@@ -152,17 +152,18 @@ class LoginPage extends PureComponent {
     ));
 
     const locale = localStorage.getItem('umi_locale');
-    const oLocale = locale === LOCALE_EN ? LOCALE_CN : LOCALE_EN;
-    const oLocaleDes = locale === LOCALE_EN ? 'chinese' : 'english';
+    const enLocale = (locale === LOCALE_EN);
+    const oLocale = enLocale ? LOCALE_CN : LOCALE_EN;
+    const oLocaleDes = enLocale ? 'chinese' : 'english';
 
     return (
       <>
         <div className={styles.container}>
           <div>
-            <a href="pages/whitepaper.html" style={{ marginRight: 10 }}>{formatMessage({ id: 'index.white_paper' })}</a>
-            <a href="pages/faq.html" style={{ marginRight: 10 }}>{formatMessage({ id: 'index.faq' })}</a>
-            <a href="pages/download.html" style={{ marginRight: 10 }}>{formatMessage({ id: 'index.download' })}</a>
-            <a href="pages/market.html" style={{ marginRight: 10 }}>{formatMessage({ id: 'index.quotation' })}</a>
+            <a href={enLocale ? 'pages/whitepaperEN.html' : 'pages/whitepaper.html'} style={{ marginRight: 10 }}>{formatMessage({ id: 'index.white_paper' })}</a>
+            <a href={enLocale ? 'pages/faqEN.html' : 'pages/faq.html'} style={{ marginRight: 10 }}>{formatMessage({ id: 'index.faq' })}</a>
+            <a href={enLocale ? 'pages/downloadEN.html' : 'pages/download.html'} style={{ marginRight: 10 }}>{formatMessage({ id: 'index.download' })}</a>
+            <a href={enLocale ? 'pages/marketEN.html' : 'pages/market.html'} style={{ marginRight: 10 }}>{formatMessage({ id: 'index.quotation' })}</a>
             <a href={`/?locale=${oLocale}`} style={{ marginRight: 10 }}>{oLocaleDes}</a>
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
