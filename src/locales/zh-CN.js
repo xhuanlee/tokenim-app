@@ -1,5 +1,5 @@
 export default {
-  'allcom': '上海傲通全称上海傲通网络科技有限公司',
+  'allcom': '上海傲通网络科技有限公司',
   'return': '返回',
   'login': '登陆',
   'register': '注册',
