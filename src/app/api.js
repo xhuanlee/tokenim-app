@@ -475,6 +475,7 @@ export const FaxTokenImAPI = {
   },
 
   setupShhMessageListener: (shhKeyId, callback) => {
+    console.log(`new message filter: ${shhKeyId}`);
     return FaxTokenImAPI.web3.shh.newMessageFilter({ privateKeyID: shhKeyId }, callback)
   },
 

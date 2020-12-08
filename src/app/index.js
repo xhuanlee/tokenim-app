@@ -292,7 +292,7 @@ const IMApp = {
       } else {
         // save to local
         IMApp.saveShhKeypairToLocal(address, keypair)
-        window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { shhKeyId: id, shhPriKey: priKey, shhPubKey: pubKey } })
+        window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { shhKeyId: id, shhPriKey: priKey, shhPubKey: pubKey, shhKeyAvaiable: true } });
       }
     }, JSON.stringify({ priKey, pubKey }))
   },
@@ -453,7 +453,7 @@ const IMApp = {
           const title = msg.group ? formatMessage({ id: 'public_group' }) : `${displayName}`
           const type = msg.type === 'image' ? formatMessage({ id: 'image' }) : formatMessage({ id: 'new_message' });
           if (!IMApp.loginAddress || msg.from !== IMApp.loginAddress) {
-            showNotification('newMessage', 'info', `${formatMessage({ id: 'receive_from' })}${title}${type}`)
+            showNotification('newMessage', 'info', `${formatMessage({ id: 'receive_from' })} ${title} ${type}`)
           }
           window.g_app._store.dispatch({ type: 'user/receiveNewMessage', payload: msg })
         }

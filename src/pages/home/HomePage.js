@@ -1,6 +1,6 @@
 import React, { Component, createRef } from 'react';
 import { connect } from 'dva';
-import { Layout, Avatar, List, Modal, Input, Alert, Tooltip, Button } from 'antd';
+import { Layout, Avatar, List, Modal, Input, Alert, Tooltip, Button, message } from 'antd';
 import ReactDraggable from 'react-draggable';
 import { formatMessage } from 'umi-plugin-locale';
 import { LoadingOutlined, CloseCircleOutlined, CheckCircleOutlined, HomeOutlined, UserOutlined,
@@ -228,6 +228,7 @@ class HomePage extends Component {
     console.log('onIceCandidateStateChange: ', e);
     if (this.peer.iceConnectionState === "failed") {
       this.props.dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.error } });
+      message.error('connect error, please try again', 10);
     } else if (this.peer?.iceConnectionState === 'connected') {
       this.props.dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.active } });
     }
@@ -266,6 +267,7 @@ class HomePage extends Component {
   }
 
   onReceiveAccept = async () => {
+    this.props.dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.connect } });
     await this.createPeer();
     this.getLocalMedia();
   }
