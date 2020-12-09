@@ -154,7 +154,7 @@ class LoginPage extends PureComponent {
     const locale = localStorage.getItem('umi_locale');
     const enLocale = (locale === LOCALE_EN);
     const oLocale = enLocale ? LOCALE_CN : LOCALE_EN;
-    const oLocaleDes = enLocale ? 'chinese' : 'english';
+    const oLocaleDes = enLocale ? 'Chinese' : 'English';
 
     return (
       <>
@@ -172,7 +172,7 @@ class LoginPage extends PureComponent {
             </Tooltip>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <h2 style={{ marginBottom: 0, fontWeight: 600 }}>Token-IM</h2>
+            <h2 style={{ marginBottom: 0, fontWeight: 600 }}>Interview.network</h2>
             <p style={{ marginBottom: 0 }}>Instant Messaging for Blockchain</p>
             <p>{formatMessage({ id: 'index.description' })}</p>
             <img src="../image/eth-icon.png" alt="" width="70" style={{ marginBottom: 30 }} />

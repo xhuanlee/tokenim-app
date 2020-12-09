@@ -22,7 +22,7 @@ export default {
       antd: true,
       dva: true,
       dynamicImport: { webpackChunkName: true },
-      title: 'Token-IM, Instant Messaging for Blockchain',
+      title: 'IClub, Instant Messaging Network for Blockchain',
       dll: false,
       locale: {
         enable: true,
