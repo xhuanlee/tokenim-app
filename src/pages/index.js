@@ -172,7 +172,7 @@ class LoginPage extends PureComponent {
             </Tooltip>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <h2 style={{ marginBottom: 0, fontWeight: 600 }}>Interview.network</h2>
+            <h2 style={{ marginBottom: 0, fontWeight: 600 }}>IClub.Network</h2>
             <p style={{ marginBottom: 0 }}>Instant Messaging for Blockchain</p>
             <p>{formatMessage({ id: 'index.description' })}</p>
             <img src="../image/eth-icon.png" alt="" width="70" style={{ marginBottom: 30 }} />
