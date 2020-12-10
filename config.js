@@ -9,6 +9,8 @@ const admin_account = '0xD227AF0e36AE44e673b0143d7765Dc4dA9B64B68';
 
 module.exports = {
   network_id: '1515',
+  ethereum_host: '222.44.63.242',
+  ethereum_port: 8545,
   ethereum_rpc_endpoint: 'https://t.callt.net/eth',
   swarm_http_endpoint: 'https://t.callt.net/swarm',
   api_http_endpoint: 'https://t.callt.net/api',
