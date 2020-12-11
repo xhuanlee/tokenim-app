@@ -173,3 +173,9 @@ export function formatLocale(locale) {
 
   return LOCALE_CN;
 }
+
+export async function promiseSleep(time) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, time);
+  });
+}

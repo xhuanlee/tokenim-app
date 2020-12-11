@@ -2,7 +2,7 @@ import { notification } from 'antd';
 import { formatMessage } from 'umi-plugin-locale';
 import { routerRedux } from 'dva/router';
 import { FaxTokenImAPI } from './api';
-import { showNotification, sendRequest, shortenAddress, converEther } from './util';
+import { showNotification, sendRequest, shortenAddress, converEther, promiseSleep } from './util';
 import { ethereum_rpc_endpoint, swarm_http_endpoint, api_http_endpoint } from '../../config'
 import { ETHEREUM_API } from './constant'
 import Wallet from 'ethereumjs-wallet'
@@ -253,48 +253,49 @@ const IMApp = {
     })
   },
 
-  newShhKeypair: (address) => {
+  newShhKeypair: async (address) => {
     const keypair = {
       id: 0,
       priKey: '',
       pubKey: '',
     }
 
-    FaxTokenImAPI.newShhKeypair().then((id) => {
-      keypair.id = id;
-      return FaxTokenImAPI.getShhPrivateKeyById(id);
-    }).then(({ id, priKey }) => {
+    try {
+      const shhId = await FaxTokenImAPI.newShhKeypair();
+      const shhPk = await FaxTokenImAPI.getShhPrivateKeyById(shhId);
+      const shhPub = await FaxTokenImAPI.getShhPublicKeyById(shhId);
+      const { priKey } = shhPk;
+      const { pubKey } = shhPub;
+      keypair.id = shhId;
       keypair.priKey = priKey;
-      return FaxTokenImAPI.getShhPublicKeyById(id);
-    }).then(({ id, pubKey }) => {
       keypair.pubKey = pubKey;
-      // save it
-      if (!IMApp.messageFilter) {
-        IMApp.messageFilter = FaxTokenImAPI.setupShhMessageListener(id, IMApp.newMessageArrive)
-      }
-      IMApp.saveShhKeypair(address, keypair)
-    }).catch((err) => {
-      console.log(err)
-      window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { newShhKeyError: true } })
-    })
+      await IMApp.saveShhKeypair(address, keypair);
+    } catch (e) {
+      console.log(e);
+      window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { newShhKeyError: true } });
+    }
   },
 
-  saveShhKeypair: (address, keypair) => {
+  saveShhKeypair: async (address, keypair) => {
     const { id, priKey, pubKey } = keypair;
     // save to contract
-    sendRequest(`${IMApp.API_URL}${ETHEREUM_API.SET_SHH_KEY}${address}`, (err, res) => {
-      if (err) {
-        console.log(`save shh key to contract error`);
-        console.log(err);
-      } else if (res.err !== 0) {
-        console.log(`save shh key to contract error`);
-        console.log(res.msg);
-      } else {
-        // save to local
-        IMApp.saveShhKeypairToLocal(address, keypair)
-        window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { shhKeyId: id, shhPriKey: priKey, shhPubKey: pubKey, shhKeyAvaiable: true } });
-      }
-    }, JSON.stringify({ priKey, pubKey }))
+    return new Promise((resolve) => {
+      sendRequest(`${IMApp.API_URL}${ETHEREUM_API.SET_SHH_KEY}${address}`, (err, res) => {
+        if (err) {
+          console.log(`save shh key to contract error`);
+          console.log(err);
+        } else if (res.err !== 0) {
+          console.log(`save shh key to contract error`);
+          console.log(res.msg);
+        } else {
+          // save to local
+          IMApp.saveShhKeypairToLocal(address, keypair)
+          window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { shhKeyId: id, shhPriKey: priKey, shhPubKey: pubKey, shhKeyAvaiable: true } });
+        }
+
+        resolve();
+      }, JSON.stringify({ priKey, pubKey }));
+    });
   },
 
   saveShhKeypairToLocal: (address, keypair) => {
@@ -504,10 +505,11 @@ const IMApp = {
     })
   },
 
-  newWalletAccount: (password) => {
-    const { wallet, aes_pk, md5_pk } = IMApp.newWalletAesEncrypt(password);
+  newWalletAccount: async (password) => {
+    const { wallet, aes_pk, md5_pk } = await IMApp.newWalletAesEncrypt(password);
     const address = wallet.getAddressString();
-    IMApp.newShhKeypair(address);
+    await IMApp.newShhKeypair(address);
+    await promiseSleep(500);
     window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { wallet, registerLoading: false, registerError: false, registerAddress: wallet.getAddressString(), registerENSName: '', regsiterPkAes: aes_pk, registerPkMd5: md5_pk } })
     window.g_app._store.dispatch(routerRedux.push('/regSuccess'))
 
@@ -517,10 +519,11 @@ const IMApp = {
     });
   },
 
-  newENSAccount: (ensName, password) => {
-    const { wallet, aes_pk, md5_pk } = IMApp.newWalletAesEncrypt(password);
+  newENSAccount: async (ensName, password) => {
+    const { wallet, aes_pk, md5_pk } = await IMApp.newWalletAesEncrypt(password);
     const address = wallet.getAddressString();
-    IMApp.newShhKeypair(address);
+    await IMApp.newShhKeypair(address);
+    await promiseSleep(500);
     window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { wallet, registerLoading: false, registerENSLoading: true, registerError: false, registerAddress: address, regsiterPkAes: aes_pk, registerPkMd5: md5_pk } })
     sendRequest(`${IMApp.API_URL}${ETHEREUM_API.REGISTER_ENS}${address}/${ensName}`, (err, res) => {
       if (err) {
@@ -561,7 +564,7 @@ const IMApp = {
     localStorage.setItem('ENSUserListLocal', JSON.stringify(ENSListObj));
   },
 
-  newWalletAesEncrypt: (password) => {
+  newWalletAesEncrypt: async (password) => {
     var newWallet = Wallet.generate();
     var address = newWallet.getAddressString();
     var aes_pk = CryptoJS.AES.encrypt(newWallet.getPrivateKeyString(), password).toString();
@@ -575,10 +578,16 @@ const IMApp = {
       console.log(e)
     }
     let WalletList = WalletObj[PROVIDER_URL] || [];
-    WalletList.unshift({ address, aes_pk, md5_pk, time: new Date().getTime() })
+    const keystore = { address, aes_pk, md5_pk, time: new Date().getTime() };
+
+    WalletList.unshift(keystore);
     WalletObj[PROVIDER_URL] = WalletList;
     localStorage.setItem('WalletListAES', JSON.stringify(WalletObj));
-    console.log(`new wallet done! ${address}`)
+    console.log(`new wallet done! ${address}`);
+
+    // 防止transaction未提交，延迟 1 秒执行
+    await IMApp.saveKeystoreToServer(address, keystore);
+    await promiseSleep(500);
 
     return {
       wallet: newWallet,
@@ -588,7 +597,7 @@ const IMApp = {
     }
   },
 
-  newWallet: (password) => {
+  newWallet: async (password) => {
     var newWallet = Wallet.generate();
     var address = newWallet.getAddressString();
     var keystore = newWallet.toV3String(password);
@@ -605,24 +614,41 @@ const IMApp = {
     localStorage.setItem('WalletList', JSON.stringify(WalletObj));
 
     console.log(`new wallet done! ${address}`)
-    sendRequest(`${IMApp.API_URL}${ETHEREUM_API.SAVE_KEYSTORE}${address}`, (err, res) => {
-      if (err) {
-        console.log(`save keystore to server error.`);
-        console.log(err);
-      } else if (res.err !== 0) {
-        console.log(`save keystore to server error.`);
-        console.log(res.msg);
-      } else {
-        console.log(`save keystore success`)
-      }
-    }, JSON.stringify({ keystore }))
+
+    // 防止transaction未提交，延迟 1 秒执行
+    await IMApp.saveKeystoreToServer(address, keystore);
+    await promiseSleep(500);
+
     return {
       wallet: newWallet,
       keystore: keystore,
     };
   },
 
-  getEncryptPrivateKeyByAddress: (address) => {
+  saveKeystoreToServer: async (address, keystore) => {
+    try {
+      return new Promise((resolve) => {
+        sendRequest(`${IMApp.API_URL}${ETHEREUM_API.SAVE_KEYSTORE}${address}`, (err, res) => {
+          if (err) {
+            console.log(`save keystore to server error.`);
+            console.log(err);
+          } else if (res.err !== 0) {
+            console.log(`save keystore to server error.`);
+            console.log(res.msg);
+          } else {
+            console.log(`save keystore success`);
+          }
+
+          resolve();
+        }, JSON.stringify({ keystore: JSON.stringify(keystore) }));
+      });
+      // save keystore to contract
+    } catch (e) {
+      console.error('save keystore error: ', e);
+    }
+  },
+
+  getEncryptPrivateKeyByAddress: async (address) => {
     const WalletListStr = localStorage.getItem('WalletListAES') || '{}';
     let WalletObj = {};
     try {
@@ -636,9 +662,26 @@ const IMApp = {
     const w = WalletList.filter(i => i.address === address);
     if (w.length > 0) {
       return w[0];
-    } else {
-      return undefined;
     }
+
+    try {
+      const response = await fetch(`${IMApp.API_URL}${ETHEREUM_API.GET_KEYSTORE}${address}`);
+      if (response.status !== 200) {
+        return undefined;
+      }
+      const body = await response.json();
+      const { err, keystore: kstr } = body;
+      if (err !== 0) {
+        return undefined;
+      }
+      const keystore = JSON.parse(kstr);
+      console.log('get key store success: ', keystore);
+      return keystore;
+    } catch (e) {
+      console.error('get keystore from server error: ', e);
+    }
+
+    return undefined;
   },
 
   getKeystoreByAddress: (address) => {
@@ -689,8 +732,8 @@ const IMApp = {
     }
   },
 
-  loginWithAddress: (address, password) => {
-    const pk_info = IMApp.getEncryptPrivateKeyByAddress(address) || {};
+  loginWithAddress: async (address, password) => {
+    const pk_info = await IMApp.getEncryptPrivateKeyByAddress(address) || {};
     const { aes_pk, md5_pk } = pk_info;
     if (aes_pk && md5_pk) {
       const wallet = IMApp.vertifyPassword(aes_pk, md5_pk, password)
