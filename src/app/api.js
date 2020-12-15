@@ -1,7 +1,8 @@
 import Web3 from 'web3';
 import { default as contract } from 'truffle-contract';
 import namehash from 'eth-ens-namehash';
-import Tx from 'ethereumjs-tx';
+import { Transaction } from 'ethereumjs-tx';
+import Common from 'ethereumjs-common';
 
 import FaxToken from '../../abi/FaxToken.json';
 import FaxTokenIM from '../../abi/FaxTokenIM.json';
@@ -265,11 +266,16 @@ export const FaxTokenImAPI = {
 
   sendTX: ({ from, to, data = '', value = 0, gas = 90000, gasPrice = 20000000000, privateKey }) => {
     return FaxTokenImAPI.getTransactionCount(from).then((nonce) => {
-      var tx = new Tx({ nonce, from, to, data, value, gas, gasPrice });
+      const common = Common.forCustomChain('mainnet', {
+        name: 'allcom',
+        networkId: 1515,
+        chainId: 1515,
+      }, 'petersburg');
+      const tx = new Transaction({ nonce: FaxTokenImAPI.web3.toHex(nonce), from, to, data, value, gas, gasPrice }, { common });
       tx.sign(privateKey);
-      var serializedTx = '0x' + tx.serialize().toString('hex');
-      return FaxTokenImAPI.sendRawTransaction(serializedTx)
-    })
+      const serializedTx = '0x' + tx.serialize().toString('hex');
+      return FaxTokenImAPI.sendRawTransaction(serializedTx);
+    });
   },
 
   // get ether balance of an address

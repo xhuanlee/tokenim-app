@@ -13,6 +13,7 @@
     "crypto-js": "^4.0.0",
     "dva": "^2.4.1",
     "eth-ens-namehash": "^2.0.8",
+    "ethereumjs-common": "^1.5.2",
     "ethereumjs-tx": "^2.1.2",
     "ethereumjs-wallet": "^1.0.1",
     "qs": "^6.9.4",
