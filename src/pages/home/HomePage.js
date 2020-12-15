@@ -251,6 +251,7 @@ class HomePage extends Component {
   }
 
   loadCacheCandidate = async () => {
+    console.log('loadCacheCandidate');
     if (this.cacheCandidates && this.cacheCandidates.length > 0) {
       for (let i = 0; i < this.cacheCandidates.length; i++) {
         console.log('add cache candidate: ' + i);
@@ -314,19 +315,19 @@ class HomePage extends Component {
 
   onReceiveCandidate = async (c) => {
     const candidateJson = JSON.parse(c);
-    const { candidate, sdpMLineIndex, sdpMid, usernameFragment } = candidateJson;
+    const { candidate, sdpMLineIndex, sdpMid } = candidateJson;
     const candidateObj = new RTCIceCandidate({
       candidate,
       sdpMLineIndex,
       sdpMid,
-      usernameFragment
     });
 
     if (this.peer) {
       try {
         await this.peer.addIceCandidate(candidateObj);
       } catch (e) {
-        console.error(e);
+        console.error('add ice failed: ', e);
+        this.cacheCandidates.push(candidateObj);
       }
       return;
     }
