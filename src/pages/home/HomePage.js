@@ -184,6 +184,8 @@ class HomePage extends Component {
 
   // webrtc:3
   gotLocalStream = async (stream) => {
+    console.log('got local stream: ', stream);
+    this.localVideoRef.current.srcObject = stream;
     this.localStream = stream;
     this.localStream.getTracks().forEach(track => this.peer.addTrack(track, this.localStream));
     console.log('Adding Local Stream to peer connection');
@@ -430,6 +432,7 @@ class HomePage extends Component {
 
   render() {
     this.videoRef = createRef();
+    this.localVideoRef = createRef();
     const { media } = this.props;
     const { type: mType, chatUser, status } = media;
     const { newDialogModal, newTranferModal, addFromEns, ensName, nameError, chatAddress, nickName } = this.state;
@@ -695,6 +698,7 @@ class HomePage extends Component {
           >
             <div style={{ width: '100%', height: '100%', backgroundColor: 'black', position: 'relative' }}>
               <video ref={this.videoRef} style={{ width: '100%' }} autoPlay></video>
+              <video style={{ height: 128, position: 'absolute', left: 0, bottom: 0 }} ref={this.localVideoRef} autoPlay muted></video>
               <div style={{ position: 'absolute', bottom: 16, right: 16 }}>
                 {
                   status === MediaStatus.ring ?
