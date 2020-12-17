@@ -264,7 +264,7 @@ export const FaxTokenImAPI = {
     })
   },
 
-  sendTX: ({ from, to, data = '', value = 0, gas = 90000, gasPrice = 20000000000, privateKey }) => {
+  sendTX: ({ from, to, data = null, value = 0, gas = 90000, gasPrice = 20000000000, privateKey }) => {
     return FaxTokenImAPI.getTransactionCount(from).then((nonce) => {
       const common = Common.forCustomChain('mainnet', {
         name: 'allcom',

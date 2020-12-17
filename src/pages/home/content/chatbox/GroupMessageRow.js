@@ -27,7 +27,7 @@ class GroupMessageRow extends Component {
         <div>
           {type && type === 'image'
             ? <img src={`${bzzURL}/bzz:/${message}`} alt="" style={{ marginBottom: 14, maxWidth: 200, maxHeight: 200, width: 'auto', height: 'auto', cursor: 'pointer' }} onClick={() => openImagePreview(`${bzzURL}/bzz:/${message}`)} />
-            : <p style={{ border: '1px solid rgb(229, 229, 229)', borderRadius: 3, padding: '10px', backgroundColor: 'rgb(229, 243, 253)', maxWidth: 360 }}>{message}</p>}
+            : <p style={{ border: '1px solid rgb(229, 229, 229)', borderRadius: 8, padding: '10px', backgroundColor: 'rgb(229, 243, 253)', maxWidth: 360, wordBreak: 'break-all' }}>{message}</p>}
           <p style={{ marginTop: -14, fontSize: 12, textAlign: 'right', paddingRight: 10 }}>{formateTime(time)}</p>
         </div>
         <div style={{ color: 'rgb(229, 243, 253)', marginLeft: -5 }}>
@@ -47,7 +47,7 @@ class GroupMessageRow extends Component {
             <div>
               {type && type === 'image'
                 ? <img src={`${bzzURL}/bzz:/${message}`} alt="" style={{ marginBottom: 14, maxWidth: 200, maxHeight: 200, width: 'auto', height: 'auto', cursor: 'pointer' }} onClick={() => openImagePreview(`${bzzURL}/bzz:/${message}`)} />
-                : <p style={{ border: '1px solid rgb(229, 229, 229)', borderRadius: 3, padding: '10px', backgroundColor: '#fff', maxWidth: 360 }}>{message}</p>}
+                : <p style={{ border: '1px solid rgb(229, 229, 229)', borderRadius: 8, padding: '10px', backgroundColor: '#fff', maxWidth: 360, wordBreak: 'break-all' }}>{message}</p>}
               <p style={{ marginTop: -14, fontSize: 12, textAlign: 'right', paddingRight: 10 }}>{formateTime(time)}</p>
             </div>
           </div>
