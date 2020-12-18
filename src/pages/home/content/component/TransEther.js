@@ -19,16 +19,24 @@ class TransEther extends Component {
 
   transferEther = () => {
     const { address, number, unit } = this.state;
+    const { isMetamask } = this.props;
     const ether = number * unit;
-    if (ether > 0) {
-      this.props.dispatch({ type: 'user/transEther', payload: { to: address, ether } });
-    } else {
+    if (ether <= 0) {
       alert(formatMessage({ id: 'transfer.not_null' }));
+      return ;
     }
+
+    if (isMetamask) {
+      this.props.dispatch({ type: 'user/metamaskTransferEth', payload: { to: address, value: ether } });
+      return;
+    }
+    this.props.dispatch({ type: 'user/transEther', payload: { to: address, ether } });
   }
   render() {
+    const { loading } = this.props;
     const { transEtherLoading } = this.props.user;
     const { number, unit } = this.state;
+    const transfering = loading.effects['user/metamaskTransferEth'] || loading.effects['user/transEther'];
     const selectAfter = <Select defaultValue={1000000000000000000} onChange={(val) => this.setState({ unit: val })}>
       <Option value={1000000000000000000}>Ether</Option>
       <Option value={1000000000}>Gwei</Option>
@@ -38,7 +46,7 @@ class TransEther extends Component {
     return (
       <div>
         <h3>{formatMessage({ id: 'transfer.transfer_eth' })}</h3>
-        <Spin spinning={transEtherLoading}>
+        <Spin spinning={transfering || transEtherLoading}>
           <FormItem>
             <Input
               prefix={<UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -69,6 +77,8 @@ class TransEther extends Component {
 const mapStateToProps = (state) => {
   return {
     user: state.user,
+    isMetamask: state.account.isMetamask,
+    loading: state.loading,
   }
 }
 

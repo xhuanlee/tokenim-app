@@ -1,5 +1,6 @@
 import { message as ant_message } from 'antd'
 import { formatMessage } from 'umi-plugin-locale';
+import { transferEther } from '@/app/metamask';
 export default {
   namespace: 'user',
 
@@ -309,6 +310,34 @@ export default {
       yield put({ type: 'saveUserState', payload: { friends, message } })
     },
 
+    *changeFriendName({ payload: { nickName, friendAddress } }, { put, select }) {
+      const friends = yield select(state => state.user.friends);
+      const providerURL = yield select(state => state.init.providerURL);
+      const address = yield select(state => state.account.address);
+      const newFriends = friends.map(f => {
+        if (f.address === friendAddress) {
+          return { ...f, nickName };
+        }
+        return f;
+      });
+
+      const FriendsListStr = localStorage.getItem('FriendsList') || '{}';
+      let FriendsListObj = {};
+      try {
+        FriendsListObj = JSON.parse(FriendsListStr);
+      } catch (e) {
+        console.log(e)
+      }
+      if (FriendsListObj[providerURL]) {
+        FriendsListObj[providerURL][address] = newFriends;
+      } else {
+        FriendsListObj[providerURL] = {};
+        FriendsListObj[providerURL][address] = newFriends;
+      }
+      localStorage.setItem('FriendsList', JSON.stringify(FriendsListObj));
+      yield put({ type: 'saveUserState', payload: { friends: newFriends } });
+    },
+
     *addFriend({ payload: { friendAddress, nickName, ensName, shhPubKey, chat } }, { put, select }) {
       const d = new Date();
       const time = d.getTime();
@@ -321,9 +350,9 @@ export default {
 
       // if address is already exist, push it to top
       const existFriends = friends.filter(i => i.address === friendAddress);
-      var existNickName = '';
-      var existEnsName = '';
-      var existShhPubKey = '';
+      let existNickName = undefined;
+      let existEnsName = '';
+      let existShhPubKey = '';
       var existTime = time;
       if (existFriends.length > 0) {
         existNickName = existFriends[0].nickName;
@@ -333,7 +362,7 @@ export default {
       }
 
       const filterFriends = friends.filter(i => i.address !== friendAddress);
-      const newFriend = { nickName: nickName || existNickName, address: friendAddress, time: existTime, ensName: ensName || existEnsName, shhPubKey: shhPubKey || existShhPubKey };
+      const newFriend = { nickName: existNickName || nickName, address: friendAddress, time: existTime, ensName: ensName || existEnsName, shhPubKey: shhPubKey || existShhPubKey };
       if (chat) {
         yield put({ type: 'media/saveChatUser', payload: { chatUser: newFriend } });
       }
@@ -424,6 +453,11 @@ export default {
 
       localStorage.setItem('PendingMessage', JSON.stringify(PendingMsgObj));
       yield put({ type: 'saveUserState', payload: { pendingMessage: filterMessge } })
+    },
+
+    *metamaskTransferEth({ payload: { to, value } }, { call, select }) {
+      const from = yield select(state => state.account.address);
+      yield call(transferEther, from, to, value);
     },
   },
 

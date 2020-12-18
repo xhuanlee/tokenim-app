@@ -3,6 +3,7 @@ import { routerRedux } from 'dva/router'
 import { showNotification } from '../app/util'
 import Wallet from 'ethereumjs-wallet'
 import CryptoJS from 'crypto-js'
+import { connectMetamask } from '@/app/metamask';
 
 export default {
   namespace: 'account',
@@ -72,6 +73,8 @@ export default {
 
     importKeystoreLoading: false,
     importKeystoreError: false,
+
+    isMetamask: false,
   },
 
   effects: {
@@ -261,6 +264,17 @@ export default {
       yield put({ type: 'saveAccountState', payload: { queryShhLoading: false, queryAddress: address, queryShhPubKeyByAddress: '' } });
       window.App.getAddressUserData(address);
     },
+
+    *loginWithMetamask(_, { call, put }) {
+      const result = yield call(connectMetamask);
+      yield put({ type: 'saveIsMetamask', payload: { isMetamask: result } });
+      if (result) {
+        yield put(routerRedux.push('/home'));
+        window.ethereum.on('accountsChanged', function () {
+          connectMetamask();
+        });
+      }
+    },
   },
 
   reducers: {
@@ -336,6 +350,10 @@ export default {
         importKeystoreLoading: false,
         importKeystoreError: false,
       }
+    },
+
+    saveIsMetamask(state, { payload: { isMetamask } }) {
+      return { ...state, isMetamask };
     },
   },
 

@@ -527,7 +527,7 @@ class HomePage extends Component {
                     }}>
                     <List.Item.Meta
                       avatar={<Avatar>{friend.ensName && friend.ensName[0] || friend.nickName && friend.nickName[0] || '0x'}</Avatar>}
-                      title={friend.ensName || friend.nickName || shortenAddress(friend.address, 10)}
+                      title={friend.nickName || friend.ensName || shortenAddress(friend.address, 10)}
                       description={formatTime(friend.time)}
                     />
                   </List.Item>

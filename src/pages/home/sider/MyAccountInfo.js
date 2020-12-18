@@ -34,7 +34,7 @@ class MyAccountInfo extends Component {
   }
 
   render() {
-    const { loginAddress, loginEns, visitorMode } = this.props.account;
+    const { loginAddress, loginEns, visitorMode, isMetamask } = this.props.account;
     const { balanceLoading, registerReward, loginReward, faxBalance, registerRewardLoading, loginRewardLoading } = this.props.user;
     const short_address = shortenAddress(loginAddress, 12);
     const display_username = visitorMode ? formatMessage({ id: 'account.visitor' }) : (loginEns || formatMessage({ id: 'account.my_account' }))
@@ -45,7 +45,7 @@ class MyAccountInfo extends Component {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', height: 65, width: 135 }}>
           <div style={{ display: 'flex', margin: '5px 0 0', fontSize: 13, alignItems: 'center' }}>
-            <p style={{ width: 60, margin: 0 }}>{display_username}</p>
+            <p style={{ width: 60, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{display_username}</p>
             <Tooltip title={formatMessage({ id: 'account.logout_tooltip' })}>
               <LogoutOutlined onClick={this.showConfirm} />
             </Tooltip>
@@ -66,41 +66,47 @@ class MyAccountInfo extends Component {
                 <div style={{ margin: 0, fontSize: 13, width: 110 }}>
                   FAX: {faxBalance}
                 </div>
-                <Popover
-                  title={formatMessage({ id: 'account.get_token' })}
-                  content={<div>
-                    <div style={{ display: 'flex', marginBottom: 10 }}>
-                      <div style={{ width: 120 }}>
-                        {formatMessage({ id: 'account.login_reward_token' })}
-                  </div>
-                      <Button
-                        size="small"
-                        type="primary"
-                        disabled={loginReward}
-                        loading={loginRewardLoading}
-                        onClick={this.getLoginReward}
-                      >
-                        {loginReward ? formatMessage({ id: 'account.gotten_token' }) : formatMessage({ id: 'account.to_get_token' })}
-                      </Button>
-                    </div>
-                    <div style={{ display: 'flex' }}>
-                      <div style={{ width: 120 }}>
-                        {formatMessage({ id: 'account.register_reward_token' })}
-                  </div>
-                      <Button
-                        size="small"
-                        type="primary"
-                        disabled={registerReward}
-                        loading={registerRewardLoading}
-                        onClick={this.getRegisterReward}
-                      >
-                        {registerReward ? formatMessage({ id: 'account.gotten_token' }) : formatMessage({ id: 'account.to_get_token' })}
-                      </Button>
-                    </div>
-                  </div>}
-                >
-                  <InfoCircleOutlined style={{ fontWeight: 500 }} />
-                </Popover>
+
+                {
+                  !isMetamask ?
+                    <Popover
+                      title={formatMessage({ id: 'account.get_token' })}
+                      content={<div>
+                        <div style={{ display: 'flex', marginBottom: 10 }}>
+                          <div style={{ width: 120 }}>
+                            {formatMessage({ id: 'account.login_reward_token' })}
+                          </div>
+                          <Button
+                            size="small"
+                            type="primary"
+                            disabled={loginReward}
+                            loading={loginRewardLoading}
+                            onClick={this.getLoginReward}
+                          >
+                            {loginReward ? formatMessage({ id: 'account.gotten_token' }) : formatMessage({ id: 'account.to_get_token' })}
+                          </Button>
+                        </div>
+                        <div style={{ display: 'flex' }}>
+                          <div style={{ width: 120 }}>
+                            {formatMessage({ id: 'account.register_reward_token' })}
+                          </div>
+                          <Button
+                            size="small"
+                            type="primary"
+                            disabled={registerReward}
+                            loading={registerRewardLoading}
+                            onClick={this.getRegisterReward}
+                          >
+                            {registerReward ? formatMessage({ id: 'account.gotten_token' }) : formatMessage({ id: 'account.to_get_token' })}
+                          </Button>
+                        </div>
+                      </div>}
+                    >
+                      <InfoCircleOutlined style={{ fontWeight: 500 }} />
+                    </Popover>
+                    :
+                    null
+                }
               </div>
             </div>
           </Spin>

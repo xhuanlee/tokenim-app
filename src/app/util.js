@@ -1,5 +1,6 @@
 import { message, notification } from 'antd';
 import { formatMessage } from 'umi-plugin-locale';
+import { ethereum_rpc_endpoint } from '../../config';
 
 export const LOCALE_CN = 'zh-CN';
 export const LOCALE_EN = 'en-US';
@@ -178,4 +179,20 @@ export async function promiseSleep(time) {
   return new Promise((resolve) => {
     setTimeout(resolve, time);
   });
+}
+
+export function getLocalShhKeyPair(address) {
+  const ShhKeyStr = localStorage.getItem('ShhKey') || '{}';
+  let ShhKeyObj = {};
+  try {
+    ShhKeyObj = JSON.parse(ShhKeyStr);
+  } catch (e) {
+    console.log(e)
+  }
+  const ShhKey = ShhKeyObj[ethereum_rpc_endpoint] || {};
+  const id = ShhKey[address] && ShhKey[address].id
+  const priKey = ShhKey[address] && ShhKey[address].pubKey;
+  const pubKey = ShhKey[address] && ShhKey[address].priKey;
+
+  return { id, priKey, pubKey };
 }

@@ -45,6 +45,8 @@ export default {
   'notification_error': 'error',
   'notification_error_des': 'please check console for more details',
   'notification_success': 'success',
+  'connect_metamask': 'connect metamask',
+  'transfer': 'transfer ',
 
   'index.white_paper': 'WP',
   'index.faq': 'FAQ',

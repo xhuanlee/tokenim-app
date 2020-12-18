@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { Button, Icon, Modal } from 'antd';
+import { Button, Icon, Input, Modal } from 'antd';
 import { message as ant_message } from 'antd';
 import { formatMessage } from 'umi-plugin-locale';
-import { PictureOutlined, PhoneOutlined, VideoCameraOutlined } from '@ant-design/icons';
+import { PictureOutlined, PhoneOutlined, VideoCameraOutlined, EditOutlined } from '@ant-design/icons';
 import MessageRow from './MessageRow';
 import GroupMessagRow from './GroupMessageRow';
 
@@ -15,6 +15,9 @@ class ChatBox extends Component {
       currentMessage: '',
       previewVisible: false,
       previewURL: '',
+      nameModal: false,
+      mNickName: '',
+      mAddress: '',
     }
   }
 
@@ -108,8 +111,19 @@ class ChatBox extends Component {
     }
   }
 
+  modifyNickName = (mAddress, mNickName) => {
+    this.setState({ mNickName, mAddress, nameModal: true });
+  };
+
+  confirmModifyName = () => {
+    const { mAddress, mNickName } = this.state;
+    const { dispatch } = this.props;
+    dispatch({ type: 'user/changeFriendName', payload: { friendAddress: mAddress, nickName: mNickName } });
+    this.setState({ mNickName: '', mAddress: '', nameModal: false });
+  };
+
   render() {
-    const { previewVisible, previewURL } = this.state;
+    const { previewVisible, previewURL, nameModal, mNickName } = this.state;
     const { ensName, nickName, address, time, isGroup } = this.props.chatTo;
     const { loginAddress } = this.props.account;
     const { bzzURL } = this.props.init;
@@ -129,7 +143,7 @@ class ChatBox extends Component {
               <h3 style={{ marginBottom: 0 }}>{formatMessage({ id: 'chat.public_room' })}</h3>
             </div>
             : <div style={{ height: 60, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>
-              <h3 style={{ marginBottom: 0 }}>{ensName || nickName || formatMessage({ id: 'chat.no_nick_name' })}</h3>
+              <h3 style={{ marginBottom: 0 }}>{nickName || ensName || formatMessage({ id: 'chat.no_nick_name' })}{<EditOutlined style={{ marginLeft: 8 }} onClick={() => this.modifyNickName(address, nickName)} />}</h3>
               <p>({address})</p>
             </div>}
 
@@ -199,6 +213,16 @@ class ChatBox extends Component {
 
           <Modal visible={previewVisible} footer={null} onCancel={() => this.setState({ previewVisible: false, previewURL: '' })}>
             <img alt="example" style={{ width: '100%' }} src={previewURL} />
+          </Modal>
+          <Modal
+            visible={nameModal}
+            title="modify nick name"
+            onCancel={() => this.setState({ mNickName: '', mAddress: '', nameModal: false })}
+            onOk={this.confirmModifyName}
+            okText="Confirm"
+            cancelText="Cancel"
+          >
+            <Input onChange={e => this.setState({ mNickName: e.target.value })} defaultValue={mNickName} value={mNickName} />
           </Modal>
         </div>
         : null

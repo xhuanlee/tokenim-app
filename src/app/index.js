@@ -51,6 +51,9 @@ const IMApp = {
   },
 
   initAndTest: (PROVIDER_URL) => {
+    if (!!window.ethereum && window.ethereum.isMetaMask) {
+      window.g_app._store.dispatch({ type: 'init/saveMetamaskOk', payload: { metamaskOk: true } });
+    }
     window.g_app._store.dispatch({ type: 'init/resetTestState' });
     FaxTokenImAPI.setProvider(PROVIDER_URL).then(providerURL => {
       console.log(`provider OK!`)

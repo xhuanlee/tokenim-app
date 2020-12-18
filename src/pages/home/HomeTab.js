@@ -94,7 +94,7 @@ class HomeTab extends Component {
     const { operation, exportPk, passwordOK, passwordError, privateKey } = this.state;
     const { address, token, ether } = this.props;
     const { balanceLoading } = this.props.user;
-    const { shhKeyAvaiable, shhKeyId, shhPubKey } = this.props.account;
+    const { shhKeyAvaiable, shhKeyId, shhPubKey, isMetamask } = this.props.account;
     const displayEther = `${converEther(ether).value} ${converEther(ether).unit}`
     const shhStatus = shhKeyAvaiable && shhKeyId ?
       <>
@@ -109,12 +109,17 @@ class HomeTab extends Component {
           <Button type="primary" shape="circle" icon={<SyncOutlined />} onClick={this.refresh} />
         </div>
         <hr style={{ borderColor: 'rgb(232,232,232)' }} />
-        <div style={{ float: 'right' }}>
-          <Button onClick={this.openExportModal} type="primary">
-            <KeyOutlined />
-            {formatMessage({ id: 'home.export_pk' })}
-          </Button>
-        </div>
+        {
+          !isMetamask ?
+            <div style={{ float: 'right' }}>
+              <Button onClick={this.openExportModal} type="primary">
+                <KeyOutlined />
+                {formatMessage({ id: 'home.export_pk' })}
+              </Button>
+            </div>
+            :
+            null
+        }
         <div style={{ marginTop: 20, marginLeft: 30, marginBottom: 40 }}>
           <Table
             style={{ width: '100%' }}

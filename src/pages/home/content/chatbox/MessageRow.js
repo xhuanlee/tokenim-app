@@ -6,9 +6,9 @@ function formateTime(date) {
   const now = new Date();
   const time = new Date(date)
   if (now.getTime() - date <= 43200000) {
-    return `${time.getHours()}:${time.getMinutes()}`;
+    return `${time.getHours()}:${time.getMinutes() < 10 ? `0${time.getMinutes()}` : time.getMinutes()}`;
   } else {
-    return `${time.getMonth() + 1}/${time.getDate()} ${time.getHours()}:${time.getMinutes()}`
+    return `${time.getMonth() + 1}/${time.getDate()} ${time.getHours()}:${time.getMinutes() < 10 ? `0${time.getMinutes()}` : time.getMinutes()}`;
   }
 }
 

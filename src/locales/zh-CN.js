@@ -45,6 +45,8 @@ export default {
   'notification_error': '出错',
   'notification_error_des': '详情请查看控制台',
   'notification_success': '成功',
+  'connect_metamask': '连接Metamask',
+  'transfer': '转账',
 
   'index.white_paper': '白皮书',
   'index.faq': 'FAQ',

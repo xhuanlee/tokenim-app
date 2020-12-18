@@ -114,11 +114,18 @@ class LoginPage extends PureComponent {
     this.setState({ signInWithENS: true })
   }
 
+  connectMetamask = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'account/loginWithMetamask' });
+  }
+
   render() {
-    const { providerURL, bzzURL, apiURL } = this.props.init;
+    const { loading } = this.props;
+    const { providerURL, bzzURL, apiURL, metamaskOk } = this.props.init;
     const { loginLoading, ensLoading, localAccounts, queryENSAvaiable, queryENSLoading, ensUserList } = this.props.account;
     const { comfirmCallModal, ensName, nameError, signInWithENS, settingModule } = this.state;
 
+    const connectingMetamask = loading.effects['account/loginWithMetamask'];
     const loginTip = ensLoading ? formatMessage({ id: 'index.search_ens' }) : loginLoading ? formatMessage({ id: 'index.verify_password' }) : '';
     const errorMessage = signInWithENS && ensName ? nameError ? nameError : (queryENSAvaiable || queryENSLoading || !ensName) ? formatMessage({ id: 'index.ens_not_registered' }) : '' : '';
     const ensNameCheck = null;
@@ -229,13 +236,21 @@ class LoginPage extends PureComponent {
                   : <a onClick={this.switchToENSLogin}>{formatMessage({ id: 'index.ens_login' })}</a>}
               </div>
               <FormItem>
-                <Button onClick={this.register} style={{ width: '45%', marginRight: '10%', backgroundColor: 'rgba(58, 141, 218, 0.2)' }}>
+                <Button disabled={connectingMetamask} onClick={this.register} style={{ width: '45%', marginRight: '10%', backgroundColor: 'rgba(58, 141, 218, 0.2)' }}>
                   {formatMessage({ id: 'index.get_wallet' })}
                 </Button>
-                <Button type="primary" htmlType="submit" style={{ width: '45%' }}>
+                <Button disabled={connectingMetamask} type="primary" htmlType="submit" style={{ width: '45%' }}>
                   {formatMessage({ id: 'index.login' })}
                 </Button>
               </FormItem>
+              {
+                metamaskOk ?
+                  <FormItem>
+                    <Button loading={connectingMetamask} onClick={this.connectMetamask} block type="dashed" danger>connect with metamask</Button>
+                  </FormItem>
+                  :
+                  null
+              }
             </Form>
           </Spin>
 
@@ -312,6 +327,7 @@ const mapStateToProps = (state) => {
   return {
     account: state.account,
     init: state.init,
+    loading: state.loading,
   }
 }
 

@@ -31,6 +31,8 @@ export default {
     faxDomainAddress: '',
     resolverAddress: '',
     userDataAddress: '',
+
+    metamaskOk: false,
   },
 
   effects: {
@@ -112,6 +114,10 @@ export default {
         resolverAddress: '',
         userDataAddress: '',
       }
+    },
+
+    saveMetamaskOk(state, { payload: { metamaskOk } }) {
+      return { ...state, metamaskOk };
     },
   },
 
