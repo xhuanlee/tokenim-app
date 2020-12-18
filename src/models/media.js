@@ -10,7 +10,7 @@ export const MediaStatus = {
   ring: 'ring',
   active: 'active',
   error: 'error',
-  connect: 'connect',
+  connect: 'connecting',
 };
 
 const defaultState = {

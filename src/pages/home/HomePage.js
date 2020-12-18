@@ -704,7 +704,7 @@ class HomePage extends Component {
                   status === MediaStatus.ring ?
                     <Button type="primary" shape="circle" size="large" icon={<PhoneOutlined />} onClick={this.acceptInvite} style={{ marginRight: 16 }} /> : null
                 }
-                <Button type="primary" danger shape="circle" size="large" icon={<PhoneOutlined />} onClick={this.endMedia} />
+                <Button type="primary" danger shape="circle" size="large" icon={<PhoneOutlined style={{ transform: 'rotateZ(-135deg)' }} />} onClick={this.endMedia} />
               </div>
             </div>
           </Modal>
