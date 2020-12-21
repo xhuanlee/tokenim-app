@@ -171,10 +171,15 @@ class ChatBox extends Component {
             }}>
               <input type='file' name='image' style={{ display: 'none' }} accept="image/*" ref={e => this.imageInput = e} onChange={this.sendImage} />
               <PictureOutlined style={{ fontSize: 17 }} onClick={this.openImageChoose} />
-              <div>
-                <PhoneOutlined style={{ cursor: 'pointer', fontSize: 17, marginRight: 8 }} onClick={this.props.startAudio} />
-                <VideoCameraOutlined style={{ cursor: 'pointer', fontSize: 17 }} onClick={this.props.startVideo} />
-              </div>
+              {
+                isGroup ?
+                  null
+                  :
+                  <div>
+                    <PhoneOutlined style={{ cursor: 'pointer', fontSize: 17, marginRight: 8 }} onClick={this.props.startAudio} />
+                    <VideoCameraOutlined style={{ cursor: 'pointer', fontSize: 17 }} onClick={this.props.startVideo} />
+                  </div>
+              }
             </div>
             <textarea
               ref={e => this.textarea = e}

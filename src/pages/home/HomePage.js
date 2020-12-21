@@ -15,10 +15,10 @@ import {
   createSessionDescription, getSDPOptions, getUserMediaOptions, sendAccept,
   sendAnswer, sendCandidate,
   sendHangup,
-  sendInvite,
+  sendInvite, sendInviteReply,
   sendOffer,
   sendReject,
-  SignalType, WebrtcConfig
+  SignalType, WebrtcConfig,
 } from '@/app/webrtc';
 import NeedLogin from '@/pages/home/NeedLogin';
 
@@ -162,6 +162,7 @@ class HomePage extends Component {
   }
 
   clearMedia = () => {
+    console.log('clearMedia');
     try {
       if (this.peer) {
         this.peer.close();
@@ -176,10 +177,14 @@ class HomePage extends Component {
       }
     } catch (e) {
     }
+
+    clearInterval(this.checkCallInterval);
   }
 
   getMediaError = (e) => {
-
+    console.log('getMediaError: ', e);
+    this.props.dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.error } });
+    message.error('get media error, please try again', 10);
   }
 
   // webrtc:3
@@ -207,6 +212,7 @@ class HomePage extends Component {
 
   // webrtc:2
   getLocalMedia = () => {
+    console.log('getLocalMedia');
     const { media: { type } } = this.props;
     navigator.mediaDevices
       .getUserMedia(getUserMediaOptions(type))
@@ -216,6 +222,7 @@ class HomePage extends Component {
 
   // webrtc:6
   onIceCandidate = (e) => {
+    console.log('onIceCandidate');
     if (!e.candidate) {
       return;
     }
@@ -238,6 +245,7 @@ class HomePage extends Component {
 
   // webrtc:7
   gotRemoteStream = (e) => {
+    console.log('gotRemoteStream');
     if (this.videoRef.current.srcObject !== e.streams[0]) {
       this.videoRef.current.srcObject = e.streams[0];
       console.log('set remote stream success');
@@ -246,10 +254,12 @@ class HomePage extends Component {
 
   // webrtc:1
   createPeer = () => {
+    console.log('createPeer start');
     this.peer = new RTCPeerConnection(WebrtcConfig);
     this.peer.onicecandidate = this.onIceCandidate;
     this.peer.ontrack = this.gotRemoteStream;
     this.peer.oniceconnectionstatechange  = this.onIceCandidateStateChange;
+    console.log('createPeer end');
   }
 
   loadCacheCandidate = async () => {
@@ -264,24 +274,38 @@ class HomePage extends Component {
   }
 
   onReceiveInvite = (type) => {
+    console.log('onReceiveInvite');
     this.passive = true;
     this.props.dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.ring } });
     this.props.dispatch({ type: 'media/saveType', payload: { type } });
+
+    const { account, media } = this.props;
+    const { address, loginEns, shhPubKey: myShhPubKey } = account;
+    const { chatUser: { shhPubKey } } = media;
+    sendInviteReply(loginEns, myShhPubKey, address, shhPubKey);
+  }
+
+  onReceiveInviteReply = () => {
+    console.log('onReceiveInviteReply');
+    this.props.dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.wait } });
   }
 
   onReceiveAccept = async () => {
+    console.log('onReceiveAccept');
     this.props.dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.connect } });
     await this.createPeer();
     this.getLocalMedia();
   }
 
   onReceiveReject = () => {
+    console.log('onReceiveReject');
     this.canAddCandidate = false;
     this.props.dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.init } });
     this.props.dispatch({ type: 'media/saveType', payload: { type: MediaType.none } });
   }
 
   onReceiveHangup = () => {
+    console.log('onReceiveHangup');
     this.passive = false;
     this.canAddCandidate = false;
     this.props.dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.init } });
@@ -291,6 +315,7 @@ class HomePage extends Component {
   }
 
   onReceiveOffer = async (sdp) => {
+    console.log('onReceiveOffer');
     const { account, media } = this.props;
     const { address, loginEns, shhPubKey: myShhPubKey } = account;
     const { chatUser: { shhPubKey }, type } = media;
@@ -307,6 +332,7 @@ class HomePage extends Component {
 
   // webrtc:5
   onReceiveAnswer = async (sdp) => {
+    console.log('onReceiveAnswer');
     try {
       await this.peer.setRemoteDescription(createSessionDescription('answer', sdp));
       this.canAddCandidate = true;
@@ -316,6 +342,7 @@ class HomePage extends Component {
   }
 
   onReceiveCandidate = async (c) => {
+    console.log('onReceiveCandidate');
     const candidateJson = JSON.parse(c);
     const { candidate, sdpMLineIndex, sdpMid } = candidateJson;
     const candidateObj = new RTCIceCandidate({
@@ -338,18 +365,20 @@ class HomePage extends Component {
   }
 
   onReceiveCandidateRemoval = (c) => {
-
+    console.log('onReceiveCandidateRemoval');
   }
 
   onSignalMessage = (msg) => {
     console.log('receive signal message: ', msg);
-    const { user: { friends }, media: { chatUser } } = this.props;
     const { name, from, shh, signal, content } = msg;
     this.props.dispatch({ type: 'user/addFriend', payload: { friendAddress: from, ensName: name, shhPubKey: shh, chat: true } });
 
     switch (signal) {
       case SignalType.invite:
         this.onReceiveInvite(content);
+        break;
+      case SignalType.invite_reply:
+        this.onReceiveInviteReply();
         break;
       case SignalType.accept:
         this.onReceiveAccept();
@@ -377,26 +406,30 @@ class HomePage extends Component {
     }
   }
 
-  startAudio = () => {
-    const { dispatch } = this.props;
-    const { account, media } = this.props;
-    const { address, loginEns, shhPubKey: myShhPubKey } = account;
-    const { chatUser: { shhPubKey } } = media;
-    sendInvite(loginEns, myShhPubKey, address, shhPubKey, MediaType.audio);
+  checkCallStatus = () => {
+    console.log('checkCallStatus');
+    const { media } = this.props;
+    const { status, chatUser } = media;
+    if (status === MediaStatus.invite) {
+      const msg = formatMessage({ id: 'offline_notice' });
+      message.warn(`${chatUser.ensName || chatUser.nickName} ${msg}`);
+      return ;
+    }
 
-    dispatch({ type: 'media/saveType', payload: { type: MediaType.audio } });
-    dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.invite } });
+    clearInterval(this.checkCallInterval);
   }
 
-  startVideo = () => {
+  startCall = (type) => {
     const { dispatch } = this.props;
     const { account, media } = this.props;
     const { address, loginEns, shhPubKey: myShhPubKey } = account;
     const { chatUser: { shhPubKey } } = media;
-    sendInvite(loginEns, myShhPubKey, address, shhPubKey, MediaType.video);
+    sendInvite(loginEns, myShhPubKey, address, shhPubKey, type);
 
-    dispatch({ type: 'media/saveType', payload: { type: MediaType.video } });
+    dispatch({ type: 'media/saveType', payload: { type } });
     dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.invite } });
+
+    this.checkCallInterval = setInterval(this.checkCallStatus, 5000);
   }
 
   acceptInvite = async () => {
@@ -439,6 +472,14 @@ class HomePage extends Component {
     const { faxBalance, etherBalance, friends } = this.props.user;
     const { queryENSAvaiable, queryENSLoading, queryENSAddress, queryShhPubKey, queryShhPubKeyByAddress } = this.props.account;
     const { loginAddress } = this.props.account;
+
+    let callTitleColor = undefined;
+    if (status === MediaStatus.active) {
+      callTitleColor = '#389e0d';
+    }
+    if (status === MediaStatus.error) {
+      callTitleColor = '#f5222d';
+    }
 
     const errorMessage = addFromEns && ensName ? nameError ? nameError : (queryENSAvaiable || !ensName) ? formatMessage({ id: 'home.ens_name_not_register_error' }) : '' : '';
     const queryENSAddressTip = queryENSAddress || (queryENSAvaiable ? formatMessage({ id: 'home.ens_name_not_register' }) : '');
@@ -537,7 +578,7 @@ class HomePage extends Component {
             <Layout style={{ overflowY: 'hidden', height: '100vh', backgroundColor: 'rgb(213,216,225)' }}>
               <Content style={{ background: '#fff', margin: '10px 3px', overflowY: 'auto' }}>
                 {chatUser
-                  ? <ChatBox chatTo={chatUser} startAudio={this.startAudio} startVideo={this.startVideo} />
+                  ? <ChatBox chatTo={chatUser} startAudio={() => this.startCall(MediaType.audio)} startVideo={() => this.startCall(MediaType.video)} />
                   : <HomeTab address={loginAddress} token={faxBalance} ether={etherBalance} />
                 }
               </Content>
@@ -672,6 +713,7 @@ class HomePage extends Component {
                 style={{
                   width: '100%',
                   cursor: 'move',
+                  color: callTitleColor,
                 }}
                 onMouseOver={() => {
                   if (this.state.disabled) {

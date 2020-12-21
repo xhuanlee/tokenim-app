@@ -47,6 +47,7 @@ export default {
   'notification_success': 'success',
   'connect_metamask': 'connect metamask',
   'transfer': 'transfer ',
+  'offline_notice': 'may be offline, you can try again later',
 
   'index.white_paper': 'WP',
   'index.faq': 'FAQ',

@@ -2,6 +2,7 @@ import { MediaType } from '../models/media';
 
 export const SignalType = {
   invite: 'invite',
+  invite_reply: 'invite_reply',
   reject: 'reject',
   accept: 'accept',
   hangup: 'hangup',
@@ -101,6 +102,17 @@ export function sendInvite(myEns, myShhPubKey, myAddress, publicKey, mediaType) 
     from: myAddress,
     signal: SignalType.invite,
     content: mediaType,
+  }
+
+  send(publicKey, message);
+}
+
+export function sendInviteReply(myEns, myShhPubKey, myAddress, publicKey) {
+  const message = {
+    name: myEns,
+    shh: myShhPubKey,
+    from: myAddress,
+    signal: SignalType.invite_reply,
   }
 
   send(publicKey, message);

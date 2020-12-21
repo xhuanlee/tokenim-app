@@ -47,6 +47,7 @@ export default {
   'notification_success': '成功',
   'connect_metamask': '连接Metamask',
   'transfer': '转账',
+  'offline_notice': '对方可能不在线，请稍后再试',
 
   'index.white_paper': '白皮书',
   'index.faq': 'FAQ',

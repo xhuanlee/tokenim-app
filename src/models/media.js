@@ -7,6 +7,7 @@ export const MediaType = {
 export const MediaStatus = {
   init: 'init',
   invite: 'invite',
+  wait: 'waiting',
   ring: 'ring',
   active: 'active',
   error: 'error',
