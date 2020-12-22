@@ -1,5 +1,6 @@
 import { getLocalShhKeyPair, showNotification } from '@/app/util';
 import { FaxTokenImAPI } from '@/app/api';
+import { message } from 'antd';
 
 function isMetamask() {
   return !!window.ethereum && window.ethereum.isMetaMask;
@@ -46,6 +47,10 @@ export async function connectMetamask() {
       await window.App.saveShhKeypair(address, keypair);
       console.log(`new shh: ${JSON.stringify(keypair)}`);
     }
+    if (keypair && keypair.id) {
+      window.App.saveShhKeypairToLocal(address, keypair);
+    }
+
     if (window.App.messageFilter) {
       window.App.messageFilter.stopWatching(window.App.newMessageArrive);
     }
@@ -94,3 +99,29 @@ export async function transferEther(from ,to, value) {
   }
 
 }
+
+export async function saveShhName(name) {
+  try {
+    const nonce = await FaxTokenImAPI.getTransactionCount(window.ethereum.selectedAddress);
+    const data = FaxTokenImAPI.web3ShhDataContract.saveShhName.getData(name);
+    const param = {
+      nonce: window.web3.toHex(nonce),
+      gas: '0x15f90',
+      gasPrice: '0x4a817c800',
+      from: window.ethereum.selectedAddress,
+      to: FaxTokenImAPI.shhDataContract.address,
+      value: '0x0',
+      data,
+      chainId: window.ethereum.chainId,
+    };
+    const txHash = await window.ethereum.request({
+      method: 'eth_sendTransaction',
+      params: [param],
+    });
+    console.log(`save shh name hash: ${txHash}`);
+  } catch (e) {
+    message.error('save shh name error!');
+  }
+}
+
+window.saveShhName = saveShhName;

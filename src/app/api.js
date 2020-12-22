@@ -11,6 +11,7 @@ import ENSRegistry from '../../ens/ENSRegistry.json';
 import FIFSRegistrar from '../../ens/FIFSRegistrar.json'
 import PublicResolver from '../../ens/PublicResolver.json';
 import UserData from '../../abi/UserData.json';
+import ShhData from '../../truffle/shh-data/build/contracts/ShhData.json';
 
 import { network_id } from '../../config'
 
@@ -31,6 +32,7 @@ export const FaxTokenImAPI = {
   faxDomainContract: null,
   resolverContract: null,
   dataContract: null,
+  shhDataContract: null,
 
   isConnected: () => {
     return FaxTokenImAPI.web3.isConnected();
@@ -231,6 +233,25 @@ export const FaxTokenImAPI = {
     return new Promise((resolve, reject) => {
       userDataContract.deployed().then(instance => {
         FaxTokenImAPI.dataContract = instance;
+        resolve(instance.address);
+      }).catch(err => {
+        reject(err);
+      })
+    })
+  },
+
+  initShhDataContract: () => {
+    // web3 contract instance
+    const c = FaxTokenImAPI.web3.eth.contract(ShhData.abi)
+    FaxTokenImAPI.web3ShhDataContract = c.at(ShhData.networks[network_id].address);
+
+    // truffle contract instance
+    const shhDataContract = contract(ShhData);
+    shhDataContract.setProvider(FaxTokenImAPI.web3.currentProvider);
+
+    return new Promise((resolve, reject) => {
+      shhDataContract.deployed().then(instance => {
+        FaxTokenImAPI.shhDataContract = instance;
         resolve(instance.address);
       }).catch(err => {
         reject(err);
@@ -564,6 +585,13 @@ export const FaxTokenImAPI = {
     return fetch()
   },
 
+  getShhNameByAddress: (address) => {
+    return FaxTokenImAPI.shhDataContract.shhNameMap.call(address);
+  },
+
+  saveShhName: (name) => {
+    return FaxTokenImAPI.shhDataContract.saveShhName.call(name);
+  },
 
   tokenContractInfo: () => {
     const tokenContractInfo = {

@@ -19,6 +19,7 @@ export default {
     resolverContractOK: false,
     resolverContractAvaiable: false,
     userDataContractOK: false,
+    shhDataContractOK: false,
     userDataContractAvaiable: false,
 
     providerURL: '',
@@ -31,6 +32,7 @@ export default {
     faxDomainAddress: '',
     resolverAddress: '',
     userDataAddress: '',
+    shhDataAddress: '',
 
     metamaskOk: false,
   },
@@ -75,6 +77,7 @@ export default {
         resolverContractAvaiable: false,
         userDataContractOK: false,
         userDataContractAvaiable: false,
+        shhDataContractOK: false,
         tokenContractAddress: '',
         imContractAddress: '',
         saleContractAddress: '',
@@ -82,6 +85,7 @@ export default {
         faxDomainAddress: '',
         resolverAddress: '',
         userDataAddress: '',
+        shhDataAddress: '',
       }
     },
 
@@ -102,6 +106,7 @@ export default {
         resolverContractOK: false,
         resolverContractAvaiable: false,
         userDataContractOK: false,
+        shhDataContractOK: false,
         userDataContractAvaiable: false,
         providerURL: '',
         bzzURL: '',
@@ -113,6 +118,7 @@ export default {
         faxDomainAddress: '',
         resolverAddress: '',
         userDataAddress: '',
+        shhDataAddress: '',
       }
     },
 

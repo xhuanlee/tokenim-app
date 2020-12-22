@@ -6,6 +6,7 @@ contract ShhData {
   mapping(address => string) shhKeyIdMap;
   mapping(address => bytes32) shhPriKeyMap;
   mapping(address => string) public shhPubKeyMap;
+  mapping(address => string) public shhNameMap;
 
   constructor() public {
     owner = msg.sender;
@@ -33,6 +34,11 @@ contract ShhData {
     return true;
   }
 
+  function saveShhName(string shhName) public returns (bool success) {
+    shhNameMap[msg.sender] = shhName;
+    return true;
+  }
+
   function getShhKeyId() public returns(string keyId) {
     return shhKeyIdMap[msg.sender];
   }
@@ -49,4 +55,7 @@ contract ShhData {
     return shhPubKeyMap[adr];
   }
 
+  function getPublicShhName(address adr) public returns(string shhName) {
+    return shhNameMap[adr];
+  }
 }
