@@ -47,6 +47,11 @@ function send(publicKey, message) {
   window.App.sendShhMessage(publicKey, JSON.stringify(message), time);
 }
 
+function sendGroup(symKeyId, message) {
+  const time = new Date().getTime();
+  window.App.sendShhSymMessage(symKeyId, JSON.stringify(message), time)
+}
+
 export function sendOffer(myEns, myShhPubKey, myAddress, publicKey, sdp) {
   const message = {
     name: myEns,
@@ -153,4 +158,63 @@ export function sendHangup(myEns, myShhPubKey, myAddress, publicKey) {
 
 export function createSessionDescription(type, sdp) {
   return new RTCSessionDescription({ sdp, type });
+}
+
+export function sendGroupInvite(myShhPubKey, myAddress, mediaType, symKeyId) {
+  const message = {
+    shh: myShhPubKey,
+    from: myAddress,
+    signal: SignalType.invite,
+    content: mediaType,
+    group: true,
+  }
+
+  sendGroup(symKeyId, message);
+}
+
+export function sendGroupOffer(myShhPubKey, myAddress, mediaType, sdp, publicKey) {
+  const message = {
+    shh: myShhPubKey,
+    from: myAddress,
+    signal: SignalType.offer,
+    content: { type: mediaType, sdp },
+    group: true,
+  }
+
+  send(publicKey, message);
+}
+
+export function sendGroupAnswer(myShhPubKey, myAddress, sdp, publicKey) {
+  const message = {
+    shh: myShhPubKey,
+    from: myAddress,
+    signal: SignalType.answer,
+    content: sdp,
+    group: true,
+  }
+
+  send(publicKey, message);
+}
+
+export function sendGroupCandidate(myShhPubKey, myAddress, candidate, publicKey) {
+  const message = {
+    shh: myShhPubKey,
+    from: myAddress,
+    signal: SignalType.candidate,
+    content: candidate,
+    group: true,
+  }
+
+  send(publicKey, message);
+}
+
+export function sendGroupHangup(myShhPubKey, myAddress, symKeyId) {
+  const message = {
+    shh: myShhPubKey,
+    from: myAddress,
+    signal: SignalType.hangup,
+    group: true,
+  }
+
+  sendGroup(symKeyId, message);
 }

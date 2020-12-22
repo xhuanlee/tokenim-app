@@ -173,7 +173,10 @@ class ChatBox extends Component {
               <PictureOutlined style={{ fontSize: 17 }} onClick={this.openImageChoose} />
               {
                 isGroup ?
-                  null
+                  <div>
+                    <PhoneOutlined style={{ cursor: 'pointer', fontSize: 17, marginRight: 8 }} onClick={this.props.startGroupAudio} />
+                    <VideoCameraOutlined style={{ cursor: 'pointer', fontSize: 17 }} onClick={this.props.startGroupVideo} />
+                  </div>
                   :
                   <div>
                     <PhoneOutlined style={{ cursor: 'pointer', fontSize: 17, marginRight: 8 }} onClick={this.props.startAudio} />
