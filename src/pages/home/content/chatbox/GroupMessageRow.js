@@ -15,13 +15,20 @@ function formateTime(date) {
 }
 
 class GroupMessageRow extends Component {
+
+  goToChat = () => {
+    const { message } = this.props;
+    const { from, name } = message;
+    window.App.jumpToChatUser(from, name);
+  }
+
   render() {
     const { currentAccount, bzzURL, openImagePreview } = this.props;
     const { from, time, message, type, name } = this.props.message;
     const avatarLetter = name && name[0] || '0x'
     const displayName = name || shortenAddress(from, 18);
     const avatarColor = stringToColour(displayName)
-    const sender = currentAccount === from;
+    const sender = (currentAccount === from);
     return (
       sender ? <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <div>
@@ -40,7 +47,7 @@ class GroupMessageRow extends Component {
             {displayName}
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-            <Avatar style={{ backgroundColor: avatarColor }}>{avatarLetter}</Avatar>
+            <Avatar style={{ backgroundColor: avatarColor, cursor: 'pointer' }} onClick={this.goToChat}>{avatarLetter}</Avatar>
             <div style={{ color: '#fff', marginRight: -5 }}>
               <CaretLeftOutlined />
             </div>

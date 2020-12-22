@@ -42,6 +42,9 @@ class HomePage extends Component {
       fax: 0,
 
       disabled: true,
+
+      nameModal: false,
+      nameValue: '',
     };
     this.canAddCandidate = false;
     this.passive = false;
@@ -751,6 +754,13 @@ class HomePage extends Component {
             </div>
           </Modal>
         </div>
+        <Modal
+          visible={this.state.nameModal}
+          cancelText="Cancel"
+          okText="Ok"
+        >
+          <Input value={this.state.nameValue} onChange={(e) => this.setState({ nameValue: e.target.value })} />
+        </Modal>
       </NeedLogin>
     );
   }
@@ -762,6 +772,7 @@ const mapStateToProps = (state) => {
     user: state.user,
     account: state.account,
     media: state.media,
+    loading: state.loading,
   }
 }
 

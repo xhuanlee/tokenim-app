@@ -259,6 +259,22 @@ const IMApp = {
     })
   },
 
+  jumpToChatUser: async (address, name) => {
+    try {
+      let shhPubKey = await FaxTokenImAPI.getShhPublicKeyByAddress(address);
+      if (!shhPubKey) {
+        return;
+      }
+      let ensName = await FaxTokenImAPI.getShhNameByAddress(address);
+      ensName = ensName || name || address;
+      IMApp.addNewFriend(address, ensName, shhPubKey);
+      const chatUser = { address, ensName, shhPubKey, time: new Date().getTime() };
+      window.g_app._store.dispatch({ type: 'media/saveChatUser', payload: { chatUser } });
+    } catch (e) {
+      console.error('jump to user error: ', e);
+    }
+  },
+
   getAddressUserData: (address) => {
     FaxTokenImAPI.getShhPublicKeyByAddress(address).then((pubKey) => {
       if (pubKey) {

@@ -1,6 +1,6 @@
 import { message as ant_message } from 'antd'
 import { formatMessage } from 'umi-plugin-locale';
-import { transferEther } from '@/app/metamask';
+import { saveShhName, transferEther } from '@/app/metamask';
 export default {
   namespace: 'user',
 
@@ -458,6 +458,10 @@ export default {
     *metamaskTransferEth({ payload: { to, value } }, { call, select }) {
       const from = yield select(state => state.account.address);
       yield call(transferEther, from, to, value);
+    },
+
+    *modifyEnsName({ payload: { name } }, { call }) {
+      yield call(saveShhName, name);
     },
   },
 

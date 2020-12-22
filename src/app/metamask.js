@@ -59,7 +59,10 @@ export async function connectMetamask() {
 
     window.App.getShhSymKey();
     FaxTokenImAPI.setupNewTransactionListener(address, (filter) => { window.App.transactionFilter = filter }, window.App.newTransactionArrive);
-    const loginEns = `${address.substring(0,5)}...${address.substring(address.length - 5)}`;
+    let loginEns = await FaxTokenImAPI.getShhNameByAddress(address);
+    if (!loginEns) {
+      loginEns = `${address.substring(0,5)}...${address.substring(address.length - 5)}`;
+    }
     window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { auth: true, loginEns, loginAddress: address, address, visitorMode: false } });
     window.g_app._store.dispatch({ type: 'user/readChatHistory' });
     window.g_app._store.dispatch({ type: 'user/getBalance' });
@@ -119,9 +122,9 @@ export async function saveShhName(name) {
       params: [param],
     });
     console.log(`save shh name hash: ${txHash}`);
+
+    window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { loginEns: name } });
   } catch (e) {
     message.error('save shh name error!');
   }
 }
-
-window.saveShhName = saveShhName;
