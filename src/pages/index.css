@@ -13,3 +13,9 @@
   bottom: 8px;
   transform: translateX(-50%);
 }
+.copyright {
+  position: absolute;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%);
+}

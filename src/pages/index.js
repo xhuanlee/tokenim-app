@@ -316,7 +316,8 @@ class LoginPage extends PureComponent {
             </FormItem>
           </Modal>
         </div>
-        <p className={styles.beian}>Copyright © 2020 <a href="https://www.allcomchina.com/">{formatMessage({ id: 'allcom' })}</a> |<a href="http://www.beian.miit.gov.cn" target="_blank"> 沪ICP备14021271号-4</a></p>
+        <p className={styles.copyright}>Copyright © 2020 <a href="https://www.github.com/clubnetwork">{formatMessage({ id: 'allcom' })}</a></p>
+          <p className={styles.beian}><a href="http://www.beian.miit.gov.cn" target="_blank"> 沪ICP备14021271号-4</a></p>
       </>
     );
   }
