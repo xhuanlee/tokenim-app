@@ -246,7 +246,7 @@ class LoginPage extends PureComponent {
               {
                 metamaskOk ?
                   <FormItem>
-                    <Button loading={connectingMetamask} onClick={this.connectMetamask} block type="dashed" danger>connect with metamask</Button>
+                    <Button loading={connectingMetamask} onClick={this.connectMetamask} block  danger>{formatMessage({ id: 'index.metamaskconnect' })}</Button>
                   </FormItem>
                   :
                   null
@@ -260,9 +260,9 @@ class LoginPage extends PureComponent {
 
             <a href="http://gfax.f3322.org:3000/" target="_blank"><FundOutlined />{formatMessage({ id: 'index.network_status' })}</a>
             <p style={{ marginBottom: 0 }}>
-              <span>{formatMessage({ id: 'index.contact' })}:</span>
-              <PhoneOutlined style={{ transform: 'rotate(90deg)', color: '#5190ff' }} />
-              <a onClick={() => this.setState({ comfirmCallModal: true })}>021-50808850</a>
+              {/*<span>{formatMessage({ id: 'index.contact' })}:</span>*/}
+              {/*<PhoneOutlined style={{ transform: 'rotate(90deg)', color: '#5190ff' }} />*/}
+              {/*<a onClick={() => this.setState({ comfirmCallModal: true })}>021-50808850</a>*/}
             </p>
             <a href="mailto:support@callus.app">support@callus.app</a>
           </div>

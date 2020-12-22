@@ -1,5 +1,8 @@
+import { Button } from 'antd';
+import React from 'react';
+
 export default {
-  'allcom': '上海傲通网络科技有限公司',
+  'allcom': 'IClub.network 团队',
   'return': '返回',
   'login': '登陆',
   'register': '注册',
@@ -79,6 +82,7 @@ export default {
   'index.eth_peer': '以太坊节点',
   'index.swarm_peer': 'Swarm节点',
   'index.api_peer': 'API节点',
+  'index.metamaskconnect':'用Metamask登录',
 
   'register.pk_error': 'private key无效, 不满足椭圆曲线条件',
   'register.pk_format_error': 'private key格式不正确',

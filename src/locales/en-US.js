@@ -1,5 +1,5 @@
 export default {
-  'allcom': 'Shanghai Allcom Network Technologies, Inc',
+  'allcom': 'IClub.network Team',
   'return': 'Return',
   'login': 'Login',
   'register': 'Register',
@@ -79,6 +79,7 @@ export default {
   'index.eth_peer': 'Ethereum peer',
   'index.swarm_peer': 'Swarm peer',
   'index.api_peer': 'API peer',
+  'index.metamaskconnect':'Connect with Metamask',
 
   'register.pk_error': 'private key is invalid, the elliptic curve condition is not satisfied ',
   'register.pk_format_error': 'wrong private key format',
