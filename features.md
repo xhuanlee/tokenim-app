@@ -1,4 +1,4 @@
-#1. metamask support
+# 1. metamask support
 - login in by sign with metamask (maybe other ethereum main or test chain, 
 but it will conntent to our own whisper blockchain and we could give him some EHT of our own private chain)
 ## UI
@@ -14,5 +14,11 @@ but it will conntent to our own whisper blockchain and we could give him some EH
 ## call/answer
 - should be able to call other club user or metamask 
 
-#2. ENS name end with .club
+# 2. ENS name end with .club
 - current .fax
+
+# 3. Profile: name for chat
+## Home - add a row to add or edit name, name can keep in a new smart contract which can search by address
+- this name should be treated as the name of profile
+- should have a ICON too
+## Public Chat Root - click the name icon and enter the chat dialog window
