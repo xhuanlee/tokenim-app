@@ -21,6 +21,7 @@ import {
   SignalType, WebrtcConfig,
 } from '@/app/webrtc';
 import NeedLogin from '@/pages/home/NeedLogin';
+import { saveShhName } from '@/app/metamask';
 
 const { Content, Sider } = Layout;
 
@@ -466,6 +467,21 @@ class HomePage extends Component {
     dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.init } });
   }
 
+  modifyEnsName = () => {
+    const { nameValue } = this.state;
+    if (!nameValue || nameValue.trim().length === 0) {
+      message.warn('name can not be null');
+      return;
+    }
+
+    this.setState({ confirmLoading: true });
+    saveShhName(nameValue).then(() => {
+      this.setState({ nameModal: false, confirmLoading: false });
+    }).catch(e => {
+      console.error("save shh name error: ", e);
+    });
+  }
+
   render() {
     this.videoRef = createRef();
     this.localVideoRef = createRef();
@@ -511,7 +527,7 @@ class HomePage extends Component {
               overflowX: 'hidden',
               overflowY: 'auto',
             }}>
-              <MyAccountRow />
+              <MyAccountRow onClick={() => this.setState({ nameModal: true })} />
 
               <div style={{
                 margin: '5px 0px',
@@ -755,9 +771,12 @@ class HomePage extends Component {
           </Modal>
         </div>
         <Modal
+          title="Modify Name"
           visible={this.state.nameModal}
           cancelText="Cancel"
           okText="Ok"
+          onOk={this.modifyEnsName}
+          okButtonProps={{ loading: this.state.confirmLoading }}
         >
           <Input value={this.state.nameValue} onChange={(e) => this.setState({ nameValue: e.target.value })} />
         </Modal>

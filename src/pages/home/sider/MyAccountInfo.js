@@ -45,7 +45,7 @@ class MyAccountInfo extends Component {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', height: 65, width: 135 }}>
           <div style={{ display: 'flex', margin: '5px 0 0', fontSize: 13, alignItems: 'center' }}>
-            <p style={{ width: 60, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{display_username}</p>
+            <p style={{ width: 60, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', cursor: 'pointer' }} onClick={this.props.onClick}>{display_username}</p>
             <Tooltip title={formatMessage({ id: 'account.logout_tooltip' })}>
               <LogoutOutlined onClick={this.showConfirm} />
             </Tooltip>
