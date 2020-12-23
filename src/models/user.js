@@ -463,6 +463,11 @@ export default {
     *modifyEnsName({ payload: { name } }, { call }) {
       yield call(saveShhName, name);
     },
+    *getFreeEther(_, { call, put, select }) {
+      const address = yield select(state => state.account.address);
+      yield call(window.App.getFreeEther, address);
+      yield put({ type: 'getBalance' });
+    },
   },
 
   reducers: {

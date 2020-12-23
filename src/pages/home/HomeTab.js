@@ -92,10 +92,19 @@ class HomeTab extends Component {
 
   render() {
     const { operation, exportPk, passwordOK, passwordError, privateKey } = this.state;
-    const { address, token, ether } = this.props;
+    const { address, token, ether, loading } = this.props;
     const { balanceLoading } = this.props.user;
     const { shhKeyAvaiable, shhKeyId, shhPubKey, isMetamask } = this.props.account;
-    const displayEther = `${converEther(ether).value} ${converEther(ether).unit}`
+    const freeLoading = loading.effects['user/getFreeEther'];
+    const displayEther = ether <= 0 ?
+      <>
+        {`${converEther(ether).value} ${converEther(ether).unit}`}
+        <Button loading={freeLoading} size="small" type="primary" style={{ marginLeft: 4 }} onClick={() => this.props.dispatch({ type: 'user/getFreeEther' })}>
+          get free eth
+        </Button>
+      </>
+      :
+      `${converEther(ether).value} ${converEther(ether).unit}`;
     const shhStatus = shhKeyAvaiable && shhKeyId ?
       <>
         <CopyToClipboard text={shhPubKey} onCopy={() => message.success('Copied')}><Button type="dashed" shape="circle" icon={<CopyOutlined />} /></CopyToClipboard>
@@ -206,6 +215,7 @@ const mapStateToProps = (state) => {
   return {
     user: state.user,
     account: state.account,
+    loading: state.loading,
   }
 }
 
