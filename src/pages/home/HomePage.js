@@ -374,7 +374,12 @@ class HomePage extends Component {
 
   onSignalMessage = (msg) => {
     console.log('receive signal message: ', msg);
-    const { name, from, shh, signal, content } = msg;
+    const { name, from, shh, signal, content, group } = msg;
+    if (group) {
+      console.log(`group ${signal} msg from ${from}`);
+      return;
+    }
+
     this.props.dispatch({ type: 'user/addFriend', payload: { friendAddress: from, ensName: name, shhPubKey: shh, chat: true } });
 
     switch (signal) {
