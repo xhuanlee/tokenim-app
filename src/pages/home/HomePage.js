@@ -401,13 +401,13 @@ class HomePage extends Component {
 
     console.log(`getGroupLocalMedia: creating offer`);
     const { account } = this.props;
-    const { address, shhPubKey: myShhPubKey } = account;
+    const { address, shhPubKey: myShhPubKey, loginEns } = account;
     try {
       // webrtc:4
       const offerSdp = await peer.createOffer(getSDPOptions(type));
       await peer.setLocalDescription(offerSdp);
       console.log(`send group offer: {to: ${from}`);
-      sendGroupOffer(myShhPubKey, address, type, offerSdp.sdp, this.groupShhPubKey[from]);
+      sendGroupOffer(loginEns, myShhPubKey, address, type, offerSdp.sdp, this.groupShhPubKey[from]);
     } catch (e) {
     }
   }
@@ -439,9 +439,9 @@ class HomePage extends Component {
       return;
     }
     const { account } = this.props;
-    const { address, shhPubKey: myShhPubKey } = account;
+    const { address, shhPubKey: myShhPubKey, loginEns } = account;
 
-    sendGroupCandidate(myShhPubKey, address, JSON.stringify(e.candidate), this.groupShhPubKey[from]);
+    sendGroupCandidate(loginEns, myShhPubKey, address, JSON.stringify(e.candidate), this.groupShhPubKey[from]);
   }
 
   onGroupIceCandidateStateChange = (e, from) => {
@@ -455,21 +455,44 @@ class HomePage extends Component {
   }
 
   // webrtc:7
-  gotGroupRemoteStream = (e, from) => {
+  gotGroupRemoteStream = (e, from, name) => {
     console.log('gotGroupRemoteStream');
     this.groupRemoteStream[from] = e.streams[0];
     const videoId = `v-${from}`;
+    const containerId = `c-${from}`;
     let vEle = document.getElementById(videoId);
     if (vEle) {
       vEle.srcObject = e.streams[0];
       return;
     }
 
+    const cEle = document.createElement('div');
+    cEle.id = containerId;
+    cEle.style.width = '33%';
+    cEle.style.position = 'relative';
+    cEle.style.display = 'flex';
+
+    const tEle = document.createElement('p');
+    tEle.innerText = name || from;
+    tEle.title = from;
+    tEle.style.position = 'absolute';
+    tEle.style.top = '8px';
+    tEle.style.left = '8px';
+    tEle.style.width = '100%';
+    tEle.style.overflow = 'hidden';
+    tEle.style.whiteSpace = 'nowrap';
+    tEle.style.textOverflow = 'ellipsis';
+    tEle.style.color = '#fff';
+    tEle.style.fontSize = '18px';
+
     vEle = document.createElement('video');
     vEle.id = videoId;
     vEle.autoplay = true;
-    vEle.style.width = '33%';
-    this.groupVideoContainerRef.current.appendChild(vEle);
+    vEle.style.width = '100%';
+
+    cEle.appendChild(tEle);
+    cEle.appendChild(vEle);
+    this.groupVideoContainerRef.current.appendChild(cEle);
     vEle.srcObject = e.streams[0];
 
     // create video element
@@ -477,11 +500,11 @@ class HomePage extends Component {
     // set video srcObject current.srcObject = e.streams[0]
   }
 
-  createGroupPeer = (from) => {
+  createGroupPeer = (from, name) => {
     console.log('createGroupPeer start');
     const peer = new RTCPeerConnection(WebrtcConfig);
     peer.onicecandidate = (e) => this.onGroupIceCandidate(e, from);
-    peer.ontrack = (e) => this.gotGroupRemoteStream(e, from);
+    peer.ontrack = (e) => this.gotGroupRemoteStream(e, from, name);
     peer.oniceconnectionstatechange  = (e) => this.onGroupIceCandidateStateChange(e, from);
     this.groupPeer[from] = peer;
     console.log('createGroupPeer end');
@@ -491,8 +514,8 @@ class HomePage extends Component {
     this.setState({ groupType: type });
 
     const { account } = this.props;
-    const { address, shhPubKey: myShhPubKey, symKeyId } = account;
-    sendGroupInvite(myShhPubKey, address, type, symKeyId);
+    const { address, shhPubKey: myShhPubKey, symKeyId, loginEns } = account;
+    sendGroupInvite(loginEns, myShhPubKey, address, type, symKeyId);
   }
 
   getGroupType = (remoteType) => {
@@ -509,9 +532,9 @@ class HomePage extends Component {
     return type;
   }
 
-  onReceiveGroupInvite = (from, content) => {
+  onReceiveGroupInvite = (from, name, content) => {
     const type = this.getGroupType(content);
-    this.createGroupPeer(from);
+    this.createGroupPeer(from, name);
     this.getGroupLocalMedia(from ,type, true);
   }
 
@@ -524,20 +547,20 @@ class HomePage extends Component {
     }
   }
 
-  onReceiveGroupOffer = async (from, content) => {
+  onReceiveGroupOffer = async (from, name, content) => {
     const type = this.getGroupType(content.type);
-    this.createGroupPeer(from);
+    this.createGroupPeer(from, name);
     await this.getGroupLocalMedia(from, type);
 
     const { account } = this.props;
-    const { address, shhPubKey: myShhPubKey } = account;
+    const { address, shhPubKey: myShhPubKey, loginEns } = account;
     try {
       const peer = this.groupPeer[from];
       await peer.setRemoteDescription(createSessionDescription('offer', content.sdp));
       await this.loadGroupCacheCandidate(from);
       const answerSdp = await peer.createAnswer();
       await peer.setLocalDescription(answerSdp);
-      sendGroupAnswer(myShhPubKey, address, answerSdp.sdp, this.groupShhPubKey[from]);
+      sendGroupAnswer(loginEns, myShhPubKey, address, answerSdp.sdp, this.groupShhPubKey[from]);
 
       /*
       await promiseSleep(2000);
@@ -606,7 +629,7 @@ class HomePage extends Component {
   onReceiveGroupHangup = (from) => {
     this.clearGroupMedia(from);
 
-    const videoId = `v-${from}`;
+    const videoId = `c-${from}`;
     const vEle = document.getElementById(videoId);
     if (vEle) {
       vEle.remove();
@@ -631,10 +654,10 @@ class HomePage extends Component {
       this.groupShhPubKey[from] = shh;
       switch (signal) {
         case SignalType.invite:
-          this.onReceiveGroupInvite(from, content);
+          this.onReceiveGroupInvite(from, name, content);
           break;
         case SignalType.offer:
-          this.onReceiveGroupOffer(from, content);
+          this.onReceiveGroupOffer(from, name, content);
           break;
         case SignalType.answer:
           this.onReceiveGroupAnswer(from, content);
@@ -750,8 +773,8 @@ class HomePage extends Component {
     this.groupRemoteStream = {};
 
     const { account } = this.props;
-    const { address, shhPubKey: myShhPubKey, symKeyId } = account;
-    sendGroupHangup(myShhPubKey, address, symKeyId);
+    const { address, shhPubKey: myShhPubKey, symKeyId, loginEns } = account;
+    sendGroupHangup(loginEns, myShhPubKey, address, symKeyId);
 
     try {
       if (this.localStream) {
@@ -1092,8 +1115,11 @@ class HomePage extends Component {
             modalRender={(modal) => <ReactDraggable disabled={this.state.disabled}>{modal}</ReactDraggable>}
           >
             <div ref={this.groupVideoContainerRef} style={{ width: '100%', minHeight: 500, backgroundColor: 'black', position: 'relative', display: 'flex', flexWrap: 'wrap' }}>
-              <video style={{ width: '33%' }} ref={this.localGroupVideoRef} autoPlay muted></video>
-              <div style={{ position: 'absolute', bottom: 16, right: 16 }}>
+              <div style={{ width: '33%', position: 'relative', display: 'flex' }}>
+                <p style={{ position: 'absolute', top: 8, left: 8, width: '100%', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', color: '#fff', fontSize: 18 }}>ME</p>
+                <video style={{ width: '100%' }} ref={this.localGroupVideoRef} autoPlay muted></video>
+              </div>
+              <div style={{ position: 'absolute', bottom: 16, right: 16, zIndex: 10000 }}>
                 <Button type="primary" danger shape="circle" size="large" icon={<PhoneOutlined style={{ transform: 'rotateZ(-135deg)' }} />} onClick={this.endGroupMedia} />
               </div>
             </div>

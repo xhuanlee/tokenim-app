@@ -160,8 +160,9 @@ export function createSessionDescription(type, sdp) {
   return new RTCSessionDescription({ sdp, type });
 }
 
-export function sendGroupInvite(myShhPubKey, myAddress, mediaType, symKeyId) {
+export function sendGroupInvite(myEns, myShhPubKey, myAddress, mediaType, symKeyId) {
   const message = {
+    name: myEns,
     shh: myShhPubKey,
     from: myAddress,
     signal: SignalType.invite,
@@ -172,8 +173,9 @@ export function sendGroupInvite(myShhPubKey, myAddress, mediaType, symKeyId) {
   sendGroup(symKeyId, message);
 }
 
-export function sendGroupOffer(myShhPubKey, myAddress, mediaType, sdp, publicKey) {
+export function sendGroupOffer(myEns, myShhPubKey, myAddress, mediaType, sdp, publicKey) {
   const message = {
+    name: myEns,
     shh: myShhPubKey,
     from: myAddress,
     signal: SignalType.offer,
@@ -184,8 +186,9 @@ export function sendGroupOffer(myShhPubKey, myAddress, mediaType, sdp, publicKey
   send(publicKey, message);
 }
 
-export function sendGroupAnswer(myShhPubKey, myAddress, sdp, publicKey) {
+export function sendGroupAnswer(myEns, myShhPubKey, myAddress, sdp, publicKey) {
   const message = {
+    name: myEns,
     shh: myShhPubKey,
     from: myAddress,
     signal: SignalType.answer,
@@ -196,8 +199,9 @@ export function sendGroupAnswer(myShhPubKey, myAddress, sdp, publicKey) {
   send(publicKey, message);
 }
 
-export function sendGroupCandidate(myShhPubKey, myAddress, candidate, publicKey) {
+export function sendGroupCandidate(myEns, myShhPubKey, myAddress, candidate, publicKey) {
   const message = {
+    name: myEns,
     shh: myShhPubKey,
     from: myAddress,
     signal: SignalType.candidate,
@@ -208,8 +212,9 @@ export function sendGroupCandidate(myShhPubKey, myAddress, candidate, publicKey)
   send(publicKey, message);
 }
 
-export function sendGroupHangup(myShhPubKey, myAddress, symKeyId) {
+export function sendGroupHangup(myEns, myShhPubKey, myAddress, symKeyId) {
   const message = {
+    name: myEns,
     shh: myShhPubKey,
     from: myAddress,
     signal: SignalType.hangup,
