@@ -8,12 +8,12 @@ import { LoadingOutlined, CloseCircleOutlined, CheckCircleOutlined, HomeOutlined
 import MyAccountRow from './sider/MyAccountInfo'
 import ChatBox from './content/chatbox/ChatBox'
 import HomeTab from './HomeTab'
-import { shortenAddress, formatTime } from '@/app/util'
+import { shortenAddress, formatTime, promiseSleep } from '@/app/util';
 import { MediaStatus, MediaType } from '@/models/media';
 import IMApp from '@/app/index';
 import {
   createSessionDescription, getSDPOptions, getUserMediaOptions, sendAccept,
-  sendAnswer, sendCandidate,
+  sendAnswer, sendCandidate, sendGroupAnswer, sendGroupCandidate, sendGroupHangup, sendGroupInvite, sendGroupOffer,
   sendHangup,
   sendInvite, sendInviteReply,
   sendOffer,
@@ -46,12 +46,19 @@ class HomePage extends Component {
 
       nameModal: false,
       nameValue: '',
+      groupType: null,
+      groupCall: [],
     };
     this.canAddCandidate = false;
     this.passive = false;
     this.peer = null;
     this.localStream = null;
     this.cacheCandidates = [];
+
+    this.groupPeer = {};
+    this.groupShhPubKey = {};
+    this.groupCandidate = {};
+    this.groupRemoteStream = {};
   }
 
   componentDidMount() {
@@ -372,11 +379,299 @@ class HomePage extends Component {
     console.log('onReceiveCandidateRemoval');
   }
 
+  getGroupMediaError = (e, from) => {
+    console.log('getGroupMediaError: ', e);
+  }
+
+  getGroupLocalMedia = async (from, type, createOffer) => {
+    console.log(`getGroupLocalMedia: createOffer = ${createOffer}`);
+    if (!this.localStream) {
+      try {
+        this.localStream = await navigator.mediaDevices.getUserMedia(getUserMediaOptions(type));
+      } catch (e) {
+        console.error('get user media error: ', e);
+        return;
+      }
+    }
+    this.localGroupVideoRef.current.srcObject = this.localStream;
+    const peer = this.groupPeer[from];
+    this.localStream.getTracks().forEach(track => peer.addTrack(track, this.localStream));
+    console.log('Adding Local Stream to peer connection');
+
+    if (!createOffer) {
+      return;
+    }
+
+    console.log(`getGroupLocalMedia: creating offer`);
+    const { account } = this.props;
+    const { address, shhPubKey: myShhPubKey, loginEns } = account;
+    try {
+      // webrtc:4
+      const offerSdp = await peer.createOffer(getSDPOptions(type));
+      await peer.setLocalDescription(offerSdp);
+      console.log(`send group offer: {to: ${from}`);
+      sendGroupOffer(loginEns, myShhPubKey, address, type, offerSdp.sdp, this.groupShhPubKey[from]);
+    } catch (e) {
+    }
+  }
+
+  addGroupCacheCandidate = (from, candidate) => {
+    if (!this.groupCandidate[from]) {
+      this.groupCandidate[from] = [];
+    }
+
+    this.groupCandidate[from].push(candidate);
+  }
+
+  loadGroupCacheCandidate = async (from) => {
+    console.log('loadGroupCacheCandidate');
+    if (this.groupCandidate && this.groupCandidate[from] && this.groupCandidate[from].length > 0) {
+      const peer = this.groupPeer[from];
+      for (let i = 0; i < this.groupCandidate[from].length; i++) {
+        console.log('add group cache candidate: ' + i);
+        await peer.addIceCandidate(this.groupCandidate[from][i]);
+      }
+      delete this.groupCandidate[from];
+    }
+  }
+
+  // webrtc:6
+  onGroupIceCandidate = (e, from) => {
+    console.log('onGroupIceCandidate');
+    if (!e.candidate) {
+      return;
+    }
+    const { account } = this.props;
+    const { address, shhPubKey: myShhPubKey, loginEns } = account;
+
+    sendGroupCandidate(loginEns, myShhPubKey, address, JSON.stringify(e.candidate), this.groupShhPubKey[from]);
+  }
+
+  onGroupIceCandidateStateChange = (e, from) => {
+    console.log('onGroupIceCandidateStateChange: ', e);
+    const peer = this.groupPeer[from];
+    if (peer.iceConnectionState === "failed") {
+      // send hangup
+    } else if (peer?.iceConnectionState === 'connected') {
+      // ...
+    }
+  }
+
+  // webrtc:7
+  gotGroupRemoteStream = (e, from, name) => {
+    console.log('gotGroupRemoteStream');
+    this.groupRemoteStream[from] = e.streams[0];
+    const videoId = `v-${from}`;
+    const containerId = `c-${from}`;
+    let vEle = document.getElementById(videoId);
+    if (vEle) {
+      vEle.srcObject = e.streams[0];
+      return;
+    }
+
+    const cEle = document.createElement('div');
+    cEle.id = containerId;
+    cEle.style.width = '33%';
+    cEle.style.position = 'relative';
+    cEle.style.display = 'flex';
+
+    const tEle = document.createElement('p');
+    tEle.innerText = name || from;
+    tEle.title = from;
+    tEle.style.position = 'absolute';
+    tEle.style.top = '8px';
+    tEle.style.left = '8px';
+    tEle.style.width = '100%';
+    tEle.style.overflow = 'hidden';
+    tEle.style.whiteSpace = 'nowrap';
+    tEle.style.textOverflow = 'ellipsis';
+    tEle.style.color = '#fff';
+    tEle.style.fontSize = '18px';
+
+    vEle = document.createElement('video');
+    vEle.id = videoId;
+    vEle.autoplay = true;
+    vEle.style.width = '100%';
+
+    cEle.appendChild(tEle);
+    cEle.appendChild(vEle);
+    this.groupVideoContainerRef.current.appendChild(cEle);
+    vEle.srcObject = e.streams[0];
+
+    // create video element
+    // append video to body
+    // set video srcObject current.srcObject = e.streams[0]
+  }
+
+  createGroupPeer = (from, name) => {
+    console.log('createGroupPeer start');
+    const peer = new RTCPeerConnection(WebrtcConfig);
+    peer.onicecandidate = (e) => this.onGroupIceCandidate(e, from);
+    peer.ontrack = (e) => this.gotGroupRemoteStream(e, from, name);
+    peer.oniceconnectionstatechange  = (e) => this.onGroupIceCandidateStateChange(e, from);
+    this.groupPeer[from] = peer;
+    console.log('createGroupPeer end');
+  }
+
+  startGroupCall = (type) => {
+    this.setState({ groupType: type });
+
+    const { account } = this.props;
+    const { address, shhPubKey: myShhPubKey, symKeyId, loginEns } = account;
+    sendGroupInvite(loginEns, myShhPubKey, address, type, symKeyId);
+  }
+
+  getGroupType = (remoteType) => {
+    const { groupType } = this.state;
+    if (!groupType) {
+      return ;
+    }
+
+    let type = MediaType.video;
+    if (groupType === MediaType.audio || remoteType === MediaType.audio) {
+      type = MediaType.audio;
+    }
+
+    return type;
+  }
+
+  onReceiveGroupInvite = (from, name, content) => {
+    const type = this.getGroupType(content);
+    this.createGroupPeer(from, name);
+    this.getGroupLocalMedia(from ,type, true);
+  }
+
+  sendLocalStream = (from) => {
+    console.log(`ready to send local stream to ${from}`);
+    if (from && this.groupPeer[from] && this.localStream) {
+      console.log(`send local stream to ${from}`);
+      const peer = this.groupPeer[from];
+      this.localStream.getTracks().forEach(track => peer.addTrack(track, this.localStream));
+    }
+  }
+
+  onReceiveGroupOffer = async (from, name, content) => {
+    const type = this.getGroupType(content.type);
+    this.createGroupPeer(from, name);
+    await this.getGroupLocalMedia(from, type);
+
+    const { account } = this.props;
+    const { address, shhPubKey: myShhPubKey, loginEns } = account;
+    try {
+      const peer = this.groupPeer[from];
+      await peer.setRemoteDescription(createSessionDescription('offer', content.sdp));
+      await this.loadGroupCacheCandidate(from);
+      const answerSdp = await peer.createAnswer();
+      await peer.setLocalDescription(answerSdp);
+      sendGroupAnswer(loginEns, myShhPubKey, address, answerSdp.sdp, this.groupShhPubKey[from]);
+
+      /*
+      await promiseSleep(2000);
+      peer.getTransceivers().forEach(transceiver => {
+        console.log('local sender: ', transceiver.sender);
+        transceiver.sender.setStreams(this.localStream);
+      });
+      */
+    } catch (e) {
+    }
+  }
+
+  onReceiveGroupIcecandidate = async (from, content) => {
+    console.log('onReceiveGroupIcecandidate');
+    const candidateJson = JSON.parse(content);
+    const { candidate, sdpMLineIndex, sdpMid } = candidateJson;
+    const candidateObj = new RTCIceCandidate({
+      candidate,
+      sdpMLineIndex,
+      sdpMid,
+    });
+
+    const peer = this.groupPeer[from];
+    if (peer) {
+      try {
+        await peer.addIceCandidate(candidateObj);
+      } catch (e) {
+        console.error('add ice failed: ', e);
+        this.addGroupCacheCandidate(from, candidateObj);
+      }
+      return;
+    }
+
+    this.addGroupCacheCandidate(from, candidateObj);
+  }
+
+  onReceiveGroupAnswer = async (from, sdp) => {
+    console.log('onReceiveGroupAnswer');
+    try {
+      const peer = this.groupPeer[from];
+      await peer.setRemoteDescription(createSessionDescription('answer', sdp));
+      await this.loadGroupCacheCandidate(from);
+    } catch (e) {
+    }
+  }
+
+  clearGroupMedia = (from) => {
+    console.log('clearGroupMedia');
+    try {
+      if (!from && Object.keys(this.groupPeer).length > 0) {
+        Object.keys(this.groupPeer).forEach(f => {
+          try {
+            this.groupPeer[f].close();
+            delete this.groupPeer[from];
+          } catch (e) {
+          }
+        })
+      } else if (this.groupPeer[from]) {
+        this.groupPeer[from].close();
+        delete this.groupPeer[from];
+      }
+    } catch (e) {
+    }
+  }
+
+  onReceiveGroupHangup = (from) => {
+    this.clearGroupMedia(from);
+
+    const videoId = `c-${from}`;
+    const vEle = document.getElementById(videoId);
+    if (vEle) {
+      vEle.remove();
+    }
+  }
+
+  /**
+   * 点击group音视频，在本地标记为允许接收来自公共频道的音视频连接，并且广播出去，
+   * 其他在线的并且允许音视频连接的账号在收到新的音视频允许连接信号时直接发送offer给发起方
+   * */
   onSignalMessage = (msg) => {
     console.log('receive signal message: ', msg);
+    const { groupType } = this.state;
     const { name, from, shh, signal, content, group } = msg;
+    const { account } = this.props;
+    const { address } = account;
+    if ((group && !groupType) || from === address) {
+      return;
+    }
+
     if (group) {
-      console.log(`group ${signal} msg from ${from}`);
+      this.groupShhPubKey[from] = shh;
+      switch (signal) {
+        case SignalType.invite:
+          this.onReceiveGroupInvite(from, name, content);
+          break;
+        case SignalType.offer:
+          this.onReceiveGroupOffer(from, name, content);
+          break;
+        case SignalType.answer:
+          this.onReceiveGroupAnswer(from, content);
+          break;
+        case SignalType.candidate:
+          this.onReceiveGroupIcecandidate(from, content);
+          break;
+        case SignalType.hangup:
+          this.onReceiveGroupHangup(from);
+          break;
+      }
       return;
     }
 
@@ -487,12 +782,34 @@ class HomePage extends Component {
     });
   }
 
+  endGroupMedia = () => {
+    this.setState({ groupType: null, groupCall: [] });
+    this.clearGroupMedia();
+    this.groupShhPubKey = {};
+    this.groupCandidate = {};
+    this.groupRemoteStream = {};
+
+    const { account } = this.props;
+    const { address, shhPubKey: myShhPubKey, symKeyId, loginEns } = account;
+    sendGroupHangup(loginEns, myShhPubKey, address, symKeyId);
+
+    try {
+      if (this.localStream) {
+        this.localStream.getTracks().forEach((track) => track.stop());
+        this.localStream = null;
+      }
+    } catch (e) {
+    }
+  }
+
   render() {
     this.videoRef = createRef();
     this.localVideoRef = createRef();
+    this.localGroupVideoRef = createRef();
+    this.groupVideoContainerRef = createRef();
     const { media } = this.props;
     const { type: mType, chatUser, status } = media;
-    const { newDialogModal, newTranferModal, addFromEns, ensName, nameError, chatAddress, nickName } = this.state;
+    const { newDialogModal, newTranferModal, addFromEns, ensName, nameError, chatAddress, nickName, groupType, groupCall } = this.state;
     const { faxBalance, etherBalance, friends } = this.props.user;
     const { queryENSAvaiable, queryENSLoading, queryENSAddress, queryShhPubKey, queryShhPubKeyByAddress } = this.props.account;
     const { loginAddress } = this.props.account;
@@ -602,7 +919,14 @@ class HomePage extends Component {
             <Layout style={{ overflowY: 'hidden', height: '100vh', backgroundColor: 'rgb(213,216,225)' }}>
               <Content style={{ background: '#fff', margin: '10px 3px', overflowY: 'auto' }}>
                 {chatUser
-                  ? <ChatBox chatTo={chatUser} startAudio={() => this.startCall(MediaType.audio)} startVideo={() => this.startCall(MediaType.video)} />
+                  ?
+                  <ChatBox
+                    chatTo={chatUser}
+                    startAudio={() => this.startCall(MediaType.audio)}
+                    startVideo={() => this.startCall(MediaType.video)}
+                    startGroupAudio={() => this.startGroupCall(MediaType.audio)}
+                    startGroupVideo={() => this.startGroupCall(MediaType.video)}
+                  />
                   : <HomeTab address={loginAddress} token={faxBalance} ether={etherBalance} />
                 }
               </Content>
@@ -762,7 +1086,7 @@ class HomePage extends Component {
             width={800}
             modalRender={(modal) => <ReactDraggable disabled={this.state.disabled}>{modal}</ReactDraggable>}
           >
-            <div style={{ width: '100%', height: '100%', backgroundColor: 'black', position: 'relative' }}>
+            <div style={{ width: '100%', minHeight: '100%', backgroundColor: 'black', position: 'relative' }}>
               <video ref={this.videoRef} style={{ width: '100%' }} autoPlay></video>
               <video style={{ height: 128, position: 'absolute', left: 0, bottom: 0 }} ref={this.localVideoRef} autoPlay muted></video>
               <div style={{ position: 'absolute', bottom: 16, right: 16 }}>
@@ -771,6 +1095,49 @@ class HomePage extends Component {
                     <Button type="primary" shape="circle" size="large" icon={<PhoneOutlined />} onClick={this.acceptInvite} style={{ marginRight: 16 }} /> : null
                 }
                 <Button type="primary" danger shape="circle" size="large" icon={<PhoneOutlined style={{ transform: 'rotateZ(-135deg)' }} />} onClick={this.endMedia} />
+              </div>
+            </div>
+          </Modal>
+          <Modal
+            visible={!!groupType}
+            mask={false}
+            destroyOnClose
+            title={
+              <div
+                style={{
+                  width: '100%',
+                  cursor: 'move',
+                }}
+                onMouseOver={() => {
+                  if (this.state.disabled) {
+                    this.setState({
+                      disabled: false,
+                    });
+                  }
+                }}
+                onMouseOut={() => {
+                  this.setState({
+                    disabled: true,
+                  });
+                }}
+              >
+                Group call
+              </div>
+            }
+            closable={false}
+            maskClosable={false}
+            footer={null}
+            bodyStyle={{ padding: 0 }}
+            width={1000}
+            modalRender={(modal) => <ReactDraggable disabled={this.state.disabled}>{modal}</ReactDraggable>}
+          >
+            <div ref={this.groupVideoContainerRef} style={{ width: '100%', minHeight: 500, backgroundColor: 'black', position: 'relative', display: 'flex', flexWrap: 'wrap' }}>
+              <div style={{ width: '33%', position: 'relative', display: 'flex' }}>
+                <p style={{ position: 'absolute', top: 8, left: 8, width: '100%', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', color: '#fff', fontSize: 18 }}>ME</p>
+                <video style={{ width: '100%' }} ref={this.localGroupVideoRef} autoPlay muted></video>
+              </div>
+              <div style={{ position: 'absolute', bottom: 16, right: 16, zIndex: 10000 }}>
+                <Button type="primary" danger shape="circle" size="large" icon={<PhoneOutlined style={{ transform: 'rotateZ(-135deg)' }} />} onClick={this.endGroupMedia} />
               </div>
             </div>
           </Modal>
