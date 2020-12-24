@@ -8,7 +8,7 @@ import { LoadingOutlined, CloseCircleOutlined, CheckCircleOutlined, HomeOutlined
 import MyAccountRow from './sider/MyAccountInfo'
 import ChatBox from './content/chatbox/ChatBox'
 import HomeTab from './HomeTab'
-import { shortenAddress, formatTime } from '@/app/util'
+import { shortenAddress, formatTime, promiseSleep } from '@/app/util';
 import { MediaStatus, MediaType } from '@/models/media';
 import IMApp from '@/app/index';
 import {
@@ -458,8 +458,20 @@ class HomePage extends Component {
   gotGroupRemoteStream = (e, from) => {
     console.log('gotGroupRemoteStream');
     this.groupRemoteStream[from] = e.streams[0];
-    const { groupCall } = this.state;
-    this.setState({ groupCall: [...groupCall, from] });
+    const videoId = `v-${from}`;
+    let vEle = document.getElementById(videoId);
+    if (vEle) {
+      vEle.srcObject = e.streams[0];
+      return;
+    }
+
+    vEle = document.createElement('video');
+    vEle.id = videoId;
+    vEle.autoplay = true;
+    vEle.style.width = '33%';
+    this.groupVideoContainerRef.current.appendChild(vEle);
+    vEle.srcObject = e.streams[0];
+
     // create video element
     // append video to body
     // set video srcObject current.srcObject = e.streams[0]
@@ -503,10 +515,19 @@ class HomePage extends Component {
     this.getGroupLocalMedia(from ,type, true);
   }
 
+  sendLocalStream = (from) => {
+    console.log(`ready to send local stream to ${from}`);
+    if (from && this.groupPeer[from] && this.localStream) {
+      console.log(`send local stream to ${from}`);
+      const peer = this.groupPeer[from];
+      this.localStream.getTracks().forEach(track => peer.addTrack(track, this.localStream));
+    }
+  }
+
   onReceiveGroupOffer = async (from, content) => {
     const type = this.getGroupType(content.type);
     this.createGroupPeer(from);
-    this.getGroupLocalMedia(from, type);
+    await this.getGroupLocalMedia(from, type);
 
     const { account } = this.props;
     const { address, shhPubKey: myShhPubKey } = account;
@@ -517,6 +538,14 @@ class HomePage extends Component {
       const answerSdp = await peer.createAnswer();
       await peer.setLocalDescription(answerSdp);
       sendGroupAnswer(myShhPubKey, address, answerSdp.sdp, this.groupShhPubKey[from]);
+
+      /*
+      await promiseSleep(2000);
+      peer.getTransceivers().forEach(transceiver => {
+        console.log('local sender: ', transceiver.sender);
+        transceiver.sender.setStreams(this.localStream);
+      });
+      */
     } catch (e) {
     }
   }
@@ -572,16 +601,16 @@ class HomePage extends Component {
       }
     } catch (e) {
     }
-    try {
-      if (this.localStream) {
-        this.localStream.getTracks().forEach((track) => track.stop());
-      }
-    } catch (e) {
-    }
   }
 
   onReceiveGroupHangup = (from) => {
     this.clearGroupMedia(from);
+
+    const videoId = `v-${from}`;
+    const vEle = document.getElementById(videoId);
+    if (vEle) {
+      vEle.remove();
+    }
   }
 
   /**
@@ -614,7 +643,6 @@ class HomePage extends Component {
           this.onReceiveGroupIcecandidate(from, content);
           break;
         case SignalType.hangup:
-          break;
           this.onReceiveGroupHangup(from);
           break;
       }
@@ -724,12 +752,21 @@ class HomePage extends Component {
     const { account } = this.props;
     const { address, shhPubKey: myShhPubKey, symKeyId } = account;
     sendGroupHangup(myShhPubKey, address, symKeyId);
+
+    try {
+      if (this.localStream) {
+        this.localStream.getTracks().forEach((track) => track.stop());
+        this.localStream = null;
+      }
+    } catch (e) {
+    }
   }
 
   render() {
     this.videoRef = createRef();
     this.localVideoRef = createRef();
     this.localGroupVideoRef = createRef();
+    this.groupVideoContainerRef = createRef();
     const { media } = this.props;
     const { type: mType, chatUser, status } = media;
     const { newDialogModal, newTranferModal, addFromEns, ensName, nameError, chatAddress, nickName, groupType, groupCall } = this.state;
@@ -1054,14 +1091,8 @@ class HomePage extends Component {
             width={1000}
             modalRender={(modal) => <ReactDraggable disabled={this.state.disabled}>{modal}</ReactDraggable>}
           >
-            <div style={{ width: '100%', minHeight: 500, backgroundColor: 'black', position: 'relative', display: 'flex', flexWrap: 'wrap' }}>
+            <div ref={this.groupVideoContainerRef} style={{ width: '100%', minHeight: 500, backgroundColor: 'black', position: 'relative', display: 'flex', flexWrap: 'wrap' }}>
               <video style={{ width: '33%' }} ref={this.localGroupVideoRef} autoPlay muted></video>
-              {
-                groupCall.map(f => {
-                  const rStream = this.groupRemoteStream[f];
-                  return <video style={{ width: '33%' }} src={window.URL.createObjectURL(rStream)} autoPlay></video>;
-                })
-              }
               <div style={{ position: 'absolute', bottom: 16, right: 16 }}>
                 <Button type="primary" danger shape="circle" size="large" icon={<PhoneOutlined style={{ transform: 'rotateZ(-135deg)' }} />} onClick={this.endGroupMedia} />
               </div>

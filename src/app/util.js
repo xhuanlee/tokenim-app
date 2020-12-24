@@ -191,8 +191,8 @@ export function getLocalShhKeyPair(address) {
   }
   const ShhKey = ShhKeyObj[ethereum_rpc_endpoint] || {};
   const id = ShhKey[address] && ShhKey[address].id
-  const priKey = ShhKey[address] && ShhKey[address].pubKey;
-  const pubKey = ShhKey[address] && ShhKey[address].priKey;
+  const pubKey = ShhKey[address] && ShhKey[address].pubKey;
+  const priKey = ShhKey[address] && ShhKey[address].priKey;
 
   return { id, priKey, pubKey };
 }
