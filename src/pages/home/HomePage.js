@@ -4,7 +4,7 @@ import { Layout, Avatar, List, Modal, Input, Alert, Tooltip, Button, message } f
 import ReactDraggable from 'react-draggable';
 import { formatMessage } from 'umi-plugin-locale';
 import { LoadingOutlined, CloseCircleOutlined, CheckCircleOutlined, HomeOutlined, UserOutlined,
-  UserAddOutlined, InteractionOutlined, TeamOutlined, PhoneOutlined } from '@ant-design/icons';
+  UserAddOutlined, InteractionOutlined, TeamOutlined, PhoneOutlined, AudioOutlined, AudioMutedOutlined } from '@ant-design/icons';
 import MyAccountRow from './sider/MyAccountInfo'
 import ChatBox from './content/chatbox/ChatBox'
 import HomeTab from './HomeTab'
@@ -48,6 +48,9 @@ class HomePage extends Component {
       nameValue: '',
       groupType: null,
       groupCall: [],
+
+      videoEnable: true,
+      audioEnable: true,
     };
     this.canAddCandidate = false;
     this.passive = false;
@@ -197,6 +200,22 @@ class HomePage extends Component {
     this.props.dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.error } });
     message.error('get media error, please try again', 10);
   }
+
+  toggleAudio = () => {
+    if (this.localStream) {
+      const { audioEnable } = this.state;
+      this.setState({ audioEnable: !audioEnable });
+      this.localStream.getAudioTracks().forEach(track => track.enabled = !audioEnable);
+    }
+  };
+
+  toggleVideo = () => {
+    if (this.localStream) {
+      const { videoEnable } = this.state;
+      this.setState({ audioEnable: !videoEnable });
+      this.localStream.getVideoTracks().forEach(track => track.enabled = !videoEnable);
+    }
+  };
 
   // webrtc:3
   gotLocalStream = async (stream) => {
@@ -783,7 +802,7 @@ class HomePage extends Component {
   }
 
   endGroupMedia = () => {
-    this.setState({ groupType: null, groupCall: [] });
+    this.setState({ groupType: null, groupCall: [], audioEnable: true, videoEnable: true, });
     this.clearGroupMedia();
     this.groupShhPubKey = {};
     this.groupCandidate = {};
@@ -809,7 +828,11 @@ class HomePage extends Component {
     this.groupVideoContainerRef = createRef();
     const { media } = this.props;
     const { type: mType, chatUser, status } = media;
-    const { newDialogModal, newTranferModal, addFromEns, ensName, nameError, chatAddress, nickName, groupType, groupCall } = this.state;
+    const {
+      newDialogModal, newTranferModal, addFromEns, ensName,
+      nameError, chatAddress, nickName, groupType, videoEnable,
+      audioEnable,
+    } = this.state;
     const { faxBalance, etherBalance, friends } = this.props.user;
     const { queryENSAvaiable, queryENSLoading, queryENSAddress, queryShhPubKey, queryShhPubKeyByAddress } = this.props.account;
     const { loginAddress } = this.props.account;
@@ -1094,6 +1117,10 @@ class HomePage extends Component {
                   status === MediaStatus.ring ?
                     <Button type="primary" shape="circle" size="large" icon={<PhoneOutlined />} onClick={this.acceptInvite} style={{ marginRight: 16 }} /> : null
                 }
+                {
+                  status == MediaStatus.active ?
+                    <Button type="primary" size="large" shape="circle" icon={audioEnable ? <AudioOutlined /> : <AudioMutedOutlined />} onClick={this.toggleAudio} style={{ marginRight: 16 }} /> : null
+                }
                 <Button type="primary" danger shape="circle" size="large" icon={<PhoneOutlined style={{ transform: 'rotateZ(-135deg)' }} />} onClick={this.endMedia} />
               </div>
             </div>
@@ -1137,6 +1164,7 @@ class HomePage extends Component {
                 <video style={{ width: '100%' }} ref={this.localGroupVideoRef} autoPlay muted></video>
               </div>
               <div style={{ position: 'absolute', bottom: 16, right: 16, zIndex: 10000 }}>
+                <Button type="primary" size="large" shape="circle" icon={audioEnable ? <AudioOutlined /> : <AudioMutedOutlined />} onClick={this.toggleAudio} style={{ marginRight: 16 }} />
                 <Button type="primary" danger shape="circle" size="large" icon={<PhoneOutlined style={{ transform: 'rotateZ(-135deg)' }} />} onClick={this.endGroupMedia} />
               </div>
             </div>
