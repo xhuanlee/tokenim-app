@@ -58,6 +58,11 @@ web3.personal.unlockAccount('address','password') //解锁账户
 ```
 部署合约
 ```shell script
+# 初始化(初始化之后需要修改 truffle-config.js 相关内容[rpc地址，发布人地址等等])
+truffle init
+# 编译
+truffle compile
+# 发布
 truffle deploy //重新部署 truffle deploy --reset
 ```
 合约部署成功后，返回合约地址
