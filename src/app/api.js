@@ -12,6 +12,7 @@ import FIFSRegistrar from '../../ens/FIFSRegistrar.json'
 import PublicResolver from '../../ens/PublicResolver.json';
 import UserData from '../../abi/UserData.json';
 import ShhData from '../../truffle/shh-data/build/contracts/ShhData.json';
+import TRONex from '../../truffle/tronex/build/contracts/TRONex.json';
 
 import { network_id } from '../../config'
 
@@ -24,6 +25,7 @@ export const FaxTokenImAPI = {
   web3FaxDomainContract: null,
   web3ResolverContract: null,
   web3DataContract: null,
+  web3InvestContract: null,
 
   tokenContract: null,
   imContract: null,
@@ -33,6 +35,7 @@ export const FaxTokenImAPI = {
   resolverContract: null,
   dataContract: null,
   shhDataContract: null,
+  investContract: null,
 
   isConnected: () => {
     return FaxTokenImAPI.web3.isConnected();
@@ -259,6 +262,25 @@ export const FaxTokenImAPI = {
     })
   },
 
+  initInvestContract: () => {
+    // web3 contract instance
+    const c = FaxTokenImAPI.web3.eth.contract(TRONex.abi)
+    FaxTokenImAPI.web3InvestContract = c.at(TRONex.networks[network_id].address);
+
+    // truffle contract instance
+    const tronexContract = contract(TRONex);
+    tronexContract.setProvider(FaxTokenImAPI.web3.currentProvider);
+
+    return new Promise((resolve, reject) => {
+      tronexContract.deployed().then(instance => {
+        FaxTokenImAPI.investContract = instance;
+        resolve(instance.address);
+      }).catch(err => {
+        reject(err);
+      })
+    })
+  },
+
   // to produce transaction nonce
   getTransactionCount: (address) => {
     return new Promise((resolve, reject) => {
@@ -296,6 +318,18 @@ export const FaxTokenImAPI = {
       tx.sign(privateKey);
       const serializedTx = '0x' + tx.serialize().toString('hex');
       return FaxTokenImAPI.sendRawTransaction(serializedTx);
+    });
+  },
+
+  estimateGas: (param) => {
+    return new Promise((resolve, reject) => {
+      FaxTokenImAPI.web3.eth.estimateGas(param, (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
     });
   },
 

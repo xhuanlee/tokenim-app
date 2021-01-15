@@ -20,6 +20,7 @@ export default {
     resolverContractAvaiable: false,
     userDataContractOK: false,
     shhDataContractOK: false,
+    investContractOK: false,
     userDataContractAvaiable: false,
 
     providerURL: '',
@@ -33,6 +34,8 @@ export default {
     resolverAddress: '',
     userDataAddress: '',
     shhDataAddress: '',
+    investAddress: '',
+
 
     metamaskOk: false,
   },
@@ -78,6 +81,7 @@ export default {
         userDataContractOK: false,
         userDataContractAvaiable: false,
         shhDataContractOK: false,
+        investContractOK: false,
         tokenContractAddress: '',
         imContractAddress: '',
         saleContractAddress: '',
@@ -86,6 +90,7 @@ export default {
         resolverAddress: '',
         userDataAddress: '',
         shhDataAddress: '',
+        investAddress: '',
       }
     },
 
@@ -107,6 +112,7 @@ export default {
         resolverContractAvaiable: false,
         userDataContractOK: false,
         shhDataContractOK: false,
+        investContractOK: false,
         userDataContractAvaiable: false,
         providerURL: '',
         bzzURL: '',
@@ -119,6 +125,7 @@ export default {
         resolverAddress: '',
         userDataAddress: '',
         shhDataAddress: '',
+        investAddress: '',
       }
     },
 

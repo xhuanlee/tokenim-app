@@ -17,7 +17,7 @@ export const sendRequest = (url, callback, data) => {
   }
 }
 
-const converter = {
+export const converter = {
   Wei: 1,
   Gwei: 1000000000,
   Ether: 1000000000000000000,

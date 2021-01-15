@@ -232,4 +232,16 @@ export default {
   'user.account_error': '账号异常，请重新登陆',
   'user.visitor_transaction_forbidden': '游客模式下，无法发起交易',
 
+  'invest.contract_title': '合约信息',
+  'invest.contract_total_invest': '投资总额(ether)',
+  'invest.contract_total_user': '用户数',
+  'invest.contract_balance': '合约余额(ether)',
+  'invest.contract_balance_rate': 'Contract Balance Rate',
+  'invest.user_title': '我的投资详情',
+  'invest.user_invest': '总投入(ether)',
+  'invest.user_deposit': '投资次数',
+  'invest.user_dividend': '获利(ether)',
+  'invest.user_referral_bonus': '推荐奖励(ether)',
+  'invest.user_total_withdraw': '提现总额(ether)',
+  'invest.user_referrer': '推荐人',
 }

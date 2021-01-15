@@ -82,12 +82,12 @@ export async function transferEther(from ,to, value) {
   try {
     const nonce = await FaxTokenImAPI.getTransactionCount(from);
     const param = {
-      nonce: window.web3.toHex(nonce),
+      nonce: window.FaxTokenImAPI.web3.toHex(nonce),
       gas: '0x15f90',
       gasPrice: '0x4a817c800',
       from,
       to,
-      value: window.web3.toHex(value),
+      value: window.FaxTokenImAPI.web3.toHex(value),
       chainId: window.ethereum.chainId,
     };
     const txHash = await window.ethereum.request({
@@ -108,7 +108,7 @@ export async function saveShhName(name) {
     const nonce = await FaxTokenImAPI.getTransactionCount(window.ethereum.selectedAddress);
     const data = FaxTokenImAPI.web3ShhDataContract.saveShhName.getData(name);
     const param = {
-      nonce: window.web3.toHex(nonce),
+      nonce: window.FaxTokenImAPI.web3.toHex(nonce),
       gas: '0x15f90',
       gasPrice: '0x4a817c800',
       from: window.ethereum.selectedAddress,

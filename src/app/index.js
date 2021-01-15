@@ -68,6 +68,7 @@ const IMApp = {
       IMApp.initResolverContract();
       IMApp.initUserDataContract();
       IMApp.initShhDataContract();
+      IMApp.initInvestContract();
     }).catch(providerURL => {
       console.log(`provider error, can not connect to ${providerURL}!`)
       window.g_app._store.dispatch({ type: 'init/saveInitState', payload: { providerOK: false, providerURL, initError: true } });
@@ -188,6 +189,18 @@ const IMApp = {
       console.log(`ShhData init error`);
       console.log(err)
       window.g_app._store.dispatch({ type: 'init/saveInitState', payload: { shhDataContractOK: false, initError: true } });
+    })
+  },
+
+  initInvestContract: () => {
+    // init
+    FaxTokenImAPI.initInvestContract().then((investAddress) => {
+      console.log('invest Contract is OK!')
+      window.g_app._store.dispatch({ type: 'init/saveInitState', payload: { investContractOK: true, investAddress } });
+    }).catch(err => {
+      console.log(`invest contract init error`);
+      console.log(err)
+      window.g_app._store.dispatch({ type: 'init/saveInitState', payload: { investContractOK: false, initError: true } });
     })
   },
 

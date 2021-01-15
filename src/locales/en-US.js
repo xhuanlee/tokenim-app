@@ -229,4 +229,16 @@ export default {
   'user.account_error': 'exception found, please login again',
   'user.visitor_transaction_forbidden': 'transfer is not available in visitor mode',
 
+  'invest.contract_title': 'Contract Info',
+  'invest.contract_total_invest': 'Total Invested(ether)',
+  'invest.contract_total_user': 'Total User',
+  'invest.contract_balance': 'Contract Balance(ether)',
+  'invest.contract_balance_rate': 'Contract Balance Rate',
+  'invest.user_title': 'My Invest Info',
+  'invest.user_invest': 'Invested(ether)',
+  'invest.user_deposit': 'Deposits',
+  'invest.user_dividend': 'Dividends(ether)',
+  'invest.user_referral_bonus': 'Referral Bonus(ether)',
+  'invest.user_total_withdraw': 'Total Withdrawn(ether)',
+  'invest.user_referrer': 'Referrer',
 }

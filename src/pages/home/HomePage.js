@@ -22,6 +22,7 @@ import {
 } from '@/app/webrtc';
 import NeedLogin from '@/pages/home/NeedLogin';
 import { saveShhName } from '@/app/metamask';
+import MiniProgramList from '@/components/MiniProgramList';
 
 const { Content, Sider } = Layout;
 
@@ -873,7 +874,7 @@ class HomePage extends Component {
               overflowY: 'auto',
             }}>
               <MyAccountRow onClick={() => this.setState({ nameModal: true })} />
-
+              <MiniProgramList />
               <div style={{
                 margin: '5px 0px',
                 display: 'flex',

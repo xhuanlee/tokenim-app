@@ -13,6 +13,7 @@ export default {
         { path: '/regSuccess', component: '../pages/regSuccess' },
         { path: '/home', component: '../pages/home/HomePage' },
         { path: '/status', component: '../pages/status' },
+        { path: '/invest', component: '../pages/invest' },
       ]
     }
   ],
