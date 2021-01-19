@@ -3,11 +3,14 @@ import { connect } from 'dva';
 import { Layout, Avatar, List, Modal, Input, Alert, Tooltip, Button, message } from 'antd';
 import ReactDraggable from 'react-draggable';
 import { formatMessage } from 'umi-plugin-locale';
-import { LoadingOutlined, CloseCircleOutlined, CheckCircleOutlined, HomeOutlined, UserOutlined,
-  UserAddOutlined, InteractionOutlined, TeamOutlined, PhoneOutlined, AudioOutlined, AudioMutedOutlined } from '@ant-design/icons';
-import MyAccountRow from './sider/MyAccountInfo'
-import ChatBox from './content/chatbox/ChatBox'
-import HomeTab from './HomeTab'
+import {
+  LoadingOutlined, CloseCircleOutlined, CheckCircleOutlined, HomeOutlined, UserOutlined,
+  UserAddOutlined, InteractionOutlined, TeamOutlined, PhoneOutlined, AudioOutlined, AudioMutedOutlined,
+} from '@ant-design/icons';
+import router from 'umi/router';
+import MyAccountRow from './sider/MyAccountInfo';
+import ChatBox from './content/chatbox/ChatBox';
+import HomeTab from './HomeTab';
 import { shortenAddress, formatTime, promiseSleep } from '@/app/util';
 import { MediaStatus, MediaType } from '@/models/media';
 import IMApp from '@/app/index';
@@ -23,6 +26,7 @@ import {
 import NeedLogin from '@/pages/home/NeedLogin';
 import { saveShhName } from '@/app/metamask';
 import MiniProgramList from '@/components/MiniProgramList';
+import Defis from '@/pages/home/content/Defis';
 
 const { Content, Sider } = Layout;
 
@@ -70,13 +74,13 @@ class HomePage extends Component {
     // document.getElementById('container').style = '';
     // document.getElementById('root').style = '';
     if (document.getElementById('AiCoin')) {
-      document.getElementById('AiCoin').style.display = 'none'
+      document.getElementById('AiCoin').style.display = 'none';
     }
 
-    this.props.dispatch({ type: 'account/saveEnsName' })
-    this.props.dispatch({ type: 'user/getUserInfo' })
-    this.props.dispatch({ type: 'contract/getContractInfo' })
-    this.props.dispatch({ type: 'user/readChatHistory' })
+    this.props.dispatch({ type: 'account/saveEnsName' });
+    this.props.dispatch({ type: 'user/getUserInfo' });
+    this.props.dispatch({ type: 'contract/getContractInfo' });
+    this.props.dispatch({ type: 'user/readChatHistory' });
 
     IMApp.setSiganlCallback(this.onSignalMessage);
   }
@@ -92,19 +96,23 @@ class HomePage extends Component {
   setChatToUser = (user) => {
     const { dispatch } = this.props;
     dispatch({ type: 'media/saveChatUser', payload: { chatUser: user } });
-  }
+    const { location: { query: { s } } } = this.props;
+    if (s) {
+      router.push('/home');
+    }
+  };
 
   openNewMessageModal = () => {
-    this.setState({ newDialogModal: true })
-  }
+    this.setState({ newDialogModal: true });
+  };
   openNewTransferModal = () => {
-    this.setState({ newTranferModal: true })
-  }
+    this.setState({ newTranferModal: true });
+  };
 
   confirmTransFax = () => {
     const { to, fax } = this.state;
-    this.props.dispatch({ type: 'user/transFax', payload: { to, fax } })
-  }
+    this.props.dispatch({ type: 'user/transFax', payload: { to, fax } });
+  };
 
   createDialog = () => {
     const { addFromEns } = this.state;
@@ -113,68 +121,81 @@ class HomePage extends Component {
     } else {
       this.createDialogByAddress();
     }
-  }
+  };
 
   createDialogByEns = () => {
     const { ensName } = this.state;
     const { queryENSAddress, queryShhPubKey } = this.props.account;
     const time = (new Date()).getTime();
     if (queryENSAddress && queryShhPubKey) {
-      this.props.dispatch({ type: 'user/addFriend', payload: { ensName, friendAddress: queryENSAddress, shhPubKey: queryShhPubKey, time } })
+      this.props.dispatch({
+        type: 'user/addFriend',
+        payload: { ensName, friendAddress: queryENSAddress, shhPubKey: queryShhPubKey, time },
+      });
       this.setState({ newDialogModal: false });
-      this.setChatToUser({ ensName, address: queryENSAddress, shhPubKey: queryShhPubKey, time })
+      this.setChatToUser({ ensName, address: queryENSAddress, shhPubKey: queryShhPubKey, time });
     } else {
       alert(formatMessage({ id: 'home.shh_format_error' }));
     }
-  }
+  };
 
   createDialogByAddress = () => {
     const { nickName } = this.state;
     const { queryAddress, queryShhPubKeyByAddress } = this.props.account;
     const time = (new Date()).getTime();
     if (queryAddress && queryShhPubKeyByAddress) {
-      this.props.dispatch({ type: 'user/addFriend', payload: { nickName, friendAddress: queryAddress, shhPubKey: queryShhPubKeyByAddress, time } })
+      this.props.dispatch({
+        type: 'user/addFriend',
+        payload: { nickName, friendAddress: queryAddress, shhPubKey: queryShhPubKeyByAddress, time },
+      });
       this.setState({ newDialogModal: false });
-      this.setChatToUser({ address: queryAddress, nickName, shhPubKey: queryShhPubKeyByAddress, time })
+      this.setChatToUser({ address: queryAddress, nickName, shhPubKey: queryShhPubKeyByAddress, time });
     } else {
       alert(formatMessage({ id: 'home.shh_format_error' }));
     }
-  }
+  };
 
   cancelDialogModal = () => {
-    this.setState({ newDialogModal: false })
-  }
+    this.setState({ newDialogModal: false });
+  };
   cancelTransferModal = () => {
-    this.setState({ newTranferModal: false })
-  }
+    this.setState({ newTranferModal: false });
+  };
 
   openHomeTab = () => {
     const { dispatch } = this.props;
     dispatch({ type: 'media/saveChatUser', payload: { chatUser: null } });
-  }
+    const { location: { query: { s } } } = this.props;
+    if (s) {
+      router.push('/home');
+    }
+  };
 
   onENSNameChange = (e) => {
     const queryENSName = e.target.value;
     if (queryENSName && /^[a-zA-Z][a-zA-Z0-9]*$/.test(queryENSName)) {
-      this.setState({ ensName: queryENSName, nameError: '' })
-      this.props.dispatch({ type: 'account/getEnsUserData', payload: queryENSName })
+      this.setState({ ensName: queryENSName, nameError: '' });
+      this.props.dispatch({ type: 'account/getEnsUserData', payload: queryENSName });
     } else {
-      this.setState({ nameError: formatMessage({ id: 'home.ens_name_format_error' }), ensName: queryENSName })
+      this.setState({ nameError: formatMessage({ id: 'home.ens_name_format_error' }), ensName: queryENSName });
     }
-  }
+  };
 
   onWhisperChange = (e) => {
     const publicKey = e.target.value;
-    this.props.dispatch({ type: 'account/saveAccountState', payload: { queryShhPubKey: publicKey, queryShhPubKeyByAddress: publicKey } });
-  }
+    this.props.dispatch({
+      type: 'account/saveAccountState',
+      payload: { queryShhPubKey: publicKey, queryShhPubKeyByAddress: publicKey },
+    });
+  };
 
   onAddressChange = (e) => {
     const address = e.target.value;
-    this.setState({ chatAddress: address })
+    this.setState({ chatAddress: address });
     if (address && /^0x[0-9a-fA-F]{40}$/.test(address)) {
-      this.props.dispatch({ type: 'account/getAddressUserData', payload: address })
+      this.props.dispatch({ type: 'account/getAddressUserData', payload: address });
     }
-  }
+  };
 
   clearMedia = () => {
     console.log('clearMedia');
@@ -194,13 +215,13 @@ class HomePage extends Component {
     }
 
     clearInterval(this.checkCallInterval);
-  }
+  };
 
   getMediaError = (e) => {
     console.log('getMediaError: ', e);
     this.props.dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.error } });
     message.error('get media error, please try again', 10);
-  }
+  };
 
   toggleAudio = () => {
     if (this.localStream) {
@@ -239,7 +260,7 @@ class HomePage extends Component {
       sendOffer(loginEns, myShhPubKey, address, shhPubKey, offerSdp.sdp);
     } catch (e) {
     }
-  }
+  };
 
   // webrtc:2
   getLocalMedia = () => {
@@ -249,7 +270,7 @@ class HomePage extends Component {
       .getUserMedia(getUserMediaOptions(type))
       .then(this.gotLocalStream)
       .catch(this.getMediaError);
-  }
+  };
 
   // webrtc:6
   onIceCandidate = (e) => {
@@ -262,26 +283,26 @@ class HomePage extends Component {
     const { chatUser: { shhPubKey } } = media;
 
     sendCandidate(loginEns, myShhPubKey, address, shhPubKey, JSON.stringify(e.candidate));
-  }
+  };
 
   onIceCandidateStateChange = (e) => {
     console.log('onIceCandidateStateChange: ', e);
-    if (this.peer.iceConnectionState === "failed") {
+    if (this.peer.iceConnectionState === 'failed') {
       this.props.dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.error } });
       message.error('connect error, please try again', 10);
     } else if (this.peer?.iceConnectionState === 'connected') {
       this.props.dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.active } });
     }
-  }
+  };
 
   // webrtc:7
   gotRemoteStream = (e) => {
     console.log('gotRemoteStream');
-    if (this.videoRef.current.srcObject !== e.streams[0]) {
-      this.videoRef.current.srcObject = e.streams[0];
+    if (this.videoRef.current.srcObject !== e.streams[ 0 ]) {
+      this.videoRef.current.srcObject = e.streams[ 0 ];
       console.log('set remote stream success');
     }
-  }
+  };
 
   // webrtc:1
   createPeer = () => {
@@ -289,20 +310,20 @@ class HomePage extends Component {
     this.peer = new RTCPeerConnection(WebrtcConfig);
     this.peer.onicecandidate = this.onIceCandidate;
     this.peer.ontrack = this.gotRemoteStream;
-    this.peer.oniceconnectionstatechange  = this.onIceCandidateStateChange;
+    this.peer.oniceconnectionstatechange = this.onIceCandidateStateChange;
     console.log('createPeer end');
-  }
+  };
 
   loadCacheCandidate = async () => {
     console.log('loadCacheCandidate');
     if (this.cacheCandidates && this.cacheCandidates.length > 0) {
       for (let i = 0; i < this.cacheCandidates.length; i++) {
         console.log('add cache candidate: ' + i);
-        await this.peer.addIceCandidate(this.cacheCandidates[i]);
+        await this.peer.addIceCandidate(this.cacheCandidates[ i ]);
       }
       this.cacheCandidates = [];
     }
-  }
+  };
 
   onReceiveInvite = (type) => {
     console.log('onReceiveInvite');
@@ -314,26 +335,26 @@ class HomePage extends Component {
     const { address, loginEns, shhPubKey: myShhPubKey } = account;
     const { chatUser: { shhPubKey } } = media;
     sendInviteReply(loginEns, myShhPubKey, address, shhPubKey);
-  }
+  };
 
   onReceiveInviteReply = () => {
     console.log('onReceiveInviteReply');
     this.props.dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.wait } });
-  }
+  };
 
   onReceiveAccept = async () => {
     console.log('onReceiveAccept');
     this.props.dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.connect } });
     await this.createPeer();
     this.getLocalMedia();
-  }
+  };
 
   onReceiveReject = () => {
     console.log('onReceiveReject');
     this.canAddCandidate = false;
     this.props.dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.init } });
     this.props.dispatch({ type: 'media/saveType', payload: { type: MediaType.none } });
-  }
+  };
 
   onReceiveHangup = () => {
     console.log('onReceiveHangup');
@@ -343,7 +364,7 @@ class HomePage extends Component {
     this.props.dispatch({ type: 'media/saveType', payload: { type: MediaType.none } });
 
     this.clearMedia();
-  }
+  };
 
   onReceiveOffer = async (sdp) => {
     console.log('onReceiveOffer');
@@ -359,7 +380,7 @@ class HomePage extends Component {
       sendAnswer(loginEns, myShhPubKey, address, shhPubKey, answerSdp.sdp);
     } catch (e) {
     }
-  }
+  };
 
   // webrtc:5
   onReceiveAnswer = async (sdp) => {
@@ -370,7 +391,7 @@ class HomePage extends Component {
       await this.loadCacheCandidate();
     } catch (e) {
     }
-  }
+  };
 
   onReceiveCandidate = async (c) => {
     console.log('onReceiveCandidate');
@@ -393,15 +414,15 @@ class HomePage extends Component {
     }
 
     this.cacheCandidates.push(candidateObj);
-  }
+  };
 
   onReceiveCandidateRemoval = (c) => {
     console.log('onReceiveCandidateRemoval');
-  }
+  };
 
   getGroupMediaError = (e, from) => {
     console.log('getGroupMediaError: ', e);
-  }
+  };
 
   getGroupLocalMedia = async (from, type, createOffer) => {
     console.log(`getGroupLocalMedia: createOffer = ${createOffer}`);
@@ -414,7 +435,7 @@ class HomePage extends Component {
       }
     }
     this.localGroupVideoRef.current.srcObject = this.localStream;
-    const peer = this.groupPeer[from];
+    const peer = this.groupPeer[ from ];
     this.localStream.getTracks().forEach(track => peer.addTrack(track, this.localStream));
     console.log('Adding Local Stream to peer connection');
 
@@ -430,30 +451,30 @@ class HomePage extends Component {
       const offerSdp = await peer.createOffer(getSDPOptions(type));
       await peer.setLocalDescription(offerSdp);
       console.log(`send group offer: {to: ${from}`);
-      sendGroupOffer(loginEns, myShhPubKey, address, type, offerSdp.sdp, this.groupShhPubKey[from]);
+      sendGroupOffer(loginEns, myShhPubKey, address, type, offerSdp.sdp, this.groupShhPubKey[ from ]);
     } catch (e) {
     }
-  }
+  };
 
   addGroupCacheCandidate = (from, candidate) => {
-    if (!this.groupCandidate[from]) {
-      this.groupCandidate[from] = [];
+    if (!this.groupCandidate[ from ]) {
+      this.groupCandidate[ from ] = [];
     }
 
-    this.groupCandidate[from].push(candidate);
-  }
+    this.groupCandidate[ from ].push(candidate);
+  };
 
   loadGroupCacheCandidate = async (from) => {
     console.log('loadGroupCacheCandidate');
-    if (this.groupCandidate && this.groupCandidate[from] && this.groupCandidate[from].length > 0) {
-      const peer = this.groupPeer[from];
-      for (let i = 0; i < this.groupCandidate[from].length; i++) {
+    if (this.groupCandidate && this.groupCandidate[ from ] && this.groupCandidate[ from ].length > 0) {
+      const peer = this.groupPeer[ from ];
+      for (let i = 0; i < this.groupCandidate[ from ].length; i++) {
         console.log('add group cache candidate: ' + i);
-        await peer.addIceCandidate(this.groupCandidate[from][i]);
+        await peer.addIceCandidate(this.groupCandidate[ from ][ i ]);
       }
-      delete this.groupCandidate[from];
+      delete this.groupCandidate[ from ];
     }
-  }
+  };
 
   // webrtc:6
   onGroupIceCandidate = (e, from) => {
@@ -464,28 +485,28 @@ class HomePage extends Component {
     const { account } = this.props;
     const { address, shhPubKey: myShhPubKey, loginEns } = account;
 
-    sendGroupCandidate(loginEns, myShhPubKey, address, JSON.stringify(e.candidate), this.groupShhPubKey[from]);
-  }
+    sendGroupCandidate(loginEns, myShhPubKey, address, JSON.stringify(e.candidate), this.groupShhPubKey[ from ]);
+  };
 
   onGroupIceCandidateStateChange = (e, from) => {
     console.log('onGroupIceCandidateStateChange: ', e);
-    const peer = this.groupPeer[from];
-    if (peer.iceConnectionState === "failed") {
+    const peer = this.groupPeer[ from ];
+    if (peer.iceConnectionState === 'failed') {
       // send hangup
     } else if (peer?.iceConnectionState === 'connected') {
       // ...
     }
-  }
+  };
 
   // webrtc:7
   gotGroupRemoteStream = (e, from, name) => {
     console.log('gotGroupRemoteStream');
-    this.groupRemoteStream[from] = e.streams[0];
+    this.groupRemoteStream[ from ] = e.streams[ 0 ];
     const videoId = `v-${from}`;
     const containerId = `c-${from}`;
     let vEle = document.getElementById(videoId);
     if (vEle) {
-      vEle.srcObject = e.streams[0];
+      vEle.srcObject = e.streams[ 0 ];
       return;
     }
 
@@ -516,22 +537,22 @@ class HomePage extends Component {
     cEle.appendChild(tEle);
     cEle.appendChild(vEle);
     this.groupVideoContainerRef.current.appendChild(cEle);
-    vEle.srcObject = e.streams[0];
+    vEle.srcObject = e.streams[ 0 ];
 
     // create video element
     // append video to body
     // set video srcObject current.srcObject = e.streams[0]
-  }
+  };
 
   createGroupPeer = (from, name) => {
     console.log('createGroupPeer start');
     const peer = new RTCPeerConnection(WebrtcConfig);
     peer.onicecandidate = (e) => this.onGroupIceCandidate(e, from);
     peer.ontrack = (e) => this.gotGroupRemoteStream(e, from, name);
-    peer.oniceconnectionstatechange  = (e) => this.onGroupIceCandidateStateChange(e, from);
-    this.groupPeer[from] = peer;
+    peer.oniceconnectionstatechange = (e) => this.onGroupIceCandidateStateChange(e, from);
+    this.groupPeer[ from ] = peer;
     console.log('createGroupPeer end');
-  }
+  };
 
   startGroupCall = (type) => {
     this.setState({ groupType: type });
@@ -539,12 +560,12 @@ class HomePage extends Component {
     const { account } = this.props;
     const { address, shhPubKey: myShhPubKey, symKeyId, loginEns } = account;
     sendGroupInvite(loginEns, myShhPubKey, address, type, symKeyId);
-  }
+  };
 
   getGroupType = (remoteType) => {
     const { groupType } = this.state;
     if (!groupType) {
-      return ;
+      return;
     }
 
     let type = MediaType.video;
@@ -553,22 +574,22 @@ class HomePage extends Component {
     }
 
     return type;
-  }
+  };
 
   onReceiveGroupInvite = (from, name, content) => {
     const type = this.getGroupType(content);
     this.createGroupPeer(from, name);
-    this.getGroupLocalMedia(from ,type, true);
-  }
+    this.getGroupLocalMedia(from, type, true);
+  };
 
   sendLocalStream = (from) => {
     console.log(`ready to send local stream to ${from}`);
-    if (from && this.groupPeer[from] && this.localStream) {
+    if (from && this.groupPeer[ from ] && this.localStream) {
       console.log(`send local stream to ${from}`);
-      const peer = this.groupPeer[from];
+      const peer = this.groupPeer[ from ];
       this.localStream.getTracks().forEach(track => peer.addTrack(track, this.localStream));
     }
-  }
+  };
 
   onReceiveGroupOffer = async (from, name, content) => {
     const type = this.getGroupType(content.type);
@@ -578,12 +599,12 @@ class HomePage extends Component {
     const { account } = this.props;
     const { address, shhPubKey: myShhPubKey, loginEns } = account;
     try {
-      const peer = this.groupPeer[from];
+      const peer = this.groupPeer[ from ];
       await peer.setRemoteDescription(createSessionDescription('offer', content.sdp));
       await this.loadGroupCacheCandidate(from);
       const answerSdp = await peer.createAnswer();
       await peer.setLocalDescription(answerSdp);
-      sendGroupAnswer(loginEns, myShhPubKey, address, answerSdp.sdp, this.groupShhPubKey[from]);
+      sendGroupAnswer(loginEns, myShhPubKey, address, answerSdp.sdp, this.groupShhPubKey[ from ]);
 
       /*
       await promiseSleep(2000);
@@ -594,7 +615,7 @@ class HomePage extends Component {
       */
     } catch (e) {
     }
-  }
+  };
 
   onReceiveGroupIcecandidate = async (from, content) => {
     console.log('onReceiveGroupIcecandidate');
@@ -606,7 +627,7 @@ class HomePage extends Component {
       sdpMid,
     });
 
-    const peer = this.groupPeer[from];
+    const peer = this.groupPeer[ from ];
     if (peer) {
       try {
         await peer.addIceCandidate(candidateObj);
@@ -618,17 +639,17 @@ class HomePage extends Component {
     }
 
     this.addGroupCacheCandidate(from, candidateObj);
-  }
+  };
 
   onReceiveGroupAnswer = async (from, sdp) => {
     console.log('onReceiveGroupAnswer');
     try {
-      const peer = this.groupPeer[from];
+      const peer = this.groupPeer[ from ];
       await peer.setRemoteDescription(createSessionDescription('answer', sdp));
       await this.loadGroupCacheCandidate(from);
     } catch (e) {
     }
-  }
+  };
 
   clearGroupMedia = (from) => {
     console.log('clearGroupMedia');
@@ -636,18 +657,18 @@ class HomePage extends Component {
       if (!from && Object.keys(this.groupPeer).length > 0) {
         Object.keys(this.groupPeer).forEach(f => {
           try {
-            this.groupPeer[f].close();
-            delete this.groupPeer[from];
+            this.groupPeer[ f ].close();
+            delete this.groupPeer[ from ];
           } catch (e) {
           }
-        })
-      } else if (this.groupPeer[from]) {
-        this.groupPeer[from].close();
-        delete this.groupPeer[from];
+        });
+      } else if (this.groupPeer[ from ]) {
+        this.groupPeer[ from ].close();
+        delete this.groupPeer[ from ];
       }
     } catch (e) {
     }
-  }
+  };
 
   onReceiveGroupHangup = (from) => {
     this.clearGroupMedia(from);
@@ -657,7 +678,7 @@ class HomePage extends Component {
     if (vEle) {
       vEle.remove();
     }
-  }
+  };
 
   /**
    * 点击group音视频，在本地标记为允许接收来自公共频道的音视频连接，并且广播出去，
@@ -674,7 +695,7 @@ class HomePage extends Component {
     }
 
     if (group) {
-      this.groupShhPubKey[from] = shh;
+      this.groupShhPubKey[ from ] = shh;
       switch (signal) {
         case SignalType.invite:
           this.onReceiveGroupInvite(from, name, content);
@@ -695,7 +716,10 @@ class HomePage extends Component {
       return;
     }
 
-    this.props.dispatch({ type: 'user/addFriend', payload: { friendAddress: from, ensName: name, shhPubKey: shh, chat: true } });
+    this.props.dispatch({
+      type: 'user/addFriend',
+      payload: { friendAddress: from, ensName: name, shhPubKey: shh, chat: true },
+    });
 
     switch (signal) {
       case SignalType.invite:
@@ -728,7 +752,7 @@ class HomePage extends Component {
       default:
         break;
     }
-  }
+  };
 
   checkCallStatus = () => {
     console.log('checkCallStatus');
@@ -737,11 +761,11 @@ class HomePage extends Component {
     if (status === MediaStatus.invite) {
       const msg = formatMessage({ id: 'offline_notice' });
       message.warn(`${chatUser.ensName || chatUser.nickName} ${msg}`);
-      return ;
+      return;
     }
 
     clearInterval(this.checkCallInterval);
-  }
+  };
 
   startCall = (type) => {
     const { dispatch } = this.props;
@@ -754,7 +778,7 @@ class HomePage extends Component {
     dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.invite } });
 
     this.checkCallInterval = setInterval(this.checkCallStatus, 5000);
-  }
+  };
 
   acceptInvite = async () => {
     const { dispatch } = this.props;
@@ -767,7 +791,7 @@ class HomePage extends Component {
     this.getLocalMedia();
 
     dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.connect } });
-  }
+  };
 
   endMedia = () => {
     this.passive = false;
@@ -785,7 +809,7 @@ class HomePage extends Component {
     this.clearMedia();
     dispatch({ type: 'media/saveType', payload: { type: MediaType.none } });
     dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.init } });
-  }
+  };
 
   modifyEnsName = () => {
     const { nameValue } = this.state;
@@ -798,12 +822,12 @@ class HomePage extends Component {
     saveShhName(nameValue).then(() => {
       this.setState({ nameModal: false, confirmLoading: false });
     }).catch(e => {
-      console.error("save shh name error: ", e);
+      console.error('save shh name error: ', e);
     });
-  }
+  };
 
   endGroupMedia = () => {
-    this.setState({ groupType: null, groupCall: [], audioEnable: true, videoEnable: true, });
+    this.setState({ groupType: null, groupCall: [], audioEnable: true, videoEnable: true });
     this.clearGroupMedia();
     this.groupShhPubKey = {};
     this.groupCandidate = {};
@@ -820,7 +844,7 @@ class HomePage extends Component {
       }
     } catch (e) {
     }
-  }
+  };
 
   render() {
     this.videoRef = createRef();
@@ -863,10 +887,25 @@ class HomePage extends Component {
           </Tooltip>
       : null;
 
+    const { s } = this.props.location.query;
+    let contentBody = <HomeTab address={loginAddress} token={faxBalance} ether={etherBalance} />;
+    if ('defi' === s) {
+      contentBody = <Defis />;
+    } else if (chatUser) {
+      contentBody = (
+        <ChatBox
+          chatTo={chatUser}
+          startAudio={() => this.startCall(MediaType.audio)}
+          startVideo={() => this.startCall(MediaType.video)}
+          startGroupAudio={() => this.startGroupCall(MediaType.audio)}
+          startGroupVideo={() => this.startGroupCall(MediaType.video)}
+        />
+      );
+    }
     return (
       <NeedLogin>
         <div style={{ height: '100vh', backgroundColor: 'rgb(213,216,225)' }}>
-          <Layout style={{ height: '100vh', width: 1000, margin: 'auto', backgroundColor: 'rgb(213,216,225)' }}>
+          <Layout style={{ height: '100vh', margin: 'auto', backgroundColor: 'rgb(213,216,225)' }}>
             <Sider width={200} style={{
               margin: '10px 0px',
               backgroundColor: '#ffffff',
@@ -887,14 +926,14 @@ class HomePage extends Component {
                 color: '#fff',
               }}>
                 <div style={{ flex: 1, textAlign: 'center', borderRight: '1px solid #e8e8e8' }}>
-                  <HomeOutlined style={{ fontSize: 22, }} onClick={this.openHomeTab} />
+                  <HomeOutlined style={{ fontSize: 22 }} onClick={this.openHomeTab} />
                   {/* <p>个人信息页</p> */}
                 </div>
                 <div style={{ flex: 1, textAlign: 'center', borderRight: '1px solid #e8e8e8' }}>
                   <UserAddOutlined style={{ fontSize: 22 }} onClick={this.openNewMessageModal} />
                   {/* <p>新建对话</p> */}
                 </div>
-                <div style={{ flex: 1, textAlign: 'center', }}>
+                <div style={{ flex: 1, textAlign: 'center' }}>
                   <InteractionOutlined style={{ fontSize: 22 }} onClick={this.openNewTransferModal} />
                   {/* <p>发起转账</p> */}
                 </div>
@@ -932,7 +971,8 @@ class HomePage extends Component {
                       backgroundColor: chatUser && chatUser.address === friend.address ? '#e6f7ff' : '',
                     }}>
                     <List.Item.Meta
-                      avatar={<Avatar>{friend.ensName && friend.ensName[0] || friend.nickName && friend.nickName[0] || '0x'}</Avatar>}
+                      avatar={
+                        <Avatar>{friend.ensName && friend.ensName[ 0 ] || friend.nickName && friend.nickName[ 0 ] || '0x'}</Avatar>}
                       title={friend.nickName || friend.ensName || shortenAddress(friend.address, 10)}
                       description={formatTime(friend.time)}
                     />
@@ -942,17 +982,7 @@ class HomePage extends Component {
             </Sider>
             <Layout style={{ overflowY: 'hidden', height: '100vh', backgroundColor: 'rgb(213,216,225)' }}>
               <Content style={{ background: '#fff', margin: '10px 3px', overflowY: 'auto' }}>
-                {chatUser
-                  ?
-                  <ChatBox
-                    chatTo={chatUser}
-                    startAudio={() => this.startCall(MediaType.audio)}
-                    startVideo={() => this.startCall(MediaType.video)}
-                    startGroupAudio={() => this.startGroupCall(MediaType.audio)}
-                    startGroupVideo={() => this.startGroupCall(MediaType.video)}
-                  />
-                  : <HomeTab address={loginAddress} token={faxBalance} ether={etherBalance} />
-                }
+                {contentBody}
               </Content>
             </Layout>
           </Layout>
@@ -967,13 +997,25 @@ class HomePage extends Component {
             cancelText={formatMessage({ id: 'cancel' })}
           >
             <div style={{ display: 'flex' }}>
-              <div style={{ flex: 1, justifyContent: 'center', display: 'flex', cursor: 'pointer' }} onClick={() => this.setState({ addFromEns: true })}>
-                <div style={{ textAlign: 'center', width: 90, color: addFromEns ? 'rgb(24, 144, 255)' : '', borderBottom: addFromEns ? '1px solid rgba(24, 144, 255, 0.5)' : '0px' }}>
+              <div style={{ flex: 1, justifyContent: 'center', display: 'flex', cursor: 'pointer' }}
+                   onClick={() => this.setState({ addFromEns: true })}>
+                <div style={{
+                  textAlign: 'center',
+                  width: 90,
+                  color: addFromEns ? 'rgb(24, 144, 255)' : '',
+                  borderBottom: addFromEns ? '1px solid rgba(24, 144, 255, 0.5)' : '0px',
+                }}>
                   {formatMessage({ id: 'home.ens_username' })}
                 </div>
               </div>
-              <div style={{ flex: 1, justifyContent: 'center', display: 'flex', cursor: 'pointer' }} onClick={() => this.setState({ addFromEns: false })} >
-                <div style={{ textAlign: 'center', width: 90, color: !addFromEns ? 'rgb(24, 144, 255)' : '', borderBottom: !addFromEns ? '1px solid rgba(24, 144, 255, 0.5)' : '0px' }}>
+              <div style={{ flex: 1, justifyContent: 'center', display: 'flex', cursor: 'pointer' }}
+                   onClick={() => this.setState({ addFromEns: false })}>
+                <div style={{
+                  textAlign: 'center',
+                  width: 90,
+                  color: !addFromEns ? 'rgb(24, 144, 255)' : '',
+                  borderBottom: !addFromEns ? '1px solid rgba(24, 144, 255, 0.5)' : '0px',
+                }}>
                   {formatMessage({ id: 'home.wallet_address' })}
                 </div>
               </div>
@@ -1066,12 +1108,14 @@ class HomePage extends Component {
 
             <div style={{ display: 'flex', margin: 20 }}>
               <span style={{ width: 80 }}>{formatMessage({ id: 'home.address' })}</span>
-              <Input placeholder={formatMessage({ id: 'home.input_other_address' })} style={{ width: 380 }} onChange={(e) => this.setState({ to: e.target.value })} />
+              <Input placeholder={formatMessage({ id: 'home.input_other_address' })} style={{ width: 380 }}
+                     onChange={(e) => this.setState({ to: e.target.value })} />
               <span style={{ color: '#f5222d' }}>*</span>
             </div>
             <div style={{ display: 'flex', margin: 20 }}>
               <span style={{ width: 80 }}>{formatMessage({ id: 'home.transfer_amount' })}</span>
-              <Input placeholder={formatMessage({ id: 'home.input_transfer_fax_amount' })} style={{ width: 380 }} addonAfter="FAX" onChange={(e) => this.setState({ fax: e.target.value })} />
+              <Input placeholder={formatMessage({ id: 'home.input_transfer_fax_amount' })} style={{ width: 380 }}
+                     addonAfter="FAX" onChange={(e) => this.setState({ fax: e.target.value })} />
               <span style={{ color: '#f5222d' }}>*</span>
             </div>
           </Modal>
@@ -1112,17 +1156,22 @@ class HomePage extends Component {
           >
             <div style={{ width: '100%', minHeight: '100%', backgroundColor: 'black', position: 'relative' }}>
               <video ref={this.videoRef} style={{ width: '100%' }} autoPlay></video>
-              <video style={{ height: 128, position: 'absolute', left: 0, bottom: 0 }} ref={this.localVideoRef} autoPlay muted></video>
+              <video style={{ height: 128, position: 'absolute', left: 0, bottom: 0 }} ref={this.localVideoRef} autoPlay
+                     muted></video>
               <div style={{ position: 'absolute', bottom: 16, right: 16 }}>
                 {
                   status === MediaStatus.ring ?
-                    <Button type="primary" shape="circle" size="large" icon={<PhoneOutlined />} onClick={this.acceptInvite} style={{ marginRight: 16 }} /> : null
+                    <Button type="primary" shape="circle" size="large" icon={<PhoneOutlined />}
+                            onClick={this.acceptInvite} style={{ marginRight: 16 }} /> : null
                 }
                 {
                   status == MediaStatus.active ?
-                    <Button type="primary" size="large" shape="circle" icon={audioEnable ? <AudioOutlined /> : <AudioMutedOutlined />} onClick={this.toggleAudio} style={{ marginRight: 16 }} /> : null
+                    <Button type="primary" size="large" shape="circle"
+                            icon={audioEnable ? <AudioOutlined /> : <AudioMutedOutlined />} onClick={this.toggleAudio}
+                            style={{ marginRight: 16 }} /> : null
                 }
-                <Button type="primary" danger shape="circle" size="large" icon={<PhoneOutlined style={{ transform: 'rotateZ(-135deg)' }} />} onClick={this.endMedia} />
+                <Button type="primary" danger shape="circle" size="large"
+                        icon={<PhoneOutlined style={{ transform: 'rotateZ(-135deg)' }} />} onClick={this.endMedia} />
               </div>
             </div>
           </Modal>
@@ -1159,14 +1208,35 @@ class HomePage extends Component {
             width={1000}
             modalRender={(modal) => <ReactDraggable disabled={this.state.disabled}>{modal}</ReactDraggable>}
           >
-            <div ref={this.groupVideoContainerRef} style={{ width: '100%', minHeight: 500, backgroundColor: 'black', position: 'relative', display: 'flex', flexWrap: 'wrap' }}>
+            <div ref={this.groupVideoContainerRef} style={{
+              width: '100%',
+              minHeight: 500,
+              backgroundColor: 'black',
+              position: 'relative',
+              display: 'flex',
+              flexWrap: 'wrap',
+            }}>
               <div style={{ width: '33%', position: 'relative', display: 'flex' }}>
-                <p style={{ position: 'absolute', top: 8, left: 8, width: '100%', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', color: '#fff', fontSize: 18 }}>ME</p>
+                <p style={{
+                  position: 'absolute',
+                  top: 8,
+                  left: 8,
+                  width: '100%',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                  color: '#fff',
+                  fontSize: 18,
+                }}>ME</p>
                 <video style={{ width: '100%' }} ref={this.localGroupVideoRef} autoPlay muted></video>
               </div>
               <div style={{ position: 'absolute', bottom: 16, right: 16, zIndex: 10000 }}>
-                <Button type="primary" size="large" shape="circle" icon={audioEnable ? <AudioOutlined /> : <AudioMutedOutlined />} onClick={this.toggleAudio} style={{ marginRight: 16 }} />
-                <Button type="primary" danger shape="circle" size="large" icon={<PhoneOutlined style={{ transform: 'rotateZ(-135deg)' }} />} onClick={this.endGroupMedia} />
+                <Button type="primary" size="large" shape="circle"
+                        icon={audioEnable ? <AudioOutlined /> : <AudioMutedOutlined />} onClick={this.toggleAudio}
+                        style={{ marginRight: 16 }} />
+                <Button type="primary" danger shape="circle" size="large"
+                        icon={<PhoneOutlined style={{ transform: 'rotateZ(-135deg)' }} />}
+                        onClick={this.endGroupMedia} />
               </div>
             </div>
           </Modal>
@@ -1194,7 +1264,7 @@ const mapStateToProps = (state) => {
     account: state.account,
     media: state.media,
     loading: state.loading,
-  }
-}
+  };
+};
 
 export default connect(mapStateToProps)(HomePage);

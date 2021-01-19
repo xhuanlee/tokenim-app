@@ -3,7 +3,7 @@ import { Avatar, Tooltip } from 'antd';
 import router from 'umi/router';
 
 const miniProgramList = [
-  { name: 'Invest', synopsis: 'invest and profit', link: '/invest', tooltip: 'invest ether and profit every second!!!' },
+  { name: 'Defi', synopsis: 'Defi', link: '/home?s=defi', tooltip: 'dapps' },
 ];
 
 const MiniProgramItem = (props) => {
