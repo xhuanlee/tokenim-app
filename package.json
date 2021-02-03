@@ -9,6 +9,13 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
+    "@polkadot/api": "^3.6.4",
+    "@polkadot/api-contract": "^3.6.4",
+    "@polkadot/apps-config": "^0.77.1",
+    "@polkadot/extension-dapp": "^0.36.1",
+    "@polkadot/keyring": "^5.3.1",
+    "@polkadot/types": "^3.6.4",
+    "@polkadot/util": "^5.3.1",
     "antd": "^4.9.1",
     "crypto-js": "^4.0.0",
     "dva": "^2.4.1",

@@ -4,6 +4,8 @@ import { showNotification } from '../app/util'
 import Wallet from 'ethereumjs-wallet'
 import CryptoJS from 'crypto-js'
 import { connectMetamask } from '@/app/metamask';
+import { confirmConnectSubstrate, connectSubstrate } from '@/app/substrate';
+import accountType from '@/app/accountType';
 
 export default {
   namespace: 'account',
@@ -75,6 +77,9 @@ export default {
     importKeystoreError: false,
 
     isMetamask: false,
+    accountType: accountType.club,
+    substrateModal: false,
+    substrateAccounts: [],
   },
 
   effects: {
@@ -269,11 +274,25 @@ export default {
       const result = yield call(connectMetamask);
       yield put({ type: 'saveIsMetamask', payload: { isMetamask: result } });
       if (result) {
+        yield put({ type: 'saveAccountType', payload: { accountType: accountType.metamask } });
         yield put(routerRedux.push('/home'));
         window.ethereum.on('accountsChanged', function () {
           connectMetamask();
         });
       }
+    },
+    *loginWithSubstrate(_, { call, put }) {
+      const account = yield call(connectSubstrate);
+      if (account) {
+        yield put({ type: 'chooseSubstrateAccount', payload: { account } });
+      }
+    },
+    *chooseSubstrateAccount({ payload: { account } }, { call, put }) {
+      const { address } = account;
+      yield put({ type: 'saveAddress', payload: { address } });
+      yield put({ type: 'saveSubstrateModal', payload: { substrateModal: false } });
+      const result = yield call(confirmConnectSubstrate, account, 'api', 'contract');
+      yield put(routerRedux.push('/home'));
     },
   },
 
@@ -352,8 +371,20 @@ export default {
       }
     },
 
+    saveAddress(state, { payload: { address } }) {
+      return { ...state, address };
+    },
     saveIsMetamask(state, { payload: { isMetamask } }) {
       return { ...state, isMetamask };
+    },
+    saveAccountType(state, { payload: { accountType } }) {
+      return { ...state, accountType };
+    },
+    saveSubstrateModal(state, { payload: { substrateModal } }) {
+      return { ...state, substrateModal };
+    },
+    saveSubstrateAccounts(state, { payload: { substrateAccounts } }) {
+      return { ...state, substrateAccounts };
     },
   },
 

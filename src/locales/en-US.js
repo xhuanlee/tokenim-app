@@ -80,6 +80,8 @@ export default {
   'index.swarm_peer': 'Swarm peer',
   'index.api_peer': 'API peer',
   'index.metamaskconnect':'Connect with Metamask',
+  'index.substrateconnect':'Connect with Substrate',
+  'index.index.substrate_rpc_peer':'Substrate Peer',
 
   'register.pk_error': 'private key is invalid, the elliptic curve condition is not satisfied ',
   'register.pk_format_error': 'wrong private key format',

@@ -35,16 +35,17 @@ export default {
     userDataAddress: '',
     shhDataAddress: '',
     investAddress: '',
+    substrateProviderUrl: '',
 
 
     metamaskOk: false,
   },
 
   effects: {
-    *resetNode({ payload: { ethereumNode, swarmNode, apiNode } }, { put, select }) {
+    *resetNode({ payload: { ethereumNode, swarmNode, apiNode, substrateProviderUrl } }, { put, select }) {
       yield put({ type: 'resetInitState' })
-      yield put({ type: 'saveInitState', payload: { providerURL: ethereumNode, bzzURL: swarmNode, apiURL: apiNode } })
-      window.App.setURL(ethereumNode, swarmNode, apiNode)
+      yield put({ type: 'saveInitState', payload: { providerURL: ethereumNode, bzzURL: swarmNode, apiURL: apiNode, substrateProviderUrl } });
+      window.App.setURL(ethereumNode, swarmNode, apiNode, substrateProviderUrl);
     }
   },
 
@@ -91,6 +92,7 @@ export default {
         userDataAddress: '',
         shhDataAddress: '',
         investAddress: '',
+        substrateProviderUrl: '',
       }
     },
 
@@ -126,6 +128,7 @@ export default {
         userDataAddress: '',
         shhDataAddress: '',
         investAddress: '',
+        substrateProviderUrl: '',
       }
     },
 

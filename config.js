@@ -14,6 +14,8 @@ module.exports = {
   ethereum_rpc_endpoint: 'https://t.callt.net/eth',
   swarm_http_endpoint: 'https://t.callt.net/swarm',
   api_http_endpoint: 'https://t.callt.net/api',
+  substrate_rpc_endpoint: 'wss://t.callt.net/substrate',
+  substrate_shh_contract_addr: '5H8Lq48UBENhcEmMgVkCocsuNNmuuJhaKzoYVUKZR9JCy8VG',
 
   admin: {
     token_admin: admin_account,

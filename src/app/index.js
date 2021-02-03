@@ -3,10 +3,15 @@ import { formatMessage } from 'umi-plugin-locale';
 import { routerRedux } from 'dva/router';
 import { FaxTokenImAPI } from './api';
 import { showNotification, sendRequest, shortenAddress, converEther, promiseSleep } from './util';
-import { ethereum_rpc_endpoint, swarm_http_endpoint, api_http_endpoint } from '../../config'
+import { ethereum_rpc_endpoint, swarm_http_endpoint, api_http_endpoint, substrate_rpc_endpoint, substrate_shh_contract_addr } from '../../config'
 import { ETHEREUM_API } from './constant'
 import Wallet from 'ethereumjs-wallet'
 import CryptoJS from 'crypto-js'
+import { TypeRegistry } from '@polkadot/types/create';
+import { ApiPromise, WsProvider } from '@polkadot/api';
+import { typesBundle, typesChain, typesSpec } from '@polkadot/apps-config';
+import { Abi, ContractPromise } from '@polkadot/api-contract';
+import webrtcDataAbi from '../../substrate-contracts/webrtc-data/webrtc_data.json';
 
 const PROVIDER_URL = ethereum_rpc_endpoint;
 notification.config({ top: 78 })
@@ -15,8 +20,11 @@ const IMApp = {
   PROVIDER_URL: '',
   SWARM_URL: '',
   API_URL: '',
+  SUBSTRATE_RPC_URL: '',
   dispatch: null,
   api: FaxTokenImAPI,
+  substrateApi: null,
+  substrateShhContract: null,
 
   loginAddress: '',
   messageFilter: null,
@@ -32,25 +40,28 @@ const IMApp = {
     const providerUrl = localStorage.getItem('PROVIDER_URL') || ethereum_rpc_endpoint;
     const swarmUrl = localStorage.getItem('SWARM_URL') || swarm_http_endpoint;
     const apiUrl = localStorage.getItem('API_URL') || api_http_endpoint;
+    const substrateProviderUrl = localStorage.getItem('SUBSTRATE_PROVIDER_URL') || substrate_rpc_endpoint;
 
 
-    IMApp.setURL(providerUrl, swarmUrl, apiUrl);
+    IMApp.setURL(providerUrl, swarmUrl, apiUrl, substrateProviderUrl);
   },
 
-  setURL: (PROVIDER_URL, SWARM_URL, API_URL) => {
+  setURL: (PROVIDER_URL, SWARM_URL, API_URL, SUBSTRATE_RPC_URL) => {
     IMApp.PROVIDER_URL = PROVIDER_URL || ethereum_rpc_endpoint;
     IMApp.SWARM_URL = SWARM_URL || swarm_http_endpoint;
     IMApp.API_URL = API_URL || api_http_endpoint;
+    IMApp.SUBSTRATE_RPC_URL = SUBSTRATE_RPC_URL || substrate_rpc_endpoint;
 
     localStorage.setItem('PROVIDER_URL', IMApp.PROVIDER_URL);
     localStorage.setItem('SWARM_URL', IMApp.SWARM_URL);
     localStorage.setItem('API_URL', IMApp.API_URL);
+    localStorage.setItem('SUBSTRATE_PROVIDER_URL', IMApp.SUBSTRATE_RPC_URL);
 
-    window.g_app._store.dispatch({ type: 'init/saveInitState', payload: { providerURL: IMApp.PROVIDER_URL, bzzURL: IMApp.SWARM_URL, apiURL: IMApp.API_URL } })
-    IMApp.initAndTest(PROVIDER_URL);
+    window.g_app._store.dispatch({ type: 'init/saveInitState', payload: { providerURL: IMApp.PROVIDER_URL, bzzURL: IMApp.SWARM_URL, apiURL: IMApp.API_URL, substrateProviderUrl: IMApp.SUBSTRATE_RPC_URL } });
+    IMApp.initAndTest(PROVIDER_URL, SUBSTRATE_RPC_URL);
   },
 
-  initAndTest: (PROVIDER_URL) => {
+  initAndTest: (PROVIDER_URL, SUBSTRATE_RPC_URL) => {
     if (!!window.ethereum && window.ethereum.isMetaMask) {
       window.g_app._store.dispatch({ type: 'init/saveMetamaskOk', payload: { metamaskOk: true } });
     }
@@ -69,11 +80,38 @@ const IMApp = {
       IMApp.initUserDataContract();
       IMApp.initShhDataContract();
       IMApp.initInvestContract();
+      IMApp.initSubstrate();
     }).catch(providerURL => {
       console.log(`provider error, can not connect to ${providerURL}!`)
       window.g_app._store.dispatch({ type: 'init/saveInitState', payload: { providerOK: false, providerURL, initError: true } });
     });
     window.FaxTokenImAPI = FaxTokenImAPI;
+  },
+
+  initSubstrate: async () => {
+    try {
+      if (IMApp.substrateApi && IMApp.substrateApi.disconnect) {
+        IMApp.substrateApi.disconnect();
+      }
+
+      const registry = new TypeRegistry();
+      const provider = new WsProvider(IMApp.SUBSTRATE_RPC_URL);
+      IMApp.substrateApi = await ApiPromise.create({
+        provider,
+        registry,
+        types: {},
+        typesBundle,
+        typesSpec,
+        typesChain,
+      });
+
+      const abi = new Abi(webrtcDataAbi, { registry: IMApp.substrateApi.registry });
+      IMApp.substrateShhContract = new ContractPromise(IMApp.substrateApi, abi, substrate_shh_contract_addr);
+      window.g_app._store.dispatch({ type: 'init/saveInitState', payload: { substrateProviderUrl: IMApp.SUBSTRATE_RPC_URL } });
+      console.log('init substrate contract & api success.')
+    } catch (e) {
+      console.error('init substrate error: ', e);
+    }
   },
 
   initTokenContract: () => {

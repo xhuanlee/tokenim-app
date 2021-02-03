@@ -1,6 +1,7 @@
 import { getLocalShhKeyPair, showNotification } from '@/app/util';
 import { FaxTokenImAPI } from '@/app/api';
 import { message } from 'antd';
+import accountType from '@/app/accountType';
 
 function isMetamask() {
   return !!window.ethereum && window.ethereum.isMetaMask;
@@ -63,6 +64,7 @@ export async function connectMetamask() {
     if (!loginEns) {
       loginEns = `${address.substring(0,5)}...${address.substring(address.length - 5)}`;
     }
+    window.g_app._store.dispatch({ type: 'account/saveAccountType', payload: { accountType: accountType.metamask } });
     window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { auth: true, loginEns, loginAddress: address, address, visitorMode: false } });
     window.g_app._store.dispatch({ type: 'user/readChatHistory' });
     window.g_app._store.dispatch({ type: 'user/getBalance' });

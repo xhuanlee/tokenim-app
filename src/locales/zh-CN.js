@@ -83,6 +83,8 @@ export default {
   'index.swarm_peer': 'Swarm节点',
   'index.api_peer': 'API节点',
   'index.metamaskconnect':'用Metamask登录',
+  'index.substrateconnect':'用Substrate登录',
+  'index.substrate_rpc_peer':'Substrate节点',
 
   'register.pk_error': 'private key无效, 不满足椭圆曲线条件',
   'register.pk_format_error': 'private key格式不正确',

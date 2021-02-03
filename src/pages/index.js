@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { formatMessage } from 'umi-plugin-locale';
 import { routerRedux } from 'dva/router'
-import { Button, Form, Input, Spin, Modal, AutoComplete, Alert, Tooltip } from 'antd'
+import { Button, Form, Input, Spin, Modal, AutoComplete, Alert, Tooltip, Radio, message } from 'antd';
 import { UserOutlined, SettingOutlined, LockOutlined, LoginOutlined, FundOutlined, PhoneOutlined } from '@ant-design/icons';
 import { formatTime, LOCALE_CN, LOCALE_EN } from '@/app/util';
 import styles from './index.css';
@@ -24,6 +24,8 @@ class LoginPage extends PureComponent {
       ethereumNode: '',
       swarmNode: '',
       apiNode: '',
+      substrateAddress: undefined,
+      substrateProviderUrl: '',
     }
   }
 
@@ -38,10 +40,10 @@ class LoginPage extends PureComponent {
   }
 
   setConfig = () => {
-    const { ethereumNode, swarmNode, apiNode } = this.state;
-    console.log(ethereumNode, swarmNode, apiNode)
+    const { ethereumNode, swarmNode, apiNode, substrateProviderUrl } = this.state;
+    console.log(ethereumNode, swarmNode, apiNode, substrateProviderUrl);
     this.setState({ settingModule: false })
-    this.props.dispatch({ type: 'init/resetNode', payload: { ethereumNode, swarmNode, apiNode } })
+    this.props.dispatch({ type: 'init/resetNode', payload: { ethereumNode, swarmNode, apiNode, substrateProviderUrl } });
   }
 
   goVisitorMode = () => {
@@ -119,13 +121,44 @@ class LoginPage extends PureComponent {
     dispatch({ type: 'account/loginWithMetamask' });
   }
 
+  connectSubstrate = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'account/loginWithSubstrate' });
+  }
+
+  onSubstrateChange = (e) => {
+    this.setState({ substrateAddress: e.target.value });
+  }
+
+  confirmConnectSubstrate = () => {
+    const { substrateAddress } = this.state;
+    if (!substrateAddress) {
+      message.info('please choose one account');
+      return;
+    }
+
+    const { dispatch, account: { substrateAccounts } } = this.props;
+    const account = substrateAccounts.filter(item => item.address === substrateAddress)[0];
+    dispatch({ type: 'account/chooseSubstrateAccount', payload: { account } });
+  }
+
+  cancelConnectSubstrate = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'account/saveSubstrateModal', payload: { substrateModal: false } });
+    dispatch({ type: 'account/saveSubstrateAccounts', payload: { substrateAccounts: [] } });
+  }
+
   render() {
     const { loading } = this.props;
-    const { providerURL, bzzURL, apiURL, metamaskOk } = this.props.init;
-    const { loginLoading, ensLoading, localAccounts, queryENSAvaiable, queryENSLoading, ensUserList } = this.props.account;
+    const { providerURL, bzzURL, apiURL, substrateProviderUrl, metamaskOk } = this.props.init;
+    const {
+      loginLoading, ensLoading, localAccounts, queryENSAvaiable, queryENSLoading, ensUserList,
+      substrateAccounts, substrateModal,
+    } = this.props.account;
     const { comfirmCallModal, ensName, nameError, signInWithENS, settingModule } = this.state;
 
     const connectingMetamask = loading.effects['account/loginWithMetamask'];
+    const connectingSubstrate = loading.effects['account/loginWithSubstrate'];
     const loginTip = ensLoading ? formatMessage({ id: 'index.search_ens' }) : loginLoading ? formatMessage({ id: 'index.verify_password' }) : '';
     const errorMessage = signInWithENS && ensName ? nameError ? nameError : (queryENSAvaiable || queryENSLoading || !ensName) ? formatMessage({ id: 'index.ens_not_registered' }) : '' : '';
     const ensNameCheck = null;
@@ -250,6 +283,9 @@ class LoginPage extends PureComponent {
                   :
                   null
               }
+              <FormItem>
+                <Button loading={connectingSubstrate} onClick={this.connectSubstrate} block  danger type="dashed">{formatMessage({ id: 'index.substrateconnect' })}</Button>
+              </FormItem>
             </Form>
           </Spin>
 
@@ -313,6 +349,34 @@ class LoginPage extends PureComponent {
                 onChange={(e) => this.setState({ apiNode: e.target.value })}
               />
             </FormItem>
+            <FormItem label={formatMessage({ id: 'index.substrate_rpc_peer' })}>
+              <Input
+                defaultValue={substrateProviderUrl}
+                onChange={(e) => this.setState({ substrateProviderUrl: e.target.value })}
+              />
+            </FormItem>
+          </Modal>
+          <Modal
+            title="Choose account"
+            visible={substrateModal}
+            maskClosable={false}
+            closable={false}
+            okText="Confirm"
+            cancelText="Cancel"
+            onOk={this.confirmConnectSubstrate}
+            onCancel={this.cancelConnectSubstrate}
+          >
+            <Radio.Group onChange={this.onSubstrateChange}>
+              {
+                substrateAccounts.map((item) => {
+                  return (
+                    <Radio key={item.address} value={item.address} style={{ marginTop: 4 }}>
+                      <span style={{ fontWeight: 'bold' }}>{item.meta.name}</span>: {item.address}
+                    </Radio>
+                  );
+                })
+              }
+            </Radio.Group>
           </Modal>
         </div>
         <p className={styles.copyright}>Copyright © 2020 <a href="https://www.github.com/clubnetwork">{formatMessage({ id: 'allcom' })}</a></p>
