@@ -3,6 +3,7 @@
 export default {
   treeShaking: true,
   hash: true,
+  minimizer: 'terserjs',
   routes: [
     {
       path: '/',
