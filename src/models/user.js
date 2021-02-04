@@ -1,6 +1,8 @@
 import { message as ant_message } from 'antd'
 import { formatMessage } from 'umi-plugin-locale';
 import { saveShhName, transferEther } from '@/app/metamask';
+import accountType from '@/app/accountType';
+import { getSubstrateBalance } from '@/app/substrate';
 export default {
   namespace: 'user',
 
@@ -44,6 +46,8 @@ export default {
     pendingMessage: [],
     message: [],
     friends: [],
+
+    substrateBalance: undefined,
   },
 
   effects: {
@@ -69,10 +73,16 @@ export default {
       }
     },
 
-    *getBalance(_, { put, select }) {
+    *getBalance(_, { call, put, select }) {
       yield put({ type: 'saveUserState', payload: { balanceLoading: true } });
       const address = yield select(state => state.account.address);
-      window.App.balanceOf(address);
+      const at = yield select(state => state.account.accountType);
+      if (at !== accountType.substrate) {
+        window.App.balanceOf(address);
+      } else {
+        const substrateBalance = yield call(getSubstrateBalance, address);
+        yield put({ type: 'saveSubstrateBalance', payload: { substrateBalance } });
+      }
     },
 
     *checkRegisterReward(_, { put, select }) {
@@ -524,6 +534,9 @@ export default {
         approveAddress: '',
         approveFaxNumber: 0,
       }
+    },
+    saveSubstrateBalance(state, { payload: { substrateBalance } }) {
+      return { ...state, substrateBalance };
     },
   },
 };

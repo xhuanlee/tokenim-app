@@ -46,6 +46,7 @@ export default {
   'notification_error_des': 'please check console for more details',
   'notification_success': 'success',
   'connect_metamask': 'connect metamask',
+  'connect_substrate': 'connect substrate',
   'transfer': 'transfer ',
   'offline_notice': 'may be offline, you can try again later',
 

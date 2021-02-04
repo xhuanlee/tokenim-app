@@ -102,7 +102,7 @@ export async function confirmConnectSubstrate(account) {
     window.g_app._store.dispatch({ type: 'user/readChatHistory' });
     window.g_app._store.dispatch({ type: 'user/getBalance' });
     window.g_app._store.dispatch({ type: 'media/saveChatUser', payload: { chatUser: null } });
-    showNotification('connect_metamask', 'success');
+    showNotification('connect_substrate', 'success');
 
     return true;
   } catch (e) {
@@ -111,4 +111,18 @@ export async function confirmConnectSubstrate(account) {
   }
 
   return false;
+}
+
+export async function getSubstrateBalance(address) {
+  try {
+    return new Promise((resolve) => {
+      IMApp.substrateApi.query.system.account(address, ({ data: { free: currentFree } }) => {
+        resolve(currentFree);
+      });
+    });
+  } catch (e) {
+    console.error('get balance error: ', e);
+  }
+
+  return undefined;
 }

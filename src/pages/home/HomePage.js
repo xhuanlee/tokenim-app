@@ -858,7 +858,7 @@ class HomePage extends Component {
       nameError, chatAddress, nickName, groupType, videoEnable,
       audioEnable,
     } = this.state;
-    const { faxBalance, etherBalance, friends } = this.props.user;
+    const { faxBalance, etherBalance, friends, substrateBalance } = this.props.user;
     const { queryENSAvaiable, queryENSLoading, queryENSAddress, queryShhPubKey, queryShhPubKeyByAddress } = this.props.account;
     const { loginAddress } = this.props.account;
 
@@ -888,7 +888,7 @@ class HomePage extends Component {
       : null;
 
     const { s } = this.props.location.query;
-    let contentBody = <HomeTab address={loginAddress} token={faxBalance} ether={etherBalance} />;
+    let contentBody = <HomeTab address={loginAddress} token={faxBalance} ether={etherBalance} substrateBalance={substrateBalance} />;
     if ('defi' === s) {
       contentBody = <Defis />;
     } else if (chatUser) {

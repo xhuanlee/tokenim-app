@@ -49,6 +49,7 @@ export default {
   'notification_error_des': '详情请查看控制台',
   'notification_success': '成功',
   'connect_metamask': '连接Metamask',
+  'connect_substrate': '连接Substrate',
   'transfer': '转账',
   'offline_notice': '对方可能不在线，请稍后再试',
 

@@ -15,6 +15,7 @@ import BuyFax from './content/component/BuyFax'
 import ApproveContract from './content/component/ApproveContract'
 
 import { converEther } from '@/app/util'
+import accountType from '@/app/accountType';
 
 const { Title } = Typography;
 
@@ -93,10 +94,10 @@ class HomeTab extends Component {
   render() {
     const { operation, exportPk, passwordOK, passwordError, privateKey } = this.state;
     const { address, token, ether, loading } = this.props;
-    const { balanceLoading } = this.props.user;
-    const { shhKeyAvaiable, shhKeyId, shhPubKey, isMetamask } = this.props.account;
+    const { balanceLoading, substrateBalance } = this.props.user;
+    const { shhKeyAvaiable, shhKeyId, shhPubKey, isMetamask, accountType: at } = this.props.account;
     const freeLoading = loading.effects['user/getFreeEther'];
-    const displayEther = ether <= 0 ?
+    let displayEther = ether <= 0 ?
       <>
         {`${converEther(ether).value} ${converEther(ether).unit}`}
         <Button loading={freeLoading} size="small" type="primary" style={{ marginLeft: 4 }} onClick={() => this.props.dispatch({ type: 'user/getFreeEther' })}>
@@ -105,6 +106,9 @@ class HomeTab extends Component {
       </>
       :
       `${converEther(ether).value} ${converEther(ether).unit}`;
+    if (at === accountType.substrate) {
+      displayEther = substrateBalance ? substrateBalance.toHuman() : 0;
+    }
     const shhStatus = shhKeyAvaiable && shhKeyId ?
       <>
         <CopyToClipboard text={shhPubKey} onCopy={() => message.success('Copied')}><Button type="dashed" shape="circle" icon={<CopyOutlined />} /></CopyToClipboard>
@@ -142,7 +146,7 @@ class HomeTab extends Component {
             dataSource={[
               { key: 'address', row: formatMessage({ id: 'home.table_account_address' }), val: address || formatMessage({ id: 'home.no_usable_wallet' }) },
               { key: 'token', row: 'Fax Token', val: token },
-              { key: 'ether', row: 'Ether', val: displayEther },
+              { key: 'ether', row: 'Balance', val: displayEther },
               { key: 'shh', row: 'Whisper', val: shhStatus },
             ]}
           />
