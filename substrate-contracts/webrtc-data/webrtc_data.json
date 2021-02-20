@@ -1,13 +1,13 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0xd18fa7fa420b200336f288702c0386e615f7761b3ccfb560e12befe44a880a91",
+    "hash": "0x402b29b961afc3de938df724bcccf352a1be90587e9b2bf9e8d92ee722bdd9f8",
     "language": "ink! 3.0.0-rc2",
     "compiler": "rustc 1.51.0-nightly"
   },
   "contract": {
     "name": "webrtc_data",
-    "version": "0.1.7",
+    "version": "0.1.10",
     "authors": [
       "Lee lixhuan822@gmail.com"
     ]
@@ -66,9 +66,9 @@
         "payable": false,
         "returnType": {
           "displayName": [
-            "String"
+            "Option"
           ],
-          "type": 9
+          "type": 10
         },
         "selector": "0x34ddff3d"
       },
@@ -155,9 +155,9 @@
         "payable": false,
         "returnType": {
           "displayName": [
-            "String"
+            "Option"
           ],
-          "type": 9
+          "type": 10
         },
         "selector": "0xc580dd9c"
       },
@@ -181,9 +181,9 @@
         "payable": false,
         "returnType": {
           "displayName": [
-            "String"
+            "Option"
           ],
-          "type": 9
+          "type": 10
         },
         "selector": "0x74c8b5e8"
       },
@@ -207,9 +207,9 @@
         "payable": false,
         "returnType": {
           "displayName": [
-            "String"
+            "Option"
           ],
-          "type": 9
+          "type": 10
         },
         "selector": "0x2c1d2ae9"
       }
@@ -606,6 +606,31 @@
       "def": {
         "primitive": "str"
       }
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "name": "None"
+            },
+            {
+              "fields": [
+                {
+                  "type": 9
+                }
+              ],
+              "name": "Some"
+            }
+          ]
+        }
+      },
+      "params": [
+        9
+      ],
+      "path": [
+        "Option"
+      ]
     }
   ]
 }

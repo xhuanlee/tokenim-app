@@ -48,9 +48,9 @@ export async function confirmConnectSubstrate(account) {
         const { output: shhIdOutput } = readShhIdResult;
 
         keypair = {
-          id: shhIdOutput.toHuman().replaceAll(/[^a-zA-Z0-9]/g, ''),
-          priKey: priOutput.toHuman().replaceAll(/[^a-zA-Z0-9]/g, ''),
-          pubKey: pubOutput.toHuman().replaceAll(/[^a-zA-Z0-9]/g, ''),
+          id: shhIdOutput.toHuman(),
+          priKey: priOutput.toHuman(),
+          pubKey: pubOutput.toHuman(),
         };
         console.log(`contract shh: ${JSON.stringify(keypair)}`);
       } catch (e) {
