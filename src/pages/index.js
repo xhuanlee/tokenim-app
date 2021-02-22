@@ -4,8 +4,11 @@ import { formatMessage } from 'umi-plugin-locale';
 import { routerRedux } from 'dva/router'
 import { Button, Form, Input, Spin, Modal, AutoComplete, Alert, Tooltip, Radio, message } from 'antd';
 import { UserOutlined, SettingOutlined, LockOutlined, LoginOutlined, FundOutlined, PhoneOutlined } from '@ant-design/icons';
+import Icon from '@ant-design/icons';
 import { formatTime, LOCALE_CN, LOCALE_EN } from '@/app/util';
 import styles from './index.css';
+import PolkadotSvg from '@/assets/polkadot-js.svg';
+import MetamaskSvg from '@/assets/metamask-fox.svg';
 
 const FormItem = Form.Item;
 
@@ -278,13 +281,13 @@ class LoginPage extends PureComponent {
               {
                 metamaskOk ?
                   <FormItem>
-                    <Button loading={connectingMetamask} onClick={this.connectMetamask} block  danger>{formatMessage({ id: 'index.metamaskconnect' })}</Button>
+                    <Button loading={connectingMetamask} onClick={this.connectMetamask} block  danger><img src={MetamaskSvg} alt="" width="20" style={{ marginRight: 8 }} />{formatMessage({ id: 'index.metamaskconnect' })}</Button>
                   </FormItem>
                   :
                   null
               }
               <FormItem>
-                <Button loading={connectingSubstrate} onClick={this.connectSubstrate} block  danger type="dashed">{formatMessage({ id: 'index.substrateconnect' })}</Button>
+                <Button loading={connectingSubstrate} onClick={this.connectSubstrate} block  danger type="dashed"><img src={PolkadotSvg} alt="" width="20" style={{ marginRight: 8 }} />{formatMessage({ id: 'index.substrateconnect' })}</Button>
               </FormItem>
             </Form>
           </Spin>
@@ -380,7 +383,7 @@ class LoginPage extends PureComponent {
           </Modal>
         </div>
         <p className={styles.copyright}>Copyright © 2020 <a href="https://www.github.com/clubnetwork">{formatMessage({ id: 'allcom' })}</a></p>
-          <p className={styles.beian}><a href="http://www.beian.miit.gov.cn" target="_blank"> 沪ICP备14021271号-4</a></p>
+          <p className={styles.beian}><a href="https://beian.miit.gov.cn/" target="_blank"> 沪ICP备14021271号-4</a></p>
       </>
     );
   }

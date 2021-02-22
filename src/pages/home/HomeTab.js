@@ -95,7 +95,7 @@ class HomeTab extends Component {
     const { operation, exportPk, passwordOK, passwordError, privateKey } = this.state;
     const { address, token, ether, loading } = this.props;
     const { balanceLoading, substrateBalance } = this.props.user;
-    const { shhKeyAvaiable, shhKeyId, shhPubKey, isMetamask, accountType: at } = this.props.account;
+    const { shhKeyAvaiable, shhKeyId, shhPubKey, accountType: at } = this.props.account;
     const freeLoading = loading.effects['user/getFreeEther'];
     let displayEther = ether <= 0 ?
       <>
@@ -123,7 +123,7 @@ class HomeTab extends Component {
         </div>
         <hr style={{ borderColor: 'rgb(232,232,232)' }} />
         {
-          !isMetamask ?
+          at === accountType.club ?
             <div style={{ float: 'right' }}>
               <Button onClick={this.openExportModal} type="primary">
                 <KeyOutlined />
@@ -152,28 +152,35 @@ class HomeTab extends Component {
           />
         </div>
 
-        <Title level={4}>{formatMessage({ id: 'home.account_operation' })}</Title>
-        <hr style={{ borderColor: 'rgb(232,232,232)' }} />
-        <div style={{ margin: 30, display: 'flex' }}>
-          <IconButton current={operation} okey='transEther' action={this.toggleOperation} icon={<SwapOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.transfer_eth' })} />
-          <IconButton current={operation} okey='transFax' action={this.toggleOperation} icon={<InteractionOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.transfer_fax' })} />
-          <IconButton current={operation} okey='buyFax' action={this.toggleOperation} icon={<ShoppingCartOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.buy_fax' })} />
-          <IconButton current={operation} okey='approveContract' action={this.toggleOperation} icon={<AuditOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.approve_contract_quota' })} />
-          <IconButton current={operation} okey='openContractPage' action={this.openContractStatePage} icon={<FileSearchOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.check_contract_status' })} />
-        </div>
-        <div style={{ marginLeft: 50, marginRight: 220 }}>
-          {operation
-            ? operation === 'transEther'
-              ? <TransEther />
-              : operation === 'transFax'
-                ? <TransFax />
-                : operation === 'buyFax'
-                  ? <BuyFax />
-                  : operation === 'approveContract'
-                    ? <ApproveContract />
-                    : null
-            : null}
-        </div>
+        {
+          at !== accountType.substrate ?
+            <>
+              <Title level={4}>{formatMessage({ id: 'home.account_operation' })}</Title>
+              <hr style={{ borderColor: 'rgb(232,232,232)' }} />
+              <div style={{ margin: 30, display: 'flex' }}>
+                <IconButton current={operation} okey='transEther' action={this.toggleOperation} icon={<SwapOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.transfer_eth' })} />
+                <IconButton current={operation} okey='transFax' action={this.toggleOperation} icon={<InteractionOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.transfer_fax' })} />
+                <IconButton current={operation} okey='buyFax' action={this.toggleOperation} icon={<ShoppingCartOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.buy_fax' })} />
+                <IconButton current={operation} okey='approveContract' action={this.toggleOperation} icon={<AuditOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.approve_contract_quota' })} />
+                <IconButton current={operation} okey='openContractPage' action={this.openContractStatePage} icon={<FileSearchOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.check_contract_status' })} />
+              </div>
+              <div style={{ marginLeft: 50, marginRight: 220 }}>
+                {operation
+                  ? operation === 'transEther'
+                    ? <TransEther />
+                    : operation === 'transFax'
+                      ? <TransFax />
+                      : operation === 'buyFax'
+                        ? <BuyFax />
+                        : operation === 'approveContract'
+                          ? <ApproveContract />
+                          : null
+                  : null}
+              </div>
+            </>
+            :
+            null
+        }
         <Modal
           title={formatMessage({ id: 'home.export_pk' })}
           visible={exportPk}
