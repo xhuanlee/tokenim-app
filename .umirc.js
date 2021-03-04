@@ -15,6 +15,8 @@ export default {
         { path: '/home', component: '../pages/home/HomePage' },
         { path: '/status', component: '../pages/status' },
         { path: '/invest', component: '../pages/invest' },
+        { path: '/club-house', component: '../pages/ClubHouse' },
+        { path: '/club-house/:id', component: '../pages/ClubHouseRoom' },
       ]
     }
   ],
@@ -41,4 +43,10 @@ export default {
       },
     }],
   ],
+  proxy: {
+    '/clubhouse-api': {
+      'target': 'http://localhost:8099/',
+      'changeOrigin': true,
+    },
+  }
 }

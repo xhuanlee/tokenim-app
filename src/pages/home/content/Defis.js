@@ -29,7 +29,7 @@ const Defis = (props) => {
   return (
     <div style={{ display: 'flex', padding: 48, flexWrap: 'wrap' }}>
       {
-        DefiList.map((d) => (<Dapp defi={d} />))
+        DefiList.map((d) => (<Dapp key={d.name} defi={d} />))
       }
     </div>
   );

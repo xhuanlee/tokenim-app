@@ -16,6 +16,7 @@
     "@polkadot/keyring": "^5.3.1",
     "@polkadot/types": "^3.6.4",
     "@polkadot/util": "^5.3.1",
+    "agora-rtc-sdk-ng": "^4.3.0",
     "antd": "^4.9.1",
     "crypto-js": "^4.0.0",
     "dva": "^2.4.1",
@@ -28,8 +29,10 @@
     "react-copy-to-clipboard": "^5.0.2",
     "react-dom": "^17.0.1",
     "react-draggable": "^4.4.3",
+    "react-infinite-scroller": "^1.2.4",
     "truffle": "4.1.14",
     "truffle-contract": "3.0.6",
+    "umi-request": "^1.3.5",
     "web3": "0.20.1",
     "webrtc-adapter": "^7.7.0"
   },
