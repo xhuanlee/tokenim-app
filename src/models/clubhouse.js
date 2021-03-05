@@ -132,7 +132,7 @@ export default {
     },
     userLeft(state, { payload: { address } }) {
       const listeners = state.listeners.filter((u) => u.address !== address);
-      const onlineSpeakers = state.onlineSpeakers.filter((u) => u.address !== address);
+      const onlineSpeakers = state.onlineSpeakers.filter((a) => a !== address);
       return { ...state, listeners, onlineSpeakers };
     },
     saveAudioEnable(state, { payload: { audioEnable } }) {
