@@ -3,9 +3,7 @@ import AgoraRTC from 'agora-rtc-sdk-ng';
 
 export async function initChannel(isHost,agoraObject, channel, address ) {
   await joinChannel(agoraObject, channel, address);
-  if (isHost) {
-    await createLocalAndPublishAudio(agoraObject);
-  }
+  await createLocalAndPublishAudio(agoraObject, isHost);
 }
 
 export async function joinChannel(agoraObject, channel, address) {
@@ -13,11 +11,15 @@ export async function joinChannel(agoraObject, channel, address) {
   await agoraObject.client.join(AGORA_APP_ID, channel, null, address);
 }
 
-export async function createLocalAndPublishAudio(agoraObject) {
+export async function createLocalAndPublishAudio(agoraObject, isHost) {
   console.log('agora user create and publish');
   const localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
   agoraObject.localAudioTrack = localAudioTrack;
   await agoraObject.client.publish([localAudioTrack]);
+  if (!isHost) {
+    await localAudioTrack.setEnabled(false);
+    window.g_app._store.dispatch({ type: 'clubhouse/saveAudioEnable', payload: { audioEnable: false } });
+  }
 }
 
 export async function userPublishedEvent(agoraObject, user, mediaType) {

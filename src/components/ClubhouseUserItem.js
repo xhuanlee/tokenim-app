@@ -1,11 +1,11 @@
 import React from 'react';
-import { Avatar, Divider, Popover } from 'antd';
+import { Avatar, Divider, Popover, Badge } from 'antd';
 import { TwitterOutlined, FacebookOutlined, WechatOutlined } from '@ant-design/icons';
 import style from './ClubhouseUserItem.less';
 import { DEFAULT_AVATAR } from '@/app/constant';
 
 const ClubhouseUserItem = (props) => {
-  const { user } = props;
+  const { user, online } = props;
   const { id, nickname, avatar, introduce, twitter, facebook, wechat } = user;
 
   const popContent = (
@@ -22,10 +22,10 @@ const ClubhouseUserItem = (props) => {
     <Popover title={nickname} content={popContent} trigger="click">
       <div className={style.userItemContainer}>
         <Avatar alt={nickname} shape="square" size={64} src={avatar && avatar !== '' ? avatar : DEFAULT_AVATAR} />
-        <div className={style.nickname}>{nickname}</div>
+        <div className={style.nickname}><Badge status={ online ? 'success' : 'error' } text={nickname} /></div>
       </div>
     </Popover>
-  )
+  );
 }
 
 export default ClubhouseUserItem;

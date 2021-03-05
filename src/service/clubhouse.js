@@ -158,3 +158,23 @@ export async function saveUser(user) {
 export async function saveChatRoom(room) {
   return request.post('/clubhouse-api/room', { data: room });
 }
+
+export function isHost(room, address) {
+  if (room && room.moderators) {
+    for (let i = 0; i < room.moderators.length; i++) {
+      if (address === room.moderators[i].address) {
+        return true;
+      }
+    }
+  }
+
+  if (room && room.speakers) {
+    for (let i = 0; i < room.speakers.length; i++) {
+      if (address === room.speakers[i].address) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+};

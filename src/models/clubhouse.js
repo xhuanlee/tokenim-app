@@ -1,4 +1,4 @@
-import { fetchMoreRoom, fetchUser, saveChatRoom, saveUser } from '@/service/clubhouse';
+import { fetchMoreRoom, fetchUser, isHost, saveChatRoom, saveUser } from '@/service/clubhouse';
 
 const defaultState = {
   rooms: [],
@@ -10,6 +10,9 @@ const defaultState = {
   needCreate: false,
   newChatRoomModal: false,
   page: 1,
+  audioEnable: true,
+  // including moderators
+  onlineSpeakers: [],
 };
 
 const INIT_SIZE = 20;
@@ -90,6 +93,12 @@ export default {
         const listeners = [ data.entry, ...oldListeners ];
         yield put({ type: 'saveListeners', payload: { listeners } });
       }
+      const oldOnlineSpeakers = yield select(state => state.clubhouse.onlineSpeakers);
+      const room = yield select(state => state.clubhouse.currentRoom);
+      if (isHost(room, address)) {
+        const onlineSpeakers = oldOnlineSpeakers.concat(address);
+        yield put({ type: 'saveOnlineSpeakers', payload: { onlineSpeakers } });
+      }
     }
   },
 
@@ -123,7 +132,14 @@ export default {
     },
     userLeft(state, { payload: { address } }) {
       const listeners = state.listeners.filter((u) => u.address !== address);
-      return { ...state, listeners };
+      const onlineSpeakers = state.onlineSpeakers.filter((u) => u.address !== address);
+      return { ...state, listeners, onlineSpeakers };
+    },
+    saveAudioEnable(state, { payload: { audioEnable } }) {
+      return { ...state, audioEnable };
+    },
+    saveOnlineSpeakers(state, { payload: { onlineSpeakers } }) {
+      return { ...state, onlineSpeakers };
     },
   }
 };

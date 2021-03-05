@@ -2,6 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import { connect } from 'dva';
 import AgoraRTC from 'agora-rtc-sdk-ng';
 import style from './ClubHouse.less';
+import { AudioOutlined, AudioMutedOutlined } from '@ant-design/icons';
 import ClubhouseUserItem from '@/components/ClubhouseUserItem';
 import {
   createLocalAndPublishAudio,
@@ -11,28 +12,11 @@ import {
   userJoinedEvent, userLeftEvent,
   userPublishedEvent,
 } from '@/app/agora';
+import { Button, Tooltip } from 'antd';
+import NeedLogin from '@/pages/home/NeedLogin';
+import { isHost } from '@/service/clubhouse';
 
 const CHANNEL_PREFIX = 'club_house';
-
-const isHost = (room, address) => {
-  if (room && room.moderators) {
-    for (let i = 0; i < room.moderators.length; i++) {
-      if (address === room.moderators[i].address) {
-        return true;
-      }
-    }
-  }
-
-  if (room && room.speakers) {
-    for (let i = 0; i < room.speakers.length; i++) {
-      if (address === room.speakers[i].address) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-};
 
 const agoraObject = {
   client: null,
@@ -40,7 +24,7 @@ const agoraObject = {
 }
 
 const ClubhouseRoom = (props) => {
-  const { dispatch, match: { params: { id } }, currentRoom, listeners, user } = props;
+  const { dispatch, match: { params: { id } }, currentRoom, listeners, user, audioEnable, onlineSpeakers } = props;
 
   useEffect(() => {
     if (!currentRoom || !currentRoom.id) {
@@ -63,28 +47,52 @@ const ClubhouseRoom = (props) => {
     }
   }, []);
 
+  useEffect(() => {
+    dispatch({ type: 'clubhouse/userJoin', payload: { address: user.address } });
+    return () => {
+      dispatch({ type: 'clubhouse/userLeft', payload: { address: user.address } });
+    };
+  }, []);
+  const toggleAudioEnable = useCallback(() => {
+    agoraObject.localAudioTrack.setEnabled(!audioEnable);
+    dispatch({ type: 'clubhouse/saveAudioEnable', payload: { audioEnable: !audioEnable } });
+  }, [audioEnable]);
+
   const { title, moderators, speakers } = currentRoom || {};
 
   return (
-    <div className={style.roomTitleContainer}>
-      <div>
-        <h1>{title}</h1>
-      </div>
-      <div className={style.userContainer}>
-        <h2>moderators</h2>
+    <NeedLogin>
+      <div className={style.roomTitleContainer}>
         <div>
-          {moderators && moderators.map(item => (<ClubhouseUserItem user={item} />))}
+          <h1>
+            {title}
+            { audioEnable ?
+              <Tooltip title="mute">
+                <Button size="large" type="link" onClick={toggleAudioEnable}><AudioMutedOutlined style={{ fontSize: '24px' }} /></Button>
+              </Tooltip>
+              :
+              <Tooltip title="unmute">
+                <Button size="large" type="link" onClick={toggleAudioEnable}><AudioOutlined style={{ fontSize: '24px' }} /></Button>
+              </Tooltip>
+            }
+          </h1>
+        </div>
+        <div className={style.userContainer}>
+          <h2>moderators</h2>
+          <div>
+            {moderators && moderators.map(item => (<ClubhouseUserItem user={item} online={onlineSpeakers.includes(item.address)}  />))}
+          </div>
+        </div>
+        <div className={style.userContainer}>
+          <h2>speakers</h2>
+          {speakers && speakers.map(item => (<ClubhouseUserItem user={item} online={onlineSpeakers.includes(item.address)} />))}
+        </div>
+        <div className={style.userContainer}>
+          <h2>listeners</h2>
+          {listeners && listeners.map(item => (<ClubhouseUserItem user={item} online />))}
         </div>
       </div>
-      <div className={style.userContainer}>
-        <h2>speakers</h2>
-        {speakers && speakers.map(item => (<ClubhouseUserItem user={item} />))}
-      </div>
-      <div className={style.userContainer}>
-        <h2>listeners</h2>
-        {listeners && listeners.map(item => (<ClubhouseUserItem user={item} />))}
-      </div>
-    </div>
+    </NeedLogin>
   );
 };
 
@@ -92,4 +100,6 @@ export default connect(state => ({
   currentRoom: state.clubhouse.currentRoom,
   user: state.clubhouse.user,
   listeners: state.clubhouse.listeners,
+  audioEnable: state.clubhouse.audioEnable,
+  onlineSpeakers: state.clubhouse.onlineSpeakers,
 }))(ClubhouseRoom);

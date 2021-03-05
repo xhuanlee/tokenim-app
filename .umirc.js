@@ -45,7 +45,7 @@ export default {
   ],
   proxy: {
     '/clubhouse-api': {
-      'target': 'http://localhost:8099/',
+      'target': 'https://t.callt.net/',
       'changeOrigin': true,
     },
   }

@@ -6,6 +6,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import router from 'umi/router';
 import style from './ClubHouse.less';
 import { DEFAULT_AVATAR } from '@/app/constant';
+import NeedLogin from '@/pages/home/NeedLogin';
 
 const Room = ({ room, goToRoom }) => {
   const { id, title, description, dueTime, moderators, speakers } = room;
@@ -119,7 +120,7 @@ const ClubHouse = (props) => {
   };
 
   return (
-    <>
+    <NeedLogin>
       <PageHeader
         avatar={{ src: user && user.avatar && user.avatar !== '' ? user.avatar : DEFAULT_AVATAR}}
         className="site-page-header"
@@ -283,7 +284,7 @@ const ClubHouse = (props) => {
           </Form.Item>
         </Form>
       </Modal>
-    </>
+    </NeedLogin>
   );
 }
 
