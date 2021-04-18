@@ -80,7 +80,7 @@ const IMApp = {
       IMApp.initUserDataContract();
       IMApp.initShhDataContract();
       IMApp.initInvestContract();
-      IMApp.initSubstrate();
+      // IMApp.initSubstrate();
     }).catch(providerURL => {
       console.log(`provider error, can not connect to ${providerURL}!`)
       window.g_app._store.dispatch({ type: 'init/saveInitState', payload: { providerOK: false, providerURL, initError: true } });
@@ -90,6 +90,7 @@ const IMApp = {
 
   initSubstrate: async () => {
     try {
+      console.log('initial substrate start...')
       if (IMApp.substrateApi && IMApp.substrateApi.disconnect) {
         IMApp.substrateApi.disconnect();
       }

@@ -9,6 +9,15 @@ import IMApp from '@/app/index';
 
 export async function connectSubstrate() {
   try {
+    await IMApp.initSubstrate();
+  } catch (e) {
+    console.error('init subsrate error!!!');
+    console.error(e);
+    message.error('init substrate error!')
+    return undefined;
+  }
+
+  try {
     window.stringToHex = stringToHex;
     window.hexToString = hexToString;
     await web3Enable('club');
