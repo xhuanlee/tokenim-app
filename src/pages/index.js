@@ -46,7 +46,7 @@ class LoginPage extends PureComponent {
     const { ethereumNode, swarmNode, apiNode, substrateProviderUrl } = this.state;
     console.log(ethereumNode, swarmNode, apiNode, substrateProviderUrl);
     this.setState({ settingModule: false })
-    this.props.dispatch({ type: 'init/resetNode', payload: { ethereumNode, swarmNode, apiNode, substrateProviderUrl } });
+///weili    this.props.dispatch({ type: 'init/resetNode', payload: { ethereumNode, swarmNode, apiNode, substrateProviderUrl } });
   }
 
   goVisitorMode = () => {

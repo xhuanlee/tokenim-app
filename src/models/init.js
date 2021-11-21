@@ -44,7 +44,7 @@ export default {
   effects: {
     *resetNode({ payload: { ethereumNode, swarmNode, apiNode, substrateProviderUrl } }, { put, select }) {
       yield put({ type: 'resetInitState' })
-      yield put({ type: 'saveInitState', payload: { providerURL: ethereumNode, bzzURL: swarmNode, apiURL: apiNode, substrateProviderUrl } });
+///weili      yield put({ type: 'saveInitState', payload: { providerURL: ethereumNode, bzzURL: swarmNode, apiURL: apiNode, substrateProviderUrl } });
       window.App.setURL(ethereumNode, swarmNode, apiNode, substrateProviderUrl);
     }
   },

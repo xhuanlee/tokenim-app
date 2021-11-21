@@ -107,7 +107,7 @@ const IMApp = {
 
       const abi = new Abi(webrtcDataAbi, { registry: IMApp.substrateApi.registry });
       IMApp.substrateShhContract = new ContractPromise(IMApp.substrateApi, abi, substrate_shh_contract_addr);
-      window.g_app._store.dispatch({ type: 'init/saveInitState', payload: { substrateProviderUrl: IMApp.SUBSTRATE_RPC_URL } });
+///weili      window.g_app._store.dispatch({ type: 'init/saveInitState', payload: { substrateProviderUrl: IMApp.SUBSTRATE_RPC_URL } });
       console.log('init substrate contract & api success.')
     } catch (e) {
       console.error('init substrate error: ', e);
