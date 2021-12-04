@@ -912,8 +912,6 @@ class HomePage extends Component {
               overflowX: 'hidden',
               overflowY: 'auto',
             }}>
-              <MyAccountRow onClick={() => this.setState({ nameModal: true })} />
-              <MiniProgramList />
               <div style={{
                 margin: '5px 0px',
                 display: 'flex',
@@ -938,6 +936,8 @@ class HomePage extends Component {
                   {/* <p>发起转账</p> */}
                 </div>
               </div>
+              <MyAccountRow onClick={() => this.setState({ nameModal: true })} />
+              <MiniProgramList />
 
               {/* public chat */}
               <List.Item
