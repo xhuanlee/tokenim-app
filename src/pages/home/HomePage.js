@@ -11,7 +11,7 @@ import router from 'umi/router';
 import MyAccountRow from './sider/MyAccountInfo';
 import ChatBox from './content/chatbox/ChatBox';
 import HomeTab from './HomeTab';
-import { shortenAddress, formatTime, promiseSleep } from '@/app/util';
+import { shortenAddress, formatTime, promiseSleep, sendRequest, showNotification } from '@/app/util';
 import { MediaStatus, MediaType } from '@/models/media';
 import IMApp from '@/app/index';
 import {
@@ -27,6 +27,8 @@ import NeedLogin from '@/pages/home/NeedLogin';
 import { saveShhName } from '@/app/metamask';
 import MiniProgramList from '@/components/MiniProgramList';
 import Defis from '@/pages/home/content/Defis';
+import { ETHEREUM_API } from '@/app/constant';
+import { routerRedux } from 'dva/router';
 
 const { Content, Sider } = Layout;
 
@@ -818,12 +820,37 @@ class HomePage extends Component {
       return;
     }
 
-    this.setState({ confirmLoading: true });
-    saveShhName(nameValue).then(() => {
-      this.setState({ nameModal: false, confirmLoading: false });
-    }).catch(e => {
-      console.error('save shh name error: ', e);
-    });
+    // should call registerENS
+    sendRequest(`${IMApp.API_URL}${ETHEREUM_API.REGISTER_ENS}${this.props.account.address}/${nameValue}`, (err, res) => {
+      if (err) {
+        console.log(`register ens error.`);
+        console.log(err);
+        showNotification('newAccount', 'error', formatMessage({ id: 'ens_register_error_notice' }));
+        window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { registerENSLoading: false, registerError: true } })
+      } else if (res.err !== 0) {
+        console.log(`register ens error.`);
+        console.log(res.msg);
+        showNotification('newAccount', 'error', res.msg);
+        window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { registerENSLoading: false, registerError: true } })
+      } else {
+        // IMApp.saveENSToLocal(ensName, address)
+        // window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { registerENSLoading: false, registerError: false } })
+        // window.g_app._store.dispatch(routerRedux.push('/regSuccess'))
+
+        this.setState({ confirmLoading: true });
+        saveShhName(nameValue).then(() => {
+          this.setState({ nameModal: false, confirmLoading: false });
+        }).catch(e => {
+          console.error('save shh name error: ', e);
+        });
+
+        // get free 1 Ether to new account
+        // IMApp.getFreeEther(address).then(() => {
+        //   console.log('success get ether')
+        // });
+      }
+    })
+
   };
 
   endGroupMedia = () => {
