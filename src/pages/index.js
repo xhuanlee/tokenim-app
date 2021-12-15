@@ -214,8 +214,8 @@ class LoginPage extends PureComponent {
             </Tooltip>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <h2 style={{ marginBottom: 0, fontWeight: 600 }}>IClub.Network</h2>
-            <p style={{ marginBottom: 0 }}>Instant Messaging for Blockchain</p>
+            <h2 style={{ marginBottom: 0, fontWeight: 600 }}>BeagleDAO</h2>
+            <p style={{ marginBottom: 0 }}>Social Network for Crypto Metaverse</p>
             <p>{formatMessage({ id: 'index.description' })}</p>
             <img src="../image/eth-icon.png" alt="" width="70" style={{ marginBottom: 30 }} />
           </div>
@@ -383,7 +383,7 @@ class LoginPage extends PureComponent {
           </Modal>
         </div>
         <p className={styles.copyright}>Copyright © 2020 <a href="https://www.github.com/clubnetwork">{formatMessage({ id: 'allcom' })}</a></p>
-          <p className={styles.beian}><a href="https://beian.miit.gov.cn/" target="_blank"> 沪ICP备14021271号-4</a></p>
+          {/*<p className={styles.beian}><a href="https://beian.miit.gov.cn/" target="_blank"> 沪ICP备14021271号-4</a></p>*/}
       </>
     );
   }

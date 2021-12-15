@@ -1,5 +1,5 @@
 export default {
-  'allcom': 'IClub.network Team',
+  'allcom': 'BeagleDAO Team',
   'return': 'Return',
   'login': 'Login',
   'register': 'Register',
@@ -59,7 +59,7 @@ export default {
   'index.visitor': 'visitor mode',
   'index.wallet_login': 'login with address',
   'index.ens_login': 'Login with ens',
-  'index.get_wallet': 'Create Address',
+  'index.get_wallet': 'Register',
   'index.login': 'Login',
   'index.encrypt_coin': 'Learn, Share and Practise ',
   'index.digital_currency': 'Deposit, Stake and Trade',

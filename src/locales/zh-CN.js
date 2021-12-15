@@ -2,7 +2,7 @@ import { Button } from 'antd';
 import React from 'react';
 
 export default {
-  'allcom': 'IClub.network 团队',
+  'allcom': 'BeagleDao团队',
   'return': '返回',
   'login': '登陆',
   'register': '注册',
@@ -62,7 +62,7 @@ export default {
   'index.visitor': '游客访问',
   'index.wallet_login': '使用钱包地址登陆',
   'index.ens_login': '使用ENS名字登陆',
-  'index.get_wallet': '获取钱包地址',
+  'index.get_wallet': '注册',
   'index.login': '登陆',
   'index.encrypt_coin': '加密货币学习、交流、实践',
   'index.digital_currency': '数字资产托管、保存、交易',
