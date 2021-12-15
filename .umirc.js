@@ -26,7 +26,7 @@ export default {
       antd: true,
       dva: true,
       dynamicImport: { webpackChunkName: true },
-      title: 'IClub, Instant Messaging Network for Blockchain',
+      title: 'BeagleDAO, Social Network for Crypto Metaverse',
       dll: false,
       locale: {
         enable: true,

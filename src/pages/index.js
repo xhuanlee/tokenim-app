@@ -203,7 +203,7 @@ class LoginPage extends PureComponent {
       <>
         <div className={styles.container}>
           <div>
-            <a href={enLocale ? 'pages/whitepaperEN.html' : 'pages/whitepaper.html'} style={{ marginRight: 10 }}>{formatMessage({ id: 'index.white_paper' })}</a>
+            <a href={enLocale ? 'https://beagle.gitbook.io/beagle-dao/' : 'https://beagle.gitbook.io/beagle-dao/'} style={{ marginRight: 10 }}>{formatMessage({ id: 'index.white_paper' })}</a>
             <a href={enLocale ? 'pages/faqEN.html' : 'pages/faq.html'} style={{ marginRight: 10 }}>{formatMessage({ id: 'index.faq' })}</a>
             <a href={enLocale ? 'pages/downloadEN.html' : 'pages/download.html'} style={{ marginRight: 10 }}>{formatMessage({ id: 'index.download' })}</a>
             <a href={`/?locale=${oLocale}`} style={{ marginRight: 10 }}>{oLocaleDes}</a>
@@ -296,13 +296,13 @@ class LoginPage extends PureComponent {
             <p style={{ marginBottom: 0 }}>{formatMessage({ id: 'index.encrypt_coin' })}</p>
             <p>{formatMessage({ id: 'index.digital_currency' })}</p>
 
-            <a href="http://gfax.f3322.org:3000/" target="_blank"><FundOutlined />{formatMessage({ id: 'index.network_status' })}</a>
+            <a href="http://beagle.chat:3000/" target="_blank"><FundOutlined />{formatMessage({ id: 'index.network_status' })}</a>
             <p style={{ marginBottom: 0 }}>
               {/*<span>{formatMessage({ id: 'index.contact' })}:</span>*/}
               {/*<PhoneOutlined style={{ transform: 'rotate(90deg)', color: '#5190ff' }} />*/}
               {/*<a onClick={() => this.setState({ comfirmCallModal: true })}>021-50808850</a>*/}
             </p>
-            <a href="mailto:support@callus.app">support@callus.app</a>
+            {/*<a href="mailto:support@callus.app">support@callus.app</a>*/}
           </div>
 
           <Modal
@@ -382,7 +382,7 @@ class LoginPage extends PureComponent {
             </Radio.Group>
           </Modal>
         </div>
-        <p className={styles.copyright}>Copyright © 2020 <a href="https://www.github.com/clubnetwork">{formatMessage({ id: 'allcom' })}</a></p>
+        <p className={styles.copyright}>Copyright © 2020-2021 <a href="https://www.github.com/clubnetwork">{formatMessage({ id: 'allcom' })}</a></p>
           {/*<p className={styles.beian}><a href="https://beian.miit.gov.cn/" target="_blank"> 沪ICP备14021271号-4</a></p>*/}
       </>
     );
