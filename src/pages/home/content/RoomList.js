@@ -9,7 +9,7 @@ import { DEFAULT_AVATAR } from '@/app/constant';
 import NeedLogin from '@/pages/home/NeedLogin';
 
 const RoomSummary = ({ room, goToRoom }) => {
-  const { id, title, description, dueTime, moderators, speakers } = room;
+  const { name,_id,id, title, description, dueTime, moderators, speakers } = room;
   let authors = [];
   if (moderators && moderators.length > 0) {
     authors = authors.concat(moderators);
@@ -18,9 +18,10 @@ const RoomSummary = ({ room, goToRoom }) => {
     authors = authors.concat(speakers);
   }
 
+
   return (
     <div className={style.roomItem} style={{ marginBottom: '16px', cursor: 'pointer' }} onClick={() => goToRoom(room)}>
-      <h2 style={{ marginBottom: '0px' }}><span>{title}</span><span style={{ fontSize: 14, fontWeight: 'unset', marginLeft: '16px' }}>{dueTime}</span></h2>
+      <h2 style={{ marginBottom: '0px' }}><span>{name}</span><span style={{ fontSize: 14, fontWeight: 'unset', marginLeft: '16px' }}>{dueTime}</span></h2>
       <Avatar.Group>
         {
           authors.map(item => (<Avatar size="large" src={item.avatar && item.avatar !== '' ? item.avatar : DEFAULT_AVATAR} />))
@@ -30,26 +31,26 @@ const RoomSummary = ({ room, goToRoom }) => {
         <span style={{ fontStyle: 'italic' }}>{authors.reduce((pre, item) => `${pre}${pre === '' ? '' : ' / '}${item.nickname}`, '')}</span>
       </div>
       <Typography>
-        {description}
+        {_id}
       </Typography>
     </div>
   );
 };
 
 const RoomList = (props) => {
-  const { dispatch, loading, clubhouse } = props;
-  const { rooms, totalRoom, hasMore, needCreate, newChatRoomModal, user } = clubhouse;
-  const fetchingMore = loading.effects['clubhouse/fetchMore'];
-  const savingUser = loading.effects['clubhouse/saveServerUser'];
-  const savingRoom = loading.effects['clubhouse/saveNewChatRoom'];
+  const { dispatch, loading, meetingroom } = props;
+  const { rooms, totalRoom, hasMore, needCreate, newChatRoomModal, user } = meetingroom;
+  const fetchingMore = loading.effects['meetingroom/fetchMore'];
+  const savingUser = loading.effects['meetingroom/saveServerUser'];
+  const savingRoom = loading.effects['meetingroom/saveNewChatRoom'];
   const [ form ] = Form.useForm();
   const [ chatRoomForm ] = Form.useForm();
 
   useEffect(() => {
-    dispatch({ type: 'clubhouse/fetchRooms' });
+    dispatch({ type: 'meetingroom/fetchRooms' });
   }, [dispatch]);
   useEffect(() => {
-    dispatch({ type: 'clubhouse/fetchUser' });
+    dispatch({ type: 'meetingroom/fetchUser' });
   }, [dispatch]);
 
   const formItemLayout = {
@@ -57,10 +58,10 @@ const RoomList = (props) => {
     wrapperCol: { span: 16 },
   };
   const loadMore = useCallback((page) => {
-    dispatch({ type: 'clubhouse/fetchMore', payload: { page } });
+    dispatch({ type: 'meetingroom/fetchMore', payload: { page } });
   }, [dispatch]);
   const goToRoom = useCallback((room) => {
-    dispatch({ type: 'clubhouse/saveCurrentRoom', payload: { currentRoom: room } });
+    dispatch({ type: 'meetingroom/saveCurrentRoom', payload: { currentRoom: room } });
     router.push(`/club-house/${room.id}`);
   }, [dispatch]);
   const saveUserInfo = useCallback(() => {
@@ -80,10 +81,10 @@ const RoomList = (props) => {
     });
   }, [dispatch, form]);
   const clickNewChatRoom = useCallback(() => {
-    dispatch({ type: 'clubhouse/saveNewChatRoomModal', payload: { newChatRoomModal: true } });
+    dispatch({ type: 'meetingroom/saveNewChatRoomModal', payload: { newChatRoomModal: true } });
   }, [dispatch]);
   const cancelNewChatRoom = useCallback(() => {
-    dispatch({ type: 'clubhouse/saveNewChatRoomModal', payload: { newChatRoomModal: false } });
+    dispatch({ type: 'meetingroom/saveNewChatRoomModal', payload: { newChatRoomModal: false } });
   }, [dispatch]);
   const saveNewChatRoom = useCallback(() => {
     chatRoomForm.validateFields().then(values => {
@@ -101,7 +102,7 @@ const RoomList = (props) => {
       for (let key in values) {
         room.append(key, values[key] || '');
       }
-      dispatch({ type: 'clubhouse/saveNewChatRoom', payload: { room } });
+      dispatch({ type: 'meetingroom/saveNewChatRoom', payload: { room } });
     }).catch(error => {
     });
   }, [chatRoomForm, dispatch]);
@@ -290,5 +291,5 @@ const RoomList = (props) => {
 
 export default connect(state => ({
   loading: state.loading,
-  clubhouse: state.clubhouse,
+  meetingroom: state.meetingroom,
 }))(RoomList);
