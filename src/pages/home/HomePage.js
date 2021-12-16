@@ -57,6 +57,7 @@ import Kademlia from '@/pages/home/content/Kademlia';
 import Beagle from '@/pages/home/content/Beagle';
 import { ETHEREUM_API } from '@/app/constant';
 import { routerRedux } from 'dva/router';
+import RoomList from '@/pages/home/content/RoomList';
 
 const { Content, Sider } = Layout;
 
@@ -1029,7 +1030,7 @@ class HomePage extends Component {
         contentBody = <Defis />;
         break;
       case 'kademlia':
-        contentBody = <Kademlia />;
+        contentBody = <RoomList />;
         break;
       case 'beagle':
         contentBody = <Beagle />;
