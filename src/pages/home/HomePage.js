@@ -4,29 +4,57 @@ import { Layout, Avatar, List, Modal, Input, Alert, Tooltip, Button, message } f
 import ReactDraggable from 'react-draggable';
 import { formatMessage } from 'umi-plugin-locale';
 import {
-  LoadingOutlined, CloseCircleOutlined, CheckCircleOutlined, HomeOutlined, UserOutlined,
-  UserAddOutlined, InteractionOutlined, TeamOutlined, PhoneOutlined, AudioOutlined, AudioMutedOutlined,
+  LoadingOutlined,
+  CloseCircleOutlined,
+  CheckCircleOutlined,
+  HomeOutlined,
+  UserOutlined,
+  UserAddOutlined,
+  InteractionOutlined,
+  TeamOutlined,
+  PhoneOutlined,
+  AudioOutlined,
+  AudioMutedOutlined,
 } from '@ant-design/icons';
 import router from 'umi/router';
 import MyAccountRow from './sider/MyAccountInfo';
 import ChatBox from './content/chatbox/ChatBox';
 import HomeTab from './HomeTab';
-import { shortenAddress, formatTime, promiseSleep, sendRequest, showNotification } from '@/app/util';
+import {
+  shortenAddress,
+  formatTime,
+  promiseSleep,
+  sendRequest,
+  showNotification,
+} from '@/app/util';
 import { MediaStatus, MediaType } from '@/models/media';
 import IMApp from '@/app/index';
 import {
-  createSessionDescription, getSDPOptions, getUserMediaOptions, sendAccept,
-  sendAnswer, sendCandidate, sendGroupAnswer, sendGroupCandidate, sendGroupHangup, sendGroupInvite, sendGroupOffer,
+  createSessionDescription,
+  getSDPOptions,
+  getUserMediaOptions,
+  sendAccept,
+  sendAnswer,
+  sendCandidate,
+  sendGroupAnswer,
+  sendGroupCandidate,
+  sendGroupHangup,
+  sendGroupInvite,
+  sendGroupOffer,
   sendHangup,
-  sendInvite, sendInviteReply,
+  sendInvite,
+  sendInviteReply,
   sendOffer,
   sendReject,
-  SignalType, WebrtcConfig,
+  SignalType,
+  WebrtcConfig,
 } from '@/app/webrtc';
 import NeedLogin from '@/pages/home/NeedLogin';
 import { saveShhName } from '@/app/metamask';
 import MiniProgramList from '@/components/MiniProgramList';
 import Defis from '@/pages/home/content/Defis';
+import Kademlia from '@/pages/home/content/Kademlia';
+import Beagle from '@/pages/home/content/Beagle';
 import { ETHEREUM_API } from '@/app/constant';
 import { routerRedux } from 'dva/router';
 
@@ -95,10 +123,14 @@ class HomePage extends Component {
     // }
   }
 
-  setChatToUser = (user) => {
+  setChatToUser = user => {
     const { dispatch } = this.props;
     dispatch({ type: 'media/saveChatUser', payload: { chatUser: user } });
-    const { location: { query: { s } } } = this.props;
+    const {
+      location: {
+        query: { s },
+      },
+    } = this.props;
     if (s) {
       router.push('/home');
     }
@@ -128,7 +160,7 @@ class HomePage extends Component {
   createDialogByEns = () => {
     const { ensName } = this.state;
     const { queryENSAddress, queryShhPubKey } = this.props.account;
-    const time = (new Date()).getTime();
+    const time = new Date().getTime();
     if (queryENSAddress && queryShhPubKey) {
       this.props.dispatch({
         type: 'user/addFriend',
@@ -144,14 +176,24 @@ class HomePage extends Component {
   createDialogByAddress = () => {
     const { nickName } = this.state;
     const { queryAddress, queryShhPubKeyByAddress } = this.props.account;
-    const time = (new Date()).getTime();
+    const time = new Date().getTime();
     if (queryAddress && queryShhPubKeyByAddress) {
       this.props.dispatch({
         type: 'user/addFriend',
-        payload: { nickName, friendAddress: queryAddress, shhPubKey: queryShhPubKeyByAddress, time },
+        payload: {
+          nickName,
+          friendAddress: queryAddress,
+          shhPubKey: queryShhPubKeyByAddress,
+          time,
+        },
       });
       this.setState({ newDialogModal: false });
-      this.setChatToUser({ address: queryAddress, nickName, shhPubKey: queryShhPubKeyByAddress, time });
+      this.setChatToUser({
+        address: queryAddress,
+        nickName,
+        shhPubKey: queryShhPubKeyByAddress,
+        time,
+      });
     } else {
       alert(formatMessage({ id: 'home.shh_format_error' }));
     }
@@ -167,23 +209,30 @@ class HomePage extends Component {
   openHomeTab = () => {
     const { dispatch } = this.props;
     dispatch({ type: 'media/saveChatUser', payload: { chatUser: null } });
-    const { location: { query: { s } } } = this.props;
+    const {
+      location: {
+        query: { s },
+      },
+    } = this.props;
     if (s) {
       router.push('/home');
     }
   };
 
-  onENSNameChange = (e) => {
+  onENSNameChange = e => {
     const queryENSName = e.target.value;
     if (queryENSName && /^[a-zA-Z][a-zA-Z0-9]*$/.test(queryENSName)) {
       this.setState({ ensName: queryENSName, nameError: '' });
       this.props.dispatch({ type: 'account/getEnsUserData', payload: queryENSName });
     } else {
-      this.setState({ nameError: formatMessage({ id: 'home.ens_name_format_error' }), ensName: queryENSName });
+      this.setState({
+        nameError: formatMessage({ id: 'home.ens_name_format_error' }),
+        ensName: queryENSName,
+      });
     }
   };
 
-  onWhisperChange = (e) => {
+  onWhisperChange = e => {
     const publicKey = e.target.value;
     this.props.dispatch({
       type: 'account/saveAccountState',
@@ -191,7 +240,7 @@ class HomePage extends Component {
     });
   };
 
-  onAddressChange = (e) => {
+  onAddressChange = e => {
     const address = e.target.value;
     this.setState({ chatAddress: address });
     if (address && /^0x[0-9a-fA-F]{40}$/.test(address)) {
@@ -206,20 +255,18 @@ class HomePage extends Component {
         this.peer.close();
         this.peer = null;
       }
-    } catch (e) {
-    }
+    } catch (e) {}
     try {
       if (this.localStream) {
-        this.localStream.getTracks().forEach((track) => track.stop());
+        this.localStream.getTracks().forEach(track => track.stop());
         this.localStream = null;
       }
-    } catch (e) {
-    }
+    } catch (e) {}
 
     clearInterval(this.checkCallInterval);
   };
 
-  getMediaError = (e) => {
+  getMediaError = e => {
     console.log('getMediaError: ', e);
     this.props.dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.error } });
     message.error('get media error, please try again', 10);
@@ -229,7 +276,7 @@ class HomePage extends Component {
     if (this.localStream) {
       const { audioEnable } = this.state;
       this.setState({ audioEnable: !audioEnable });
-      this.localStream.getAudioTracks().forEach(track => track.enabled = !audioEnable);
+      this.localStream.getAudioTracks().forEach(track => (track.enabled = !audioEnable));
     }
   };
 
@@ -237,12 +284,12 @@ class HomePage extends Component {
     if (this.localStream) {
       const { videoEnable } = this.state;
       this.setState({ audioEnable: !videoEnable });
-      this.localStream.getVideoTracks().forEach(track => track.enabled = !videoEnable);
+      this.localStream.getVideoTracks().forEach(track => (track.enabled = !videoEnable));
     }
   };
 
   // webrtc:3
-  gotLocalStream = async (stream) => {
+  gotLocalStream = async stream => {
     console.log('got local stream: ', stream);
     this.localVideoRef.current.srcObject = stream;
     this.localStream = stream;
@@ -254,20 +301,24 @@ class HomePage extends Component {
 
     const { account, media } = this.props;
     const { address, loginEns, shhPubKey: myShhPubKey } = account;
-    const { chatUser: { shhPubKey }, type } = media;
+    const {
+      chatUser: { shhPubKey },
+      type,
+    } = media;
     try {
       // webrtc:4
       const offerSdp = await this.peer.createOffer(getSDPOptions(type));
       await this.peer.setLocalDescription(offerSdp);
       sendOffer(loginEns, myShhPubKey, address, shhPubKey, offerSdp.sdp);
-    } catch (e) {
-    }
+    } catch (e) {}
   };
 
   // webrtc:2
   getLocalMedia = () => {
     console.log('getLocalMedia');
-    const { media: { type } } = this.props;
+    const {
+      media: { type },
+    } = this.props;
     navigator.mediaDevices
       .getUserMedia(getUserMediaOptions(type))
       .then(this.gotLocalStream)
@@ -275,19 +326,21 @@ class HomePage extends Component {
   };
 
   // webrtc:6
-  onIceCandidate = (e) => {
+  onIceCandidate = e => {
     console.log('onIceCandidate');
     if (!e.candidate) {
       return;
     }
     const { account, media } = this.props;
     const { address, loginEns, shhPubKey: myShhPubKey } = account;
-    const { chatUser: { shhPubKey } } = media;
+    const {
+      chatUser: { shhPubKey },
+    } = media;
 
     sendCandidate(loginEns, myShhPubKey, address, shhPubKey, JSON.stringify(e.candidate));
   };
 
-  onIceCandidateStateChange = (e) => {
+  onIceCandidateStateChange = e => {
     console.log('onIceCandidateStateChange: ', e);
     if (this.peer.iceConnectionState === 'failed') {
       this.props.dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.error } });
@@ -298,10 +351,10 @@ class HomePage extends Component {
   };
 
   // webrtc:7
-  gotRemoteStream = (e) => {
+  gotRemoteStream = e => {
     console.log('gotRemoteStream');
-    if (this.videoRef.current.srcObject !== e.streams[ 0 ]) {
-      this.videoRef.current.srcObject = e.streams[ 0 ];
+    if (this.videoRef.current.srcObject !== e.streams[0]) {
+      this.videoRef.current.srcObject = e.streams[0];
       console.log('set remote stream success');
     }
   };
@@ -321,13 +374,13 @@ class HomePage extends Component {
     if (this.cacheCandidates && this.cacheCandidates.length > 0) {
       for (let i = 0; i < this.cacheCandidates.length; i++) {
         console.log('add cache candidate: ' + i);
-        await this.peer.addIceCandidate(this.cacheCandidates[ i ]);
+        await this.peer.addIceCandidate(this.cacheCandidates[i]);
       }
       this.cacheCandidates = [];
     }
   };
 
-  onReceiveInvite = (type) => {
+  onReceiveInvite = type => {
     console.log('onReceiveInvite');
     this.passive = true;
     this.props.dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.ring } });
@@ -335,7 +388,9 @@ class HomePage extends Component {
 
     const { account, media } = this.props;
     const { address, loginEns, shhPubKey: myShhPubKey } = account;
-    const { chatUser: { shhPubKey } } = media;
+    const {
+      chatUser: { shhPubKey },
+    } = media;
     sendInviteReply(loginEns, myShhPubKey, address, shhPubKey);
   };
 
@@ -368,11 +423,14 @@ class HomePage extends Component {
     this.clearMedia();
   };
 
-  onReceiveOffer = async (sdp) => {
+  onReceiveOffer = async sdp => {
     console.log('onReceiveOffer');
     const { account, media } = this.props;
     const { address, loginEns, shhPubKey: myShhPubKey } = account;
-    const { chatUser: { shhPubKey }, type } = media;
+    const {
+      chatUser: { shhPubKey },
+      type,
+    } = media;
     try {
       await this.peer.setRemoteDescription(createSessionDescription('offer', sdp));
       this.canAddCandidate = true;
@@ -380,22 +438,20 @@ class HomePage extends Component {
       const answerSdp = await this.peer.createAnswer();
       await this.peer.setLocalDescription(answerSdp);
       sendAnswer(loginEns, myShhPubKey, address, shhPubKey, answerSdp.sdp);
-    } catch (e) {
-    }
+    } catch (e) {}
   };
 
   // webrtc:5
-  onReceiveAnswer = async (sdp) => {
+  onReceiveAnswer = async sdp => {
     console.log('onReceiveAnswer');
     try {
       await this.peer.setRemoteDescription(createSessionDescription('answer', sdp));
       this.canAddCandidate = true;
       await this.loadCacheCandidate();
-    } catch (e) {
-    }
+    } catch (e) {}
   };
 
-  onReceiveCandidate = async (c) => {
+  onReceiveCandidate = async c => {
     console.log('onReceiveCandidate');
     const candidateJson = JSON.parse(c);
     const { candidate, sdpMLineIndex, sdpMid } = candidateJson;
@@ -418,7 +474,7 @@ class HomePage extends Component {
     this.cacheCandidates.push(candidateObj);
   };
 
-  onReceiveCandidateRemoval = (c) => {
+  onReceiveCandidateRemoval = c => {
     console.log('onReceiveCandidateRemoval');
   };
 
@@ -437,7 +493,7 @@ class HomePage extends Component {
       }
     }
     this.localGroupVideoRef.current.srcObject = this.localStream;
-    const peer = this.groupPeer[ from ];
+    const peer = this.groupPeer[from];
     this.localStream.getTracks().forEach(track => peer.addTrack(track, this.localStream));
     console.log('Adding Local Stream to peer connection');
 
@@ -453,28 +509,27 @@ class HomePage extends Component {
       const offerSdp = await peer.createOffer(getSDPOptions(type));
       await peer.setLocalDescription(offerSdp);
       console.log(`send group offer: {to: ${from}`);
-      sendGroupOffer(loginEns, myShhPubKey, address, type, offerSdp.sdp, this.groupShhPubKey[ from ]);
-    } catch (e) {
-    }
+      sendGroupOffer(loginEns, myShhPubKey, address, type, offerSdp.sdp, this.groupShhPubKey[from]);
+    } catch (e) {}
   };
 
   addGroupCacheCandidate = (from, candidate) => {
-    if (!this.groupCandidate[ from ]) {
-      this.groupCandidate[ from ] = [];
+    if (!this.groupCandidate[from]) {
+      this.groupCandidate[from] = [];
     }
 
-    this.groupCandidate[ from ].push(candidate);
+    this.groupCandidate[from].push(candidate);
   };
 
-  loadGroupCacheCandidate = async (from) => {
+  loadGroupCacheCandidate = async from => {
     console.log('loadGroupCacheCandidate');
-    if (this.groupCandidate && this.groupCandidate[ from ] && this.groupCandidate[ from ].length > 0) {
-      const peer = this.groupPeer[ from ];
-      for (let i = 0; i < this.groupCandidate[ from ].length; i++) {
+    if (this.groupCandidate && this.groupCandidate[from] && this.groupCandidate[from].length > 0) {
+      const peer = this.groupPeer[from];
+      for (let i = 0; i < this.groupCandidate[from].length; i++) {
         console.log('add group cache candidate: ' + i);
-        await peer.addIceCandidate(this.groupCandidate[ from ][ i ]);
+        await peer.addIceCandidate(this.groupCandidate[from][i]);
       }
-      delete this.groupCandidate[ from ];
+      delete this.groupCandidate[from];
     }
   };
 
@@ -487,12 +542,18 @@ class HomePage extends Component {
     const { account } = this.props;
     const { address, shhPubKey: myShhPubKey, loginEns } = account;
 
-    sendGroupCandidate(loginEns, myShhPubKey, address, JSON.stringify(e.candidate), this.groupShhPubKey[ from ]);
+    sendGroupCandidate(
+      loginEns,
+      myShhPubKey,
+      address,
+      JSON.stringify(e.candidate),
+      this.groupShhPubKey[from],
+    );
   };
 
   onGroupIceCandidateStateChange = (e, from) => {
     console.log('onGroupIceCandidateStateChange: ', e);
-    const peer = this.groupPeer[ from ];
+    const peer = this.groupPeer[from];
     if (peer.iceConnectionState === 'failed') {
       // send hangup
     } else if (peer?.iceConnectionState === 'connected') {
@@ -503,12 +564,12 @@ class HomePage extends Component {
   // webrtc:7
   gotGroupRemoteStream = (e, from, name) => {
     console.log('gotGroupRemoteStream');
-    this.groupRemoteStream[ from ] = e.streams[ 0 ];
+    this.groupRemoteStream[from] = e.streams[0];
     const videoId = `v-${from}`;
     const containerId = `c-${from}`;
     let vEle = document.getElementById(videoId);
     if (vEle) {
-      vEle.srcObject = e.streams[ 0 ];
+      vEle.srcObject = e.streams[0];
       return;
     }
 
@@ -539,7 +600,7 @@ class HomePage extends Component {
     cEle.appendChild(tEle);
     cEle.appendChild(vEle);
     this.groupVideoContainerRef.current.appendChild(cEle);
-    vEle.srcObject = e.streams[ 0 ];
+    vEle.srcObject = e.streams[0];
 
     // create video element
     // append video to body
@@ -549,14 +610,14 @@ class HomePage extends Component {
   createGroupPeer = (from, name) => {
     console.log('createGroupPeer start');
     const peer = new RTCPeerConnection(WebrtcConfig);
-    peer.onicecandidate = (e) => this.onGroupIceCandidate(e, from);
-    peer.ontrack = (e) => this.gotGroupRemoteStream(e, from, name);
-    peer.oniceconnectionstatechange = (e) => this.onGroupIceCandidateStateChange(e, from);
-    this.groupPeer[ from ] = peer;
+    peer.onicecandidate = e => this.onGroupIceCandidate(e, from);
+    peer.ontrack = e => this.gotGroupRemoteStream(e, from, name);
+    peer.oniceconnectionstatechange = e => this.onGroupIceCandidateStateChange(e, from);
+    this.groupPeer[from] = peer;
     console.log('createGroupPeer end');
   };
 
-  startGroupCall = (type) => {
+  startGroupCall = type => {
     this.setState({ groupType: type });
 
     const { account } = this.props;
@@ -564,7 +625,7 @@ class HomePage extends Component {
     sendGroupInvite(loginEns, myShhPubKey, address, type, symKeyId);
   };
 
-  getGroupType = (remoteType) => {
+  getGroupType = remoteType => {
     const { groupType } = this.state;
     if (!groupType) {
       return;
@@ -584,11 +645,11 @@ class HomePage extends Component {
     this.getGroupLocalMedia(from, type, true);
   };
 
-  sendLocalStream = (from) => {
+  sendLocalStream = from => {
     console.log(`ready to send local stream to ${from}`);
-    if (from && this.groupPeer[ from ] && this.localStream) {
+    if (from && this.groupPeer[from] && this.localStream) {
       console.log(`send local stream to ${from}`);
-      const peer = this.groupPeer[ from ];
+      const peer = this.groupPeer[from];
       this.localStream.getTracks().forEach(track => peer.addTrack(track, this.localStream));
     }
   };
@@ -601,12 +662,12 @@ class HomePage extends Component {
     const { account } = this.props;
     const { address, shhPubKey: myShhPubKey, loginEns } = account;
     try {
-      const peer = this.groupPeer[ from ];
+      const peer = this.groupPeer[from];
       await peer.setRemoteDescription(createSessionDescription('offer', content.sdp));
       await this.loadGroupCacheCandidate(from);
       const answerSdp = await peer.createAnswer();
       await peer.setLocalDescription(answerSdp);
-      sendGroupAnswer(loginEns, myShhPubKey, address, answerSdp.sdp, this.groupShhPubKey[ from ]);
+      sendGroupAnswer(loginEns, myShhPubKey, address, answerSdp.sdp, this.groupShhPubKey[from]);
 
       /*
       await promiseSleep(2000);
@@ -615,8 +676,7 @@ class HomePage extends Component {
         transceiver.sender.setStreams(this.localStream);
       });
       */
-    } catch (e) {
-    }
+    } catch (e) {}
   };
 
   onReceiveGroupIcecandidate = async (from, content) => {
@@ -629,7 +689,7 @@ class HomePage extends Component {
       sdpMid,
     });
 
-    const peer = this.groupPeer[ from ];
+    const peer = this.groupPeer[from];
     if (peer) {
       try {
         await peer.addIceCandidate(candidateObj);
@@ -646,33 +706,30 @@ class HomePage extends Component {
   onReceiveGroupAnswer = async (from, sdp) => {
     console.log('onReceiveGroupAnswer');
     try {
-      const peer = this.groupPeer[ from ];
+      const peer = this.groupPeer[from];
       await peer.setRemoteDescription(createSessionDescription('answer', sdp));
       await this.loadGroupCacheCandidate(from);
-    } catch (e) {
-    }
+    } catch (e) {}
   };
 
-  clearGroupMedia = (from) => {
+  clearGroupMedia = from => {
     console.log('clearGroupMedia');
     try {
       if (!from && Object.keys(this.groupPeer).length > 0) {
         Object.keys(this.groupPeer).forEach(f => {
           try {
-            this.groupPeer[ f ].close();
-            delete this.groupPeer[ from ];
-          } catch (e) {
-          }
+            this.groupPeer[f].close();
+            delete this.groupPeer[from];
+          } catch (e) {}
         });
-      } else if (this.groupPeer[ from ]) {
-        this.groupPeer[ from ].close();
-        delete this.groupPeer[ from ];
+      } else if (this.groupPeer[from]) {
+        this.groupPeer[from].close();
+        delete this.groupPeer[from];
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   };
 
-  onReceiveGroupHangup = (from) => {
+  onReceiveGroupHangup = from => {
     this.clearGroupMedia(from);
 
     const videoId = `c-${from}`;
@@ -686,7 +743,7 @@ class HomePage extends Component {
    * 点击group音视频，在本地标记为允许接收来自公共频道的音视频连接，并且广播出去，
    * 其他在线的并且允许音视频连接的账号在收到新的音视频允许连接信号时直接发送offer给发起方
    * */
-  onSignalMessage = (msg) => {
+  onSignalMessage = msg => {
     console.log('receive signal message: ', msg);
     const { groupType } = this.state;
     const { name, from, shh, signal, content, group } = msg;
@@ -697,7 +754,7 @@ class HomePage extends Component {
     }
 
     if (group) {
-      this.groupShhPubKey[ from ] = shh;
+      this.groupShhPubKey[from] = shh;
       switch (signal) {
         case SignalType.invite:
           this.onReceiveGroupInvite(from, name, content);
@@ -769,11 +826,13 @@ class HomePage extends Component {
     clearInterval(this.checkCallInterval);
   };
 
-  startCall = (type) => {
+  startCall = type => {
     const { dispatch } = this.props;
     const { account, media } = this.props;
     const { address, loginEns, shhPubKey: myShhPubKey } = account;
-    const { chatUser: { shhPubKey } } = media;
+    const {
+      chatUser: { shhPubKey },
+    } = media;
     sendInvite(loginEns, myShhPubKey, address, shhPubKey, type);
 
     dispatch({ type: 'media/saveType', payload: { type } });
@@ -786,7 +845,9 @@ class HomePage extends Component {
     const { dispatch } = this.props;
     const { account, media } = this.props;
     const { address, loginEns, shhPubKey: myShhPubKey } = account;
-    const { chatUser: { shhPubKey } } = media;
+    const {
+      chatUser: { shhPubKey },
+    } = media;
     sendAccept(loginEns, myShhPubKey, address, shhPubKey);
 
     await this.createPeer();
@@ -801,7 +862,10 @@ class HomePage extends Component {
     const { dispatch } = this.props;
     const { account, media } = this.props;
     const { address, loginEns, shhPubKey: myShhPubKey } = account;
-    const { chatUser: { shhPubKey }, status } = media;
+    const {
+      chatUser: { shhPubKey },
+      status,
+    } = media;
     if (status === MediaStatus.ring) {
       sendReject(loginEns, myShhPubKey, address, shhPubKey);
     } else {
@@ -821,36 +885,50 @@ class HomePage extends Component {
     }
 
     // should call registerENS
-    sendRequest(`${IMApp.API_URL}${ETHEREUM_API.REGISTER_ENS}${this.props.account.address}/${nameValue}`, (err, res) => {
-      if (err) {
-        console.log(`register ens error.`);
-        console.log(err);
-        showNotification('newAccount', 'error', formatMessage({ id: 'ens_register_error_notice' }));
-        window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { registerENSLoading: false, registerError: true } })
-      } else if (res.err !== 0) {
-        console.log(`register ens error.`);
-        console.log(res.msg);
-        showNotification('newAccount', 'error', res.msg);
-        window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { registerENSLoading: false, registerError: true } })
-      } else {
-        // IMApp.saveENSToLocal(ensName, address)
-        // window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { registerENSLoading: false, registerError: false } })
-        // window.g_app._store.dispatch(routerRedux.push('/regSuccess'))
+    sendRequest(
+      `${IMApp.API_URL}${ETHEREUM_API.REGISTER_ENS}${this.props.account.address}/${nameValue}`,
+      (err, res) => {
+        if (err) {
+          console.log(`register ens error.`);
+          console.log(err);
+          showNotification(
+            'newAccount',
+            'error',
+            formatMessage({ id: 'ens_register_error_notice' }),
+          );
+          window.g_app._store.dispatch({
+            type: 'account/saveAccountState',
+            payload: { registerENSLoading: false, registerError: true },
+          });
+        } else if (res.err !== 0) {
+          console.log(`register ens error.`);
+          console.log(res.msg);
+          showNotification('newAccount', 'error', res.msg);
+          window.g_app._store.dispatch({
+            type: 'account/saveAccountState',
+            payload: { registerENSLoading: false, registerError: true },
+          });
+        } else {
+          // IMApp.saveENSToLocal(ensName, address)
+          // window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { registerENSLoading: false, registerError: false } })
+          // window.g_app._store.dispatch(routerRedux.push('/regSuccess'))
 
-        this.setState({ confirmLoading: true });
-        saveShhName(nameValue).then(() => {
-          this.setState({ nameModal: false, confirmLoading: false });
-        }).catch(e => {
-          console.error('save shh name error: ', e);
-        });
+          this.setState({ confirmLoading: true });
+          saveShhName(nameValue)
+            .then(() => {
+              this.setState({ nameModal: false, confirmLoading: false });
+            })
+            .catch(e => {
+              console.error('save shh name error: ', e);
+            });
 
-        // get free 1 Ether to new account
-        // IMApp.getFreeEther(address).then(() => {
-        //   console.log('success get ether')
-        // });
-      }
-    })
-
+          // get free 1 Ether to new account
+          // IMApp.getFreeEther(address).then(() => {
+          //   console.log('success get ether')
+          // });
+        }
+      },
+    );
   };
 
   endGroupMedia = () => {
@@ -866,11 +944,10 @@ class HomePage extends Component {
 
     try {
       if (this.localStream) {
-        this.localStream.getTracks().forEach((track) => track.stop());
+        this.localStream.getTracks().forEach(track => track.stop());
         this.localStream = null;
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   };
 
   render() {
@@ -881,12 +958,25 @@ class HomePage extends Component {
     const { media } = this.props;
     const { type: mType, chatUser, status } = media;
     const {
-      newDialogModal, newTranferModal, addFromEns, ensName,
-      nameError, chatAddress, nickName, groupType, videoEnable,
+      newDialogModal,
+      newTranferModal,
+      addFromEns,
+      ensName,
+      nameError,
+      chatAddress,
+      nickName,
+      groupType,
+      videoEnable,
       audioEnable,
     } = this.state;
     const { faxBalance, etherBalance, friends, substrateBalance } = this.props.user;
-    const { queryENSAvaiable, queryENSLoading, queryENSAddress, queryShhPubKey, queryShhPubKeyByAddress } = this.props.account;
+    const {
+      queryENSAvaiable,
+      queryENSLoading,
+      queryENSAddress,
+      queryShhPubKey,
+      queryShhPubKeyByAddress,
+    } = this.props.account;
     const { loginAddress } = this.props.account;
 
     let callTitleColor = undefined;
@@ -897,59 +987,93 @@ class HomePage extends Component {
       callTitleColor = '#f5222d';
     }
 
-    const errorMessage = addFromEns && ensName ? nameError ? nameError : (queryENSAvaiable || !ensName) ? formatMessage({ id: 'home.ens_name_not_register_error' }) : '' : '';
-    const queryENSAddressTip = queryENSAddress || (queryENSAvaiable ? formatMessage({ id: 'home.ens_name_not_register' }) : '');
+    const errorMessage =
+      addFromEns && ensName
+        ? nameError
+          ? nameError
+          : queryENSAvaiable || !ensName
+          ? formatMessage({ id: 'home.ens_name_not_register_error' })
+          : ''
+        : '';
+    const queryENSAddressTip =
+      queryENSAddress ||
+      (queryENSAvaiable ? formatMessage({ id: 'home.ens_name_not_register' }) : '');
 
-    const ensNameCheck = ensName
-      ? queryENSLoading
-        ? <Tooltip title={formatMessage({ id: 'home.searching' })}>
+    const ensNameCheck = ensName ? (
+      queryENSLoading ? (
+        <Tooltip title={formatMessage({ id: 'home.searching' })}>
           <LoadingOutlined style={{ color: '#1890ff' }} />
         </Tooltip>
-        : queryENSAvaiable
-          ? <Tooltip title={formatMessage({ id: 'home.ens_name_not_register' })}>
-            <CloseCircleOutlined style={{ color: '#f5222d' }} />
-          </Tooltip>
-          : <Tooltip title={formatMessage({ id: 'home.registered' })}>
-            <CheckCircleOutlined style={{ color: '#52c41a' }} />
-          </Tooltip>
-      : null;
+      ) : queryENSAvaiable ? (
+        <Tooltip title={formatMessage({ id: 'home.ens_name_not_register' })}>
+          <CloseCircleOutlined style={{ color: '#f5222d' }} />
+        </Tooltip>
+      ) : (
+        <Tooltip title={formatMessage({ id: 'home.registered' })}>
+          <CheckCircleOutlined style={{ color: '#52c41a' }} />
+        </Tooltip>
+      )
+    ) : null;
 
     const { s } = this.props.location.query;
-    let contentBody = <HomeTab address={loginAddress} token={faxBalance} ether={etherBalance} substrateBalance={substrateBalance} />;
-    if ('defi' === s) {
-      contentBody = <Defis />;
-    } else if (chatUser) {
-      contentBody = (
-        <ChatBox
-          chatTo={chatUser}
-          startAudio={() => this.startCall(MediaType.audio)}
-          startVideo={() => this.startCall(MediaType.video)}
-          startGroupAudio={() => this.startGroupCall(MediaType.audio)}
-          startGroupVideo={() => this.startGroupCall(MediaType.video)}
-        />
-      );
+    let contentBody = (
+      <HomeTab
+        address={loginAddress}
+        token={faxBalance}
+        ether={etherBalance}
+        substrateBalance={substrateBalance}
+      />
+    );
+    switch (s) {
+      case 'defi':
+        contentBody = <Defis />;
+        break;
+      case 'kademlia':
+        contentBody = <Kademlia />;
+        break;
+      case 'beagle':
+        contentBody = <Beagle />;
+        break;
+      default:
+        if (chatUser) {
+          contentBody = (
+            <ChatBox
+              chatTo={chatUser}
+              startAudio={() => this.startCall(MediaType.audio)}
+              startVideo={() => this.startCall(MediaType.video)}
+              startGroupAudio={() => this.startGroupCall(MediaType.audio)}
+              startGroupVideo={() => this.startGroupCall(MediaType.video)}
+            />
+          );
+        }
     }
+
     return (
       <NeedLogin>
         <div style={{ height: '100vh', backgroundColor: 'rgb(213,216,225)' }}>
           <Layout style={{ height: '100vh', margin: 'auto', backgroundColor: 'rgb(213,216,225)' }}>
-            <Sider width={200} style={{
-              margin: '10px 0px',
-              backgroundColor: '#ffffff',
-              overflowX: 'hidden',
-              overflowY: 'auto',
-            }}>
-              <div style={{
-                margin: '5px 0px',
-                display: 'flex',
-                flexDirection: 'row',
-                borderBottom: '1px solid #e8e8e8',
-                borderTop: '1px solid #e8e8e8',
-                height: 50,
-                alignItems: 'center',
-                backgroundColor: 'rgba(40,40,40, 0.7)',
-                color: '#fff',
-              }}>
+            <Sider
+              width={200}
+              style={{
+                margin: '10px 0px',
+                backgroundColor: '#ffffff',
+                overflowX: 'hidden',
+                overflowY: 'auto',
+              }}
+            >
+              <div
+                style={{
+                  margin: '5px 0px',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  borderBottom: '1px solid #e8e8e8',
+                  borderTop: '1px solid #e8e8e8',
+                  height: 50,
+                  alignItems: 'center',
+                  backgroundColor: 'rgba(40,40,40, 0.7)',
+                  color: '#fff',
+                }}
+              >
                 <div style={{ flex: 1, textAlign: 'center', borderRight: '1px solid #e8e8e8' }}>
                   <HomeOutlined style={{ fontSize: 22 }} onClick={this.openHomeTab} />
                   {/* <p>个人信息页</p> */}
@@ -959,7 +1083,10 @@ class HomePage extends Component {
                   {/* <p>新建对话</p> */}
                 </div>
                 <div style={{ flex: 1, textAlign: 'center' }}>
-                  <InteractionOutlined style={{ fontSize: 22 }} onClick={this.openNewTransferModal} />
+                  <InteractionOutlined
+                    style={{ fontSize: 22 }}
+                    onClick={this.openNewTransferModal}
+                  />
                   {/* <p>发起转账</p> */}
                 </div>
               </div>
@@ -976,7 +1103,8 @@ class HomePage extends Component {
                   height: 70,
                   borderBottom: '1px solid #e8e8e8',
                   backgroundColor: chatUser && chatUser.isGroup ? '#e6f7ff' : '',
-                }}>
+                }}
+              >
                 <List.Item.Meta
                   avatar={<Avatar icon={<TeamOutlined />} style={{ backgroundColor: '#40a9ff' }} />}
                   title={formatMessage({ id: 'home.public_room' })}
@@ -995,25 +1123,35 @@ class HomePage extends Component {
                       paddingRight: 10,
                       width: 200,
                       height: 70,
-                      backgroundColor: chatUser && chatUser.address === friend.address ? '#e6f7ff' : '',
-                    }}>
+                      backgroundColor:
+                        chatUser && chatUser.address === friend.address ? '#e6f7ff' : '',
+                    }}
+                  >
                     <List.Item.Meta
                       avatar={
-                        <Avatar>{friend.ensName && friend.ensName[ 0 ] || friend.nickName && friend.nickName[ 0 ] || '0x'}</Avatar>}
-                      title={friend.nickName || friend.ensName || shortenAddress(friend.address, 10)}
+                        <Avatar>
+                          {(friend.ensName && friend.ensName[0]) ||
+                            (friend.nickName && friend.nickName[0]) ||
+                            '0x'}
+                        </Avatar>
+                      }
+                      title={
+                        friend.nickName || friend.ensName || shortenAddress(friend.address, 10)
+                      }
                       description={formatTime(friend.time)}
                     />
                   </List.Item>
                 )}
               />
             </Sider>
-            <Layout style={{ overflowY: 'hidden', height: '100vh', backgroundColor: 'rgb(213,216,225)' }}>
+            <Layout
+              style={{ overflowY: 'hidden', height: '100vh', backgroundColor: 'rgb(213,216,225)' }}
+            >
               <Content style={{ background: '#fff', margin: '10px 3px', overflowY: 'auto' }}>
                 {contentBody}
               </Content>
             </Layout>
           </Layout>
-
 
           <Modal
             title={formatMessage({ id: 'home.add_dialogue' })}
@@ -1024,32 +1162,40 @@ class HomePage extends Component {
             cancelText={formatMessage({ id: 'cancel' })}
           >
             <div style={{ display: 'flex' }}>
-              <div style={{ flex: 1, justifyContent: 'center', display: 'flex', cursor: 'pointer' }}
-                   onClick={() => this.setState({ addFromEns: true })}>
-                <div style={{
-                  textAlign: 'center',
-                  width: 90,
-                  color: addFromEns ? 'rgb(24, 144, 255)' : '',
-                  borderBottom: addFromEns ? '1px solid rgba(24, 144, 255, 0.5)' : '0px',
-                }}>
+              <div
+                style={{ flex: 1, justifyContent: 'center', display: 'flex', cursor: 'pointer' }}
+                onClick={() => this.setState({ addFromEns: true })}
+              >
+                <div
+                  style={{
+                    textAlign: 'center',
+                    width: 90,
+                    color: addFromEns ? 'rgb(24, 144, 255)' : '',
+                    borderBottom: addFromEns ? '1px solid rgba(24, 144, 255, 0.5)' : '0px',
+                  }}
+                >
                   {formatMessage({ id: 'home.ens_username' })}
                 </div>
               </div>
-              <div style={{ flex: 1, justifyContent: 'center', display: 'flex', cursor: 'pointer' }}
-                   onClick={() => this.setState({ addFromEns: false })}>
-                <div style={{
-                  textAlign: 'center',
-                  width: 90,
-                  color: !addFromEns ? 'rgb(24, 144, 255)' : '',
-                  borderBottom: !addFromEns ? '1px solid rgba(24, 144, 255, 0.5)' : '0px',
-                }}>
+              <div
+                style={{ flex: 1, justifyContent: 'center', display: 'flex', cursor: 'pointer' }}
+                onClick={() => this.setState({ addFromEns: false })}
+              >
+                <div
+                  style={{
+                    textAlign: 'center',
+                    width: 90,
+                    color: !addFromEns ? 'rgb(24, 144, 255)' : '',
+                    borderBottom: !addFromEns ? '1px solid rgba(24, 144, 255, 0.5)' : '0px',
+                  }}
+                >
                   {formatMessage({ id: 'home.wallet_address' })}
                 </div>
               </div>
             </div>
 
-            {addFromEns
-              ? <div>
+            {addFromEns ? (
+              <div>
                 <div style={{ display: 'flex', margin: '20px 20px 5px 20px' }}>
                   <Input
                     prefix={<UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -1069,31 +1215,47 @@ class HomePage extends Component {
                     onChange={this.onWhisperChange}
                   />
                 </div>
-                {errorMessage
-                  ? <div style={{ margin: '5px 20' }}>
+                {errorMessage ? (
+                  <div style={{ margin: '5px 20' }}>
                     <Alert message={errorMessage} type="error" />
                   </div>
-                  : <div style={{ margin: '5px 20px' }}>
-                    <Alert message={<div>
-                      <div>{formatMessage({ id: 'home.alert_address' })}<br />{queryENSAddressTip}</div>
-                      <hr style={{ borderBottom: '1px solid #91d5ff', borderTop: '0px' }} />
-                      <div>{formatMessage({ id: 'home.alert_shh_pubkey' })} <br />{queryShhPubKey}</div>
-                    </div>
-                    } type="info" />
-                  </div>}
+                ) : (
+                  <div style={{ margin: '5px 20px' }}>
+                    <Alert
+                      message={
+                        <div>
+                          <div>
+                            {formatMessage({ id: 'home.alert_address' })}
+                            <br />
+                            {queryENSAddressTip}
+                          </div>
+                          <hr style={{ borderBottom: '1px solid #91d5ff', borderTop: '0px' }} />
+                          <div>
+                            {formatMessage({ id: 'home.alert_shh_pubkey' })} <br />
+                            {queryShhPubKey}
+                          </div>
+                        </div>
+                      }
+                      type="info"
+                    />
+                  </div>
+                )}
               </div>
-              : <div>
+            ) : (
+              <div>
                 <div style={{ display: 'flex', margin: 20 }}>
                   <span style={{ width: 80 }}>{formatMessage({ id: 'home.my_nickname' })}</span>
                   <Input
                     placeholder={formatMessage({ id: 'home.set_my_nickname' })}
                     style={{ width: 380 }}
-                    onChange={(e) => this.setState({ nickName: e.target.value })}
+                    onChange={e => this.setState({ nickName: e.target.value })}
                     defaultValue={nickName}
                   />
                 </div>
                 <div style={{ display: 'flex', margin: '20px 20px 5px' }}>
-                  <span style={{ width: 80 }}>地址:<span style={{ color: '#f5222d' }}>*</span></span>
+                  <span style={{ width: 80 }}>
+                    地址:<span style={{ color: '#f5222d' }}>*</span>
+                  </span>
                   <Input
                     placeholder={formatMessage({ id: 'home.input_other_address' })}
                     style={{ width: 380 }}
@@ -1102,7 +1264,9 @@ class HomePage extends Component {
                   />
                 </div>
                 <div style={{ display: 'flex', margin: '20px 20px 5px' }}>
-                  <span style={{ width: 80 }}>Whisper:<span style={{ color: '#f5222d' }}>*</span></span>
+                  <span style={{ width: 80 }}>
+                    Whisper:<span style={{ color: '#f5222d' }}>*</span>
+                  </span>
                   <Input.TextArea
                     placeholder="Please input whisper public key"
                     defaultValue={queryShhPubKeyByAddress}
@@ -1112,12 +1276,20 @@ class HomePage extends Component {
                 </div>
 
                 <div style={{ margin: '20px 20px 20px' }}>
-                  <Alert message={<div>
-                    <div>{formatMessage({ id: 'home.alert_shh_pubkey' })} <br />{queryShhPubKeyByAddress}</div>
-                  </div>
-                  } type="info" />
+                  <Alert
+                    message={
+                      <div>
+                        <div>
+                          {formatMessage({ id: 'home.alert_shh_pubkey' })} <br />
+                          {queryShhPubKeyByAddress}
+                        </div>
+                      </div>
+                    }
+                    type="info"
+                  />
                 </div>
-              </div>}
+              </div>
+            )}
           </Modal>
 
           <Modal
@@ -1135,14 +1307,21 @@ class HomePage extends Component {
 
             <div style={{ display: 'flex', margin: 20 }}>
               <span style={{ width: 80 }}>{formatMessage({ id: 'home.address' })}</span>
-              <Input placeholder={formatMessage({ id: 'home.input_other_address' })} style={{ width: 380 }}
-                     onChange={(e) => this.setState({ to: e.target.value })} />
+              <Input
+                placeholder={formatMessage({ id: 'home.input_other_address' })}
+                style={{ width: 380 }}
+                onChange={e => this.setState({ to: e.target.value })}
+              />
               <span style={{ color: '#f5222d' }}>*</span>
             </div>
             <div style={{ display: 'flex', margin: 20 }}>
               <span style={{ width: 80 }}>{formatMessage({ id: 'home.transfer_amount' })}</span>
-              <Input placeholder={formatMessage({ id: 'home.input_transfer_fax_amount' })} style={{ width: 380 }}
-                     addonAfter="FAX" onChange={(e) => this.setState({ fax: e.target.value })} />
+              <Input
+                placeholder={formatMessage({ id: 'home.input_transfer_fax_amount' })}
+                style={{ width: 380 }}
+                addonAfter="FAX"
+                onChange={e => this.setState({ fax: e.target.value })}
+              />
               <span style={{ color: '#f5222d' }}>*</span>
             </div>
           </Modal>
@@ -1179,26 +1358,54 @@ class HomePage extends Component {
             footer={null}
             bodyStyle={{ padding: 0 }}
             width={800}
-            modalRender={(modal) => <ReactDraggable disabled={this.state.disabled}>{modal}</ReactDraggable>}
+            modalRender={modal => (
+              <ReactDraggable disabled={this.state.disabled}>{modal}</ReactDraggable>
+            )}
           >
-            <div style={{ width: '100%', minHeight: '100%', backgroundColor: 'black', position: 'relative' }}>
+            <div
+              style={{
+                width: '100%',
+                minHeight: '100%',
+                backgroundColor: 'black',
+                position: 'relative',
+              }}
+            >
               <video ref={this.videoRef} style={{ width: '100%' }} autoPlay></video>
-              <video style={{ height: 128, position: 'absolute', left: 0, bottom: 0 }} ref={this.localVideoRef} autoPlay
-                     muted></video>
+              <video
+                style={{ height: 128, position: 'absolute', left: 0, bottom: 0 }}
+                ref={this.localVideoRef}
+                autoPlay
+                muted
+              ></video>
               <div style={{ position: 'absolute', bottom: 16, right: 16 }}>
-                {
-                  status === MediaStatus.ring ?
-                    <Button type="primary" shape="circle" size="large" icon={<PhoneOutlined />}
-                            onClick={this.acceptInvite} style={{ marginRight: 16 }} /> : null
-                }
-                {
-                  status == MediaStatus.active ?
-                    <Button type="primary" size="large" shape="circle"
-                            icon={audioEnable ? <AudioOutlined /> : <AudioMutedOutlined />} onClick={this.toggleAudio}
-                            style={{ marginRight: 16 }} /> : null
-                }
-                <Button type="primary" danger shape="circle" size="large"
-                        icon={<PhoneOutlined style={{ transform: 'rotateZ(-135deg)' }} />} onClick={this.endMedia} />
+                {status === MediaStatus.ring ? (
+                  <Button
+                    type="primary"
+                    shape="circle"
+                    size="large"
+                    icon={<PhoneOutlined />}
+                    onClick={this.acceptInvite}
+                    style={{ marginRight: 16 }}
+                  />
+                ) : null}
+                {status == MediaStatus.active ? (
+                  <Button
+                    type="primary"
+                    size="large"
+                    shape="circle"
+                    icon={audioEnable ? <AudioOutlined /> : <AudioMutedOutlined />}
+                    onClick={this.toggleAudio}
+                    style={{ marginRight: 16 }}
+                  />
+                ) : null}
+                <Button
+                  type="primary"
+                  danger
+                  shape="circle"
+                  size="large"
+                  icon={<PhoneOutlined style={{ transform: 'rotateZ(-135deg)' }} />}
+                  onClick={this.endMedia}
+                />
               </div>
             </div>
           </Modal>
@@ -1233,37 +1440,61 @@ class HomePage extends Component {
             footer={null}
             bodyStyle={{ padding: 0 }}
             width={1000}
-            modalRender={(modal) => <ReactDraggable disabled={this.state.disabled}>{modal}</ReactDraggable>}
+            modalRender={modal => (
+              <ReactDraggable disabled={this.state.disabled}>{modal}</ReactDraggable>
+            )}
           >
-            <div ref={this.groupVideoContainerRef} style={{
-              width: '100%',
-              minHeight: 500,
-              backgroundColor: 'black',
-              position: 'relative',
-              display: 'flex',
-              flexWrap: 'wrap',
-            }}>
+            <div
+              ref={this.groupVideoContainerRef}
+              style={{
+                width: '100%',
+                minHeight: 500,
+                backgroundColor: 'black',
+                position: 'relative',
+                display: 'flex',
+                flexWrap: 'wrap',
+              }}
+            >
               <div style={{ width: '33%', position: 'relative', display: 'flex' }}>
-                <p style={{
-                  position: 'absolute',
-                  top: 8,
-                  left: 8,
-                  width: '100%',
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                  textOverflow: 'ellipsis',
-                  color: '#fff',
-                  fontSize: 18,
-                }}>ME</p>
-                <video style={{ width: '100%' }} ref={this.localGroupVideoRef} autoPlay muted></video>
+                <p
+                  style={{
+                    position: 'absolute',
+                    top: 8,
+                    left: 8,
+                    width: '100%',
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                    color: '#fff',
+                    fontSize: 18,
+                  }}
+                >
+                  ME
+                </p>
+                <video
+                  style={{ width: '100%' }}
+                  ref={this.localGroupVideoRef}
+                  autoPlay
+                  muted
+                ></video>
               </div>
               <div style={{ position: 'absolute', bottom: 16, right: 16, zIndex: 10000 }}>
-                <Button type="primary" size="large" shape="circle"
-                        icon={audioEnable ? <AudioOutlined /> : <AudioMutedOutlined />} onClick={this.toggleAudio}
-                        style={{ marginRight: 16 }} />
-                <Button type="primary" danger shape="circle" size="large"
-                        icon={<PhoneOutlined style={{ transform: 'rotateZ(-135deg)' }} />}
-                        onClick={this.endGroupMedia} />
+                <Button
+                  type="primary"
+                  size="large"
+                  shape="circle"
+                  icon={audioEnable ? <AudioOutlined /> : <AudioMutedOutlined />}
+                  onClick={this.toggleAudio}
+                  style={{ marginRight: 16 }}
+                />
+                <Button
+                  type="primary"
+                  danger
+                  shape="circle"
+                  size="large"
+                  icon={<PhoneOutlined style={{ transform: 'rotateZ(-135deg)' }} />}
+                  onClick={this.endGroupMedia}
+                />
               </div>
             </div>
           </Modal>
@@ -1277,14 +1508,17 @@ class HomePage extends Component {
           onOk={this.modifyEnsName}
           okButtonProps={{ loading: this.state.confirmLoading }}
         >
-          <Input value={this.state.nameValue} onChange={(e) => this.setState({ nameValue: e.target.value })} />
+          <Input
+            value={this.state.nameValue}
+            onChange={e => this.setState({ nameValue: e.target.value })}
+          />
         </Modal>
       </NeedLogin>
     );
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     contract: state.contract,
     user: state.user,

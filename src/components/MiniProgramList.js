@@ -4,38 +4,44 @@ import router from 'umi/router';
 
 const miniProgramList = [
   { name: 'Defi', synopsis: 'Defi', link: '/home?s=defi', tooltip: 'dapps' },
+  { name: 'Kademlia', synopsis: 'Kademlia', link: '/home?s=kademlia', tooltip: 'Kademlia talk' },
+  { name: 'Beagle', synopsis: 'Beagle', link: '/home?s=beagle', tooltip: 'Beagle talk' },
 ];
 
-const MiniProgramItem = (props) => {
+const MiniProgramItem = props => {
   const { name, synopsis, link, tooltip } = props;
 
   const navigate = useCallback(() => {
     router.push(link);
-  }, []);
+  }, [link]);
 
   return (
     <Tooltip title={tooltip} placement="right">
       <div
         onClick={navigate}
-        style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', padding: '4px 8px', cursor: 'pointer' }}
+        style={{
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          padding: '4px 8px',
+          cursor: 'pointer',
+        }}
       >
-        <Avatar>
-          {name}
-        </Avatar>
+        <Avatar>{name}</Avatar>
         <span style={{ marginLeft: 8 }}>{synopsis}</span>
       </div>
     </Tooltip>
   );
-}
+};
 
-const MiniProgramList = (props) => {
+const MiniProgramList = props => {
   return (
     <div>
-      {
-        miniProgramList.map((item) => <MiniProgramItem key={item.name} {...item} />)
-      }
+      {miniProgramList.map(item => (
+        <MiniProgramItem key={item.name} {...item} />
+      ))}
     </div>
   );
-}
+};
 
 export default MiniProgramList;
