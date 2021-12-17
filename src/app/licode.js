@@ -39,12 +39,16 @@ export async function initChannel(isHost,agoraObject, channel, address ) {
     roomId: channel,
     type: configFlags.type,
     mediaConfiguration: configFlags.mediaConfiguration };
-  createToken(roomData,(response)=>{
+  createToken(roomData,(response)=> {
     const token = response;
     console.log(token);
-    if (token=="")
+    if (token == "")
       return;
-    room = Erizo.Room({ token });
+    if (!Erizo.Room){
+      alert("Erizo.Room is Empty" + token)
+      return;
+    }
+      room = Erizo.Room({ token });
     room.connect();
     room.addEventListener('room-connected', (roomEvent) => {
       console.log(JSON.stringify(roomEvent));
