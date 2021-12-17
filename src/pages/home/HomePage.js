@@ -20,6 +20,7 @@ import router from 'umi/router';
 import MyAccountRow from './sider/MyAccountInfo';
 import ChatBox from './content/chatbox/ChatBox';
 import HomeTab from './HomeTab';
+import ERIZO from './content/erizo.js';
 import {
   shortenAddress,
   formatTime,
@@ -55,6 +56,7 @@ import MiniProgramList from '@/components/MiniProgramList';
 import Defis from '@/pages/home/content/Defis';
 import Kademlia from '@/pages/home/content/Kademlia';
 import Beagle from '@/pages/home/content/Beagle';
+import Chat from '@/pages/home/content/Chat';
 import { ETHEREUM_API } from '@/app/constant';
 import { routerRedux } from 'dva/router';
 import RoomList from '@/pages/home/content/RoomList';
@@ -1034,6 +1036,9 @@ class HomePage extends Component {
         break;
       case 'beagle':
         contentBody = <Beagle />;
+        break;
+      case 'chat':
+        contentBody = <Chat />;
         break;
       default:
         if (chatUser) {
