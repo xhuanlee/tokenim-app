@@ -1,8 +1,9 @@
+/* eslint-disable */
 import { AGORA_APP_ID } from '@/app/constant';
 import AgoraRTC from 'agora-rtc-sdk-ng';
 import {createToken} from '../pages/home/content/LicodeClient';
 
-const Erizo = require('../pages/home/content/erizo');
+//const Erizo = require('../pages/home/content/erizo');
 const serverUrl = 'https://t.callt.net:3001/';
 let localStream;
 let localStreamid;

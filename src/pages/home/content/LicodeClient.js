@@ -1,6 +1,7 @@
+/* eslint-disable */
 //import $ from "jquery";
 //import Erizo from "./erizo";
-const Erizo = require('./erizo');// eslint-disable-line
+//const Erizo = require('./erizo');// eslint-disable-line
 //require('./erizo');
 //const serverUrl = '/';
 const serverUrl = 'https://t.callt.net:3001/';
