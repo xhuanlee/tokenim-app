@@ -1,3 +1,4 @@
+/* eslint-disable */
 /*
  The buffer module from node.js, for the browser.
 

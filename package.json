@@ -7,6 +7,14 @@
     "lint": "eslint {src,mock,tests}/**/*.{js,jsx} --fix",
     "precommit": "lint-staged"
   },
+  "eslintConfig": {
+    "extends": "react-app",
+    "rules": {
+      "no-undef": "off",
+      "no-restricted-globals": "off",
+      "no-unused-vars": "off"
+    }
+  },
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
     "@polkadot/api": "^3.6.4",

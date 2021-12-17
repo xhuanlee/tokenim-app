@@ -11,7 +11,7 @@ import {
   leaveCall,
   userJoinedEvent, userLeftEvent,
   userPublishedEvent,
-} from '@/app/agora';
+} from '@/app/licode';
 import { Button, Tooltip } from 'antd';
 import NeedLogin from '@/pages/home/NeedLogin';
 import { isHost } from '@/service/clubhouse';
@@ -36,7 +36,9 @@ const MeetingRoom = (props) => {
     const isAHost = isHost(currentRoom, user.address);
     const role = isAHost ? 'host' : 'audience';
     enterRoom(user.address,currentRoom.name,id);
-    return;
+    return () => {
+      leaveCall(agoraObject);
+    }
     const client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
     agoraObject.client = client;
 

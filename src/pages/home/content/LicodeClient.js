@@ -1,6 +1,6 @@
 //import $ from "jquery";
 //import Erizo from "./erizo";
-const Erizo = require('./erizo');
+const Erizo = require('./erizo');// eslint-disable-line
 //require('./erizo');
 //const serverUrl = '/';
 const serverUrl = 'https://licode.callpass.cn:3001/';
@@ -220,7 +220,7 @@ const getRooms = (callback) => {
 
 const name = addPreZero4(Math.round(Math.random() * 10000));
 let speakersInRoom = 0;
-const createToken = (roomData, callback) => {
+export const createToken = (roomData, callback) => {
   const req = new XMLHttpRequest();
   const url = `${serverUrl}createToken/`;
 
@@ -236,7 +236,7 @@ const createToken = (roomData, callback) => {
   req.send(JSON.stringify(roomData));
 };
 
-const enterRoom = (username, room, roomid) => {
+export const enterRoom = (username, room, roomid) => {
   const roomData = { username: username,
     role: 'presenter',
     room: room,
@@ -245,11 +245,11 @@ const enterRoom = (username, room, roomid) => {
     mediaConfiguration: configFlags.mediaConfiguration };
   // document.getElementById('startButton').disabled = true;
   // document.getElementById('slideShowMode').disabled = false;
-  document.getElementById('recordButton').disabled = false;
-  document.getElementById('stopButton').disabled = true;
-  document.getElementById('talkMode').disabled = false;
-  document.getElementById('startWarning').hidden = true;
-  document.getElementById('startButton').hidden = true;
+  // document.getElementById('recordButton').disabled = false;
+  // document.getElementById('stopButton').disabled = true;
+  // document.getElementById('talkMode').disabled = false;
+  // document.getElementById('startWarning').hidden = true;
+  // document.getElementById('startButton').hidden = true;
   recording = false;
   console.log('Selected Room', configFlags.room, 'of type', configFlags.type);
   const music = document.getElementsByName('music');
