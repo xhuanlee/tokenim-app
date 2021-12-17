@@ -62,7 +62,8 @@ const RoomList = (props) => {
   }, [dispatch]);
   const goToRoom = useCallback((room) => {
     dispatch({ type: 'meetingroom/saveCurrentRoom', payload: { currentRoom: room } });
-    router.push(`/club-house/${room.id}`);
+    router.push(`/meetingroom/${room._id}`);
+    console.log('enter:'+room._id);
   }, [dispatch]);
   const saveUserInfo = useCallback(() => {
     form.validateFields().then(values => {

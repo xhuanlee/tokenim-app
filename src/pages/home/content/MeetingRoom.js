@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 import { connect } from 'dva';
 import AgoraRTC from 'agora-rtc-sdk-ng';
-import style from './ClubHouse.less';
+import style from '../../ClubHouse.less';
 import { AudioOutlined, AudioMutedOutlined } from '@ant-design/icons';
 import ClubhouseUserItem from '@/components/ClubhouseUserItem';
 import {
@@ -15,25 +15,28 @@ import {
 import { Button, Tooltip } from 'antd';
 import NeedLogin from '@/pages/home/NeedLogin';
 import { isHost } from '@/service/clubhouse';
+import {enterRoom} from './LicodeClient';
 
-const CHANNEL_PREFIX = 'club_house';
+const CHANNEL_PREFIX = 'meetingroom';
 
 const agoraObject = {
   client: null,
   localAudioTrack: null,
 }
 
-const ClubhouseRoom = (props) => {
+const MeetingRoom = (props) => {
   const { dispatch, match: { params: { id } }, currentRoom, listeners, user, audioEnable, onlineSpeakers } = props;
 
   useEffect(() => {
-    if (!currentRoom || !currentRoom.id) {
-      dispatch({ type: 'clubhouse/fetchRoom', payload: { id } });
+    if (!currentRoom || !currentRoom._id) {
+      dispatch({ type: 'meetingroom/fetchRoom', payload: { id } });
       return;
     }
 
     const isAHost = isHost(currentRoom, user.address);
     const role = isAHost ? 'host' : 'audience';
+    enterRoom(user.address,currentRoom.name,id);
+    return;
     const client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
     agoraObject.client = client;
 
@@ -48,14 +51,14 @@ const ClubhouseRoom = (props) => {
   }, [currentRoom, dispatch, id, user.address]);
 
   useEffect(() => {
-    dispatch({ type: 'clubhouse/userJoin', payload: { address: user.address } });
+    dispatch({ type: 'meeting/userJoin', payload: { address: user.address } });
     return () => {
-      dispatch({ type: 'clubhouse/userLeft', payload: { address: user.address } });
+      dispatch({ type: 'meeting/userLeft', payload: { address: user.address } });
     };
   }, [dispatch, user.address]);
   const toggleAudioEnable = useCallback(() => {
     agoraObject.localAudioTrack.setEnabled(!audioEnable);
-    dispatch({ type: 'clubhouse/saveAudioEnable', payload: { audioEnable: !audioEnable } });
+    dispatch({ type: 'meeting/saveAudioEnable', payload: { audioEnable: !audioEnable } });
   }, [audioEnable, dispatch]);
 
   const { title, moderators, speakers } = currentRoom || {};
@@ -97,9 +100,9 @@ const ClubhouseRoom = (props) => {
 };
 
 export default connect(state => ({
-  currentRoom: state.clubhouse.currentRoom,
-  user: state.clubhouse.user,
-  listeners: state.clubhouse.listeners,
-  audioEnable: state.clubhouse.audioEnable,
-  onlineSpeakers: state.clubhouse.onlineSpeakers,
-}))(ClubhouseRoom);
+  currentRoom: state.meetingroom.currentRoom,
+  user: state.meetingroom.user,
+  listeners: state.meetingroom.listeners,
+  audioEnable: state.meetingroom.audioEnable,
+  onlineSpeakers: state.meetingroom.onlineSpeakers,
+}))(MeetingRoom);

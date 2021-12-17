@@ -17,6 +17,8 @@ export default {
         { path: '/invest', component: '../pages/invest' },
         { path: '/club-house', component: '../pages/ClubHouse' },
         { path: '/club-house/:id', component: '../pages/ClubHouseRoom' },
+        { path: '/meetingroom', component: '../pages/home/content/RoomList' },
+        { path: '/meetingroom/:id', component: '../pages/home/content/MeetingRoom' },
       ]
     }
   ],
