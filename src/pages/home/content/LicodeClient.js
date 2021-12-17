@@ -1,5 +1,6 @@
 //import $ from "jquery";
-import Erizo from "./erizo";
+//import Erizo from "./erizo";
+const Erizo = require('./erizo');
 //require('./erizo');
 //const serverUrl = '/';
 const serverUrl = 'https://licode.callpass.cn:3001/';
