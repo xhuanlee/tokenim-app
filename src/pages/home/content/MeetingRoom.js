@@ -35,29 +35,36 @@ const MeetingRoom = (props) => {
 
     const isAHost = isHost(currentRoom, user.address);
     const role = isAHost ? 'host' : 'audience';
-    enterRoom(user.address,currentRoom.name,id);
+    agoraObject.roomname = currentRoom.name;
+//    enterRoom(user.address,currentRoom.name,id);
+//    initChannel(isAHost, agoraObject, `${CHANNEL_PREFIX}_${currentRoom.id}`, user.address);
+    agoraObject.client = user;
+    initChannel(isAHost, agoraObject, currentRoom._id, user.address);
     return () => {
       leaveCall(agoraObject);
     }
-    const client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
-    agoraObject.client = client;
-
-    client.on('user-published', (user, mediaType) => userPublishedEvent(agoraObject, user, mediaType));
-    client.on('user-joined', userJoinedEvent);
-    client.on('user-left', userLeftEvent);
-    initChannel(isAHost, agoraObject, `${CHANNEL_PREFIX}_${currentRoom.id}`, user.address);
-
-    return () => {
-      leaveCall(agoraObject);
-    }
-  }, [currentRoom, dispatch, id, user.address]);
+    // const client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
+    // agoraObject.client = client;
+    //
+    // client.on('user-published', (user, mediaType) => userPublishedEvent(agoraObject, user, mediaType));
+    // client.on('user-joined', userJoinedEvent);
+    // client.on('user-left', userLeftEvent);
+    // initChannel(isAHost, agoraObject, `${CHANNEL_PREFIX}_${currentRoom.id}`, user.address);
+    //
+    // return () => {
+    //   leaveCall(agoraObject);
+    // }
+  }
+    , [currentRoom, dispatch, id, user]);
+//, [currentRoom, dispatch, id, user.address]);
 
   useEffect(() => {
-    dispatch({ type: 'meeting/userJoin', payload: { address: user.address } });
+    dispatch({ type: 'meetingroom/userJoin', payload: { address: user.address } });
     return () => {
-      dispatch({ type: 'meeting/userLeft', payload: { address: user.address } });
+      dispatch({ type: 'meetingroom/userLeft', payload: { address: user.address } });
     };
   }, [dispatch, user.address]);
+//}, [dispatch, user.address]);
   const toggleAudioEnable = useCallback(() => {
     agoraObject.localAudioTrack.setEnabled(!audioEnable);
     dispatch({ type: 'meeting/saveAudioEnable', payload: { audioEnable: !audioEnable } });

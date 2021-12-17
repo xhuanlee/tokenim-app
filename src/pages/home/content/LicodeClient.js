@@ -3,7 +3,7 @@
 const Erizo = require('./erizo');// eslint-disable-line
 //require('./erizo');
 //const serverUrl = '/';
-const serverUrl = 'https://licode.callpass.cn:3001/';
+const serverUrl = 'https://t.callt.net:3001/';
 let localStream;
 let localStreamid;
 let room;
