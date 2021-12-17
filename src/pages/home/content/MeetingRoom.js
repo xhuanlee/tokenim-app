@@ -75,6 +75,7 @@ const MeetingRoom = (props) => {
   return (
     <NeedLogin>
       <div className={style.roomTitleContainer}>
+        <script type="text/javascript" src="erizo.js"></script>
         <div>
           <h1>
             {title}

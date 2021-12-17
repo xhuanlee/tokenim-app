@@ -60,6 +60,7 @@ import Chat from '@/pages/home/content/Chat';
 import { ETHEREUM_API } from '@/app/constant';
 import { routerRedux } from 'dva/router';
 import RoomList from '@/pages/home/content/RoomList';
+import MeetingRoom from '@/pages/home/content/MeetingRoom';
 
 const { Content, Sider } = Layout;
 
@@ -1038,7 +1039,7 @@ class HomePage extends Component {
         contentBody = <Beagle />;
         break;
       case 'chat':
-        contentBody = <Chat />;
+        contentBody = <MeetingRoom />;
         break;
       default:
         if (chatUser) {
