@@ -975,6 +975,16 @@ class HomePage extends Component {
     } = this.state;
     const { faxBalance, etherBalance, friends, substrateBalance } = this.props.user;
     const {
+      dispatch,
+      currentRoom,
+      listeners,
+      roomUser,
+      audioEnable: roomAudioEnable,
+      onlineSpeakers,
+      loading,
+      meetingroom,
+    } = this.props;
+    const {
       queryENSAvaiable,
       queryENSLoading,
       queryENSAddress,
@@ -1019,7 +1029,7 @@ class HomePage extends Component {
       )
     ) : null;
 
-    const { s } = this.props.location.query;
+    const { s, room } = this.props.location.query;
     let contentBody = (
       <HomeTab
         address={loginAddress}
@@ -1033,13 +1043,23 @@ class HomePage extends Component {
         contentBody = <Defis />;
         break;
       case 'kademlia':
-        contentBody = <RoomList />;
+        contentBody = <RoomList dispatch={dispatch} loading={loading} meetingroom={meetingroom} />;
         break;
       case 'beagle':
         contentBody = <Beagle />;
         break;
       case 'chat':
-        contentBody = <MeetingRoom />;
+        contentBody = (
+          <MeetingRoom
+            dispatch={dispatch}
+            id={room}
+            currentRoom={currentRoom}
+            listeners={listeners}
+            user={roomUser}
+            audioEnable={roomAudioEnable}
+            onlineSpeakers={onlineSpeakers}
+          />
+        );
         break;
       default:
         if (chatUser) {
@@ -1532,6 +1552,12 @@ const mapStateToProps = state => {
     account: state.account,
     media: state.media,
     loading: state.loading,
+    meetingroom: state.meetingroom,
+    currentRoom: state.meetingroom.currentRoom,
+    roomUser: state.meetingroom.user,
+    listeners: state.meetingroom.listeners,
+    audioEnable: state.meetingroom.audioEnable,
+    onlineSpeakers: state.meetingroom.onlineSpeakers,
   };
 };
 

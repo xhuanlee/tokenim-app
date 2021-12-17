@@ -87,8 +87,8 @@ const RoomList = props => {
   const goToRoom = useCallback(
     room => {
       dispatch({ type: 'meetingroom/saveCurrentRoom', payload: { currentRoom: room } });
-      router.push(`/meetingroom/${room._id}`);
-      //router.push(`/home?s=chat&room=${room._id}`);
+      //router.push(`/meetingroom/${room._id}`);
+      router.push(`/home?s=chat&room=${room._id}`);
       console.log('enter:' + room._id);
     },
     [dispatch],
@@ -301,7 +301,4 @@ const RoomList = props => {
   );
 };
 
-export default connect(state => ({
-  loading: state.loading,
-  meetingroom: state.meetingroom,
-}))(RoomList);
+export default RoomList;
