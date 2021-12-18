@@ -103,16 +103,23 @@ const MeetingRoom = props => {
               ))}
           </div>
         </div>
-        <div className={style.userContainer}>
+        <div className={style.userContainer} id="videoContainer" >
           <h2>speakers</h2>
           {speakers &&
             speakers.map(item => (
               <ClubhouseUserItem user={item} online={onlineSpeakers.includes(item.address)} />
             ))}
         </div>
-        <div className={style.userContainer}>
+        <div className={style.userContainer}  id="listenerContainer">
           <h2>listeners</h2>
           {listeners && listeners.map(item => <ClubhouseUserItem user={item} online />)}
+        </div>
+        <div className={style.userContainer} >
+          <button id="stopButton" onClick={()=>{console.log("stopConference()")}}  disabled>End</button>
+          <button id="talkMode" onClick={()=>{console.log("talkMode()")}} >Mute</button>
+          <button id="cameraMode" onClick={()=>{console.log("cameraMode()")}} >Video</button>
+          <button id="recordButton" onClick={()=>{console.log("startRecording()")}} disabled>Recording
+          </button>
         </div>
       </div>
     </NeedLogin>
