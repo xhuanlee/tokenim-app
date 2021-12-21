@@ -131,7 +131,11 @@ export async function initChannel(isHost,agoraObject, channel, address ) {
         });
       });
       subscribeToStreams(roomEvent.streams);
-      createLocalAndPublishAudio(agoraObject, isHost);
+      if (configFlags.microphone && speakersInRoom >= 5) {
+        talkMode(false);
+      }
+      else
+        createLocalAndPublishAudio(agoraObject, isHost);
     });
     room.addEventListener('room-disconnected', (roomEvent) => {
       console.log(JSON.stringify(roomEvent));
@@ -168,6 +172,7 @@ export async function initChannel(isHost,agoraObject, channel, address ) {
       // eslint-disable-next-line no-plusplus
       speakersInRoom--;
       console.log(`speakersInRoom--:${speakersInRoom}`);
+      window.g_app._store.dispatch({ type: 'meetingroom/userLeft', payload:{address: stream.getID() }});
       if (stream.elementID !== undefined) {
         const element = document.getElementById(stream.elementID);
         if (element) {
@@ -240,6 +245,8 @@ export async function createLocalAndPublishAudio(agoraObject, isHost) {
         window.g_app._store.dispatch({ type: 'meetingroom/saveAudioEnable', payload: { audioEnable: false } });
       } else {
         console.log('Published stream', id);
+        let stream=localStream;
+        window.g_app._store.dispatch({ type: 'meetingroom/addOnlineSpeakers', payload: {speaker:{ nickName:stream.getAttributes().actualName, address: stream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` }} });
       }
     });
     localStream.show('myAudio');
@@ -283,10 +290,120 @@ export function userLeftEvent(user, reason) {
   console.log('agora user left: ', user, reason);
   window.g_app._store.dispatch({ type: 'meetingroom/userLeft', payload: { address: user.uid } });
 }
+function stopConference() {
+  if (room) {
+    if (isTalking && localStream.getID()) { room.unpublish(localStream); }
+    //    room.unsubscribe();
+    room.disconnect();
+  }
+}
 
 export async function leaveCall(agoraObject) {
   console.log('licode user leave');
+  stopConference();
   // agoraObject.localAudioTrack && agoraObject.localAudioTrack.close();
   // await agoraObject.client.leave();
   window.g_app._store.dispatch({ type: 'meetingroom/saveListeners', payload: { listeners: [] } });
+}
+
+export function talkMode(audioEnable) {
+  if (!configFlags.microphone && localStream.getID()) {
+    configFlags.microphone = true;
+    document.getElementById('microphone').checked = configFlags.microphone;
+    room.unpublish(localStream, (event) => {
+      console.log(JSON.stringify(event));
+    });
+    localStream.close();
+    const config = { audio: configFlags.microphone, //! configFlags.onlySubscribe,//true,
+      video: configFlags.camera, //! configFlags.onlyAudio,
+      data: configFlags.data, // true,
+      screen: configFlags.screen,
+      attributes: { nickname: `web${name}`, actualName: `web${name}`, avatar: `${name}`, id: `${name}`, name: `${name}`, speaker: !configFlags.onlySubscribe } };
+    localStream = Erizo.Stream(config);
+    window.localStream = localStream;
+    localStream.addEventListener('access-accepted', () => {
+      room.publish(localStream, { maxVideoBW: 300, handlerProfile: 0 }, (id, error) => {
+        if (id === undefined) {
+          console.log('Error publishing stream', error);
+        } else {
+          console.log('Published stream', id);
+          window.g_app._store.dispatch({ type: 'meetingroom/addOnlineSpeakers', payload: {speaker:{ nickName:stream.getAttributes().actualName, address: stream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` }} });
+        }
+      });
+      localStream.show('myAudio');
+      localStream.addEventListener('stream-data', (evt) => {
+        console.log('Received data ', evt.msg, 'from stream ', evt.stream.getAttributes().name);
+        // $('#messages').append($('<li>').text(evt.msg));
+      });
+    });
+    localStream.addEventListener('access-denied', () => {
+      //        room.connect({ singlePC: configFlags.singlePC });
+      //        localStream.show('myVideo');
+      console.log('access-denied');
+      //          room.disconnect();
+    });
+    localStream.init();
+    return;
+  }
+
+  if (!localStream.audioMuted) {
+    isTalking = false;
+    configFlags.microphone = false;
+    localStream.muteAudio(true);
+    document.getElementById('talkMode').textContent = 'Cancel Mute';
+    if (speakersInRoom<5) {
+      document.getElementById('microphone').checked = configFlags.microphone;
+      return;
+    }
+    room.unpublish(localStream, (event) => {
+      console.log(JSON.stringify(event));
+      window.g_app._store.dispatch({ type: 'meetingroom/addListener', payload: {listener:{ nickName:stream.getAttributes().actualName, address: stream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` }} });
+    });
+    localStream.close();
+    const config = { audio: configFlags.microphone, //! configFlags.onlySubscribe,//true,
+      video: configFlags.camera, //! configFlags.onlyAudio,
+      data: configFlags.data, // true,
+      screen: configFlags.screen,
+      attributes: { nickname: `web${name}`, actualName: `web${name}`, avatar: `${name}`, id: `${name}`, name: `${name}`, speaker: !configFlags.onlySubscribe } };
+    localStream = Erizo.Stream(config);
+    window.localStream = localStream;
+    localStream.init();
+  } else {
+    // room.publish(localStream);
+    //    configFlags.microphone = true;
+    localStream.muteAudio(false);
+    //    isTalking=true;
+    document.getElementById('talkMode').textContent = 'Mute';
+  }
+  document.getElementById('microphone').checked = configFlags.microphone;
+}
+function cameraMode() {
+  if (configFlags.camera) {
+    if (localStream.videoMuted) {
+      localStream.muteVideo(false);
+      document.getElementById('cameraMode').textContent = 'Close Camera';
+    } else {
+      //    configFlags.onlyAudio = true;
+      localStream.muteVideo(true);
+      document.getElementById('cameraMode').textContent = 'Open Camera';
+    }
+  }
+}
+function onChangeCheckbox(el) {
+  switch (el.value) {
+    case '1':
+      configFlags.microphone = el.checked;
+      break;
+    case '2':
+      configFlags.camera = el.checked;
+      break;
+    case '3':
+      configFlags.data = el.checked;
+      break;
+    case '4':
+      configFlags.music = el.checked;
+      break;
+    default:
+      break;
+  }
 }

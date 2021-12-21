@@ -88,7 +88,7 @@ const RoomList = props => {
     room => {
       console.log(JSON.stringify(room));
       room.title = room.name;
-      room.speakers=[{address:'0xaaaddddeeee',nickName:'alan',avatar:'https://s2.loli.net/2021/12/16/UEdKoBsS3JNtfAy.jpg'}];
+      // room.speakers=[{address:'0xaaaddddeeee',nickName:'alan',avatar:'https://s2.loli.net/2021/12/16/UEdKoBsS3JNtfAy.jpg'}];
       dispatch({ type: 'meetingroom/saveCurrentRoom', payload: { currentRoom: room } });
       //router.push(`/meetingroom/${room._id}`);
       router.push(`/home?s=chat&room=${room._id}`);

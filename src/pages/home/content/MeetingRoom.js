@@ -12,6 +12,7 @@ import {
   userJoinedEvent,
   userLeftEvent,
   userPublishedEvent,
+  talkMode
 } from '@/app/licode';
 import { Button, Tooltip } from 'antd';
 import NeedLogin from '@/pages/home/NeedLogin';
@@ -66,7 +67,7 @@ const MeetingRoom = props => {
   }, [dispatch, user.address]);
   //}, [dispatch, user.address]);
   const toggleAudioEnable = useCallback(() => {
-    agoraObject.localAudioTrack.setEnabled(!audioEnable);
+//    agoraObject.localAudioTrack.setEnabled(!audioEnable);
     dispatch({ type: 'meetingroom/saveAudioEnable', payload: { audioEnable: !audioEnable } });
   }, [audioEnable, dispatch]);
 
@@ -99,7 +100,7 @@ const MeetingRoom = props => {
           </h1>
         </div>
         <div className={style.userContainer}>
-          <h2>moderators</h2>
+          <h2>Speakers</h2>
           <div>
             {onlineSpeakers &&
             onlineSpeakers.map(item => (
@@ -107,19 +108,19 @@ const MeetingRoom = props => {
               ))}
           </div>
         </div>
-        <div className={style.userContainer} id="videoContainer" >
-          <h2>speakers</h2>
-          {speakers &&
-            speakers.map(item => (
-              <ClubhouseUserItem user={item} online />
-            ))}
-        </div>
+        {/*<div className={style.userContainer} id="videoContainer" >*/}
+        {/*  <h2>speakers</h2>*/}
+        {/*  {speakers &&*/}
+        {/*    speakers.map(item => (*/}
+        {/*      <ClubhouseUserItem user={item} online />*/}
+        {/*    ))}*/}
+        {/*</div>*/}
         <div className={style.userContainer}  id="listenerContainer">
           <h2>listeners</h2>
           {listeners && listeners.map(item => <ClubhouseUserItem user={item} online />)}
         </div>
         <div className={style.userContainer} >
-          <button key="stopButton" id="stopButton" onClick={stopConference}  disabled>End</button>
+          <button key="stopButton" id="stopButton" onClick={stopConference}  >End</button>
           <button key="talkMode" id="talkMode" onClick={()=>{console.log("talkMode()")}} >Mute</button>
           <button key="cameraMode" id="cameraMode" onClick={()=>{console.log("cameraMode()")}} >Video</button>
           <button key="recordButton" id="recordButton" onClick={()=>{console.log("startRecording()")}} disabled>Recording

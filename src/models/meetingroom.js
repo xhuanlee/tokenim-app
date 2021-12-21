@@ -97,11 +97,11 @@ export default {
         yield put({ type: 'saveListeners', payload: { listeners } });
 //        yield put({ type: 'saveOnlineSpeakers', payload: { listeners } });
       }
-      const oldOnlineSpeakers = yield select(state => state.meetingroom.onlineSpeakers);
-      // const room = yield select(state => state.clubhouse.currentRoom);
-      // if (isHost(room, address)) {
-        const onlineSpeakers = oldOnlineSpeakers.concat(data.entry);
-        yield put({ type: 'saveOnlineSpeakers', payload: { onlineSpeakers } });
+      // const oldOnlineSpeakers = yield select(state => state.meetingroom.onlineSpeakers);
+      // // const room = yield select(state => state.clubhouse.currentRoom);
+      // // if (isHost(room, address)) {
+      //   const onlineSpeakers = oldOnlineSpeakers.concat(data.entry);
+      //   yield put({ type: 'saveOnlineSpeakers', payload: { onlineSpeakers } });
       // }
     }
   },
@@ -136,7 +136,7 @@ export default {
     },
     userLeft(state, { payload: { address } }) {
       const listeners = state.listeners.filter((u) => u.address !== address);
-      const onlineSpeakers = state.onlineSpeakers.filter((a) => a !== address);
+      const onlineSpeakers = state.onlineSpeakers.filter((a) => a.address !== address);
       return { ...state, listeners, onlineSpeakers };
     },
     saveAudioEnable(state, { payload: { audioEnable } }) {
@@ -144,6 +144,13 @@ export default {
     },
     saveOnlineSpeakers(state, { payload: { onlineSpeakers } }) {
       return { ...state, onlineSpeakers };
+    },
+    addListener(state, { payload: { listener } }) {
+      console.log(JSON.stringify(state.listensers));
+      console.log(JSON.stringify(listener));
+      const listeners = state.listener.concat(listener);
+      console.log(JSON.stringify(listeners));
+      return { ...state, listeners };
     },
     addOnlineSpeakers(state, { payload: { speaker } }) {
       console.log(JSON.stringify(state.onlineSpeakers));
