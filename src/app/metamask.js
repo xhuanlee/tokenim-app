@@ -20,6 +20,40 @@ export async function connectMetamask() {
   }
 
   try {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x5eb' }],
+      });
+    } catch (switchError) {
+      // This error code indicates that the chain has not been added to MetaMask.
+      if (switchError.code === 4902 || switchError.code === 4001) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{ chainId: '0x5eb',
+                        chainName: 'BeagleDAO App Chain',
+                        nativeCurrency: {
+                          name: 'beagledao',
+                          symbol: 'BDSN',
+                          decimals: 18
+                        },
+                       rpcUrls: ['https://t.callt.net/eth'],
+                       // blockExplorerUrls: ['https://beagledao.finance/']
+                    /* ... */ }],
+          });
+        } catch (addError) {
+          // handle "add" error
+          console.log("add network error:" + JSON.stringify(addError))
+          alert("add network error:" + addError.code)
+        }
+      }
+      else {
+        console.log("network error:" + JSON.stringify(switchError))
+        alert("switch network error:" + switchError.code)
+      }
+    }
+
     await window.ethereum.request({ method: 'eth_requestAccounts' });
     const address = selectedAddress();
     window.App.loginAddress = address;

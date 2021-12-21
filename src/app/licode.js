@@ -32,6 +32,7 @@ const configFlags = {
 };
 let speakersInRoom = 0;
 let isTalking = false;
+let slideShowMode = false;
 const subscribeToStreams = (streams) => {
   if (configFlags.autoSubscribe) {
     return;
@@ -44,7 +45,7 @@ const subscribeToStreams = (streams) => {
   };
 
   streams.forEach((stream) => {
-    if (localStream.getID() !== stream.getID()) {
+    if (localStream==null || localStream.getID() !== stream.getID()) {
       if (stream.hasAudio() || stream.hasVideo()) {
         speakersInRoom += 1;
         console.log(`speakersInRoom++:${speakersInRoom}`);
@@ -84,9 +85,8 @@ export async function initChannel(isHost,agoraObject, channel, address ) {
       room = Erizo.Room({ token });
     room.connect();
     room.addEventListener('room-connected', (roomEvent) => {
-      console.log(JSON.stringify(roomEvent));
+      console.log(JSON.stringify(roomEvent.type)+":"+roomEvent.streams.length);
       speakersInRoom = 0;
-      subscribeToStreams(roomEvent.streams);
       room.addEventListener('stream-subscribed', (streamEvent) => {
         const stream = streamEvent.stream;
         const div = document.createElement('div');
@@ -122,12 +122,16 @@ export async function initChannel(isHost,agoraObject, channel, address ) {
           document.getElementById('videoContainer').setAttribute('style', 'background:lightcyan;width:100%;min-height: 260px');
         }
         console.log(`${stream.getID()}:${JSON.stringify(stream.getAttributes())}`);
+//        window.g_app._store.dispatch({ type: 'meetingroom/userJoin', payload: { address: stream.getID() } });
+        window.g_app._store.dispatch({ type: 'meetingroom/addOnlineSpeakers', payload:{speaker: {id: getAttributes().avatar, nickmame:stream.getAttributes().actualName, address: stream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` } }});
+
         stream.addEventListener('stream-data', (evt) => {
           console.log('stream Received data ', evt.msg, 'from stream ', evt.stream.getAttributes().name);
           // $('#messages').append($('<li>').text(`${evt.msg.from}:${evt.msg.text}`));
         });
       });
-        createLocalAndPublishAudio(agoraObject, isHost);
+      subscribeToStreams(roomEvent.streams);
+      createLocalAndPublishAudio(agoraObject, isHost);
     });
     room.addEventListener('room-disconnected', (roomEvent) => {
       console.log(JSON.stringify(roomEvent));
@@ -149,11 +153,13 @@ export async function initChannel(isHost,agoraObject, channel, address ) {
       // }
       subscribeToStreams(streams);
       document.getElementById('recordButton').disabled = false;
-      if (localStream.getID() === stream.getID()) {
+      if (localStream && localStream.getID() === stream.getID()) {
         document.getElementById('talkMode').disabled = false;
         isTalking = true;
         localStreamid = stream.getID();
       }
+      window.g_app._store.dispatch({ type: 'meetingroom/addOnlineSpeakers', payload: {speaker:{ nickName:stream.getAttributes().actualName, address: stream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` }} });
+//      window.g_app._store.dispatch({ type: 'meetingroom/userJoin', payload: { address: stream.getID() } });
     });
 
     room.addEventListener('stream-removed', (streamEvent) => {
@@ -182,6 +188,7 @@ export async function initChannel(isHost,agoraObject, channel, address ) {
         }
       }
       console.log(`${stream.getID()}:removed:${JSON.stringify(stream.getAttributes())}`);
+      if (localStream)
       if (localStream.getID() === stream.getID() || localStreamid === stream.getID()) {
         const element = document.getElementById('myAudio');
         if (element) {
@@ -269,17 +276,17 @@ export async function userPublishedEvent(agoraObject, user, mediaType) {
 
 export function userJoinedEvent(user) {
   console.log('agora user join: ', user);
-  window.g_app._store.dispatch({ type: 'clubhouse/userJoin', payload: { address: user.uid } });
+  window.g_app._store.dispatch({ type: 'meetingroom/userJoin', payload: { address: user.uid } });
 }
 
 export function userLeftEvent(user, reason) {
   console.log('agora user left: ', user, reason);
-  window.g_app._store.dispatch({ type: 'clubhouse/userLeft', payload: { address: user.uid } });
+  window.g_app._store.dispatch({ type: 'meetingroom/userLeft', payload: { address: user.uid } });
 }
 
 export async function leaveCall(agoraObject) {
   console.log('licode user leave');
   // agoraObject.localAudioTrack && agoraObject.localAudioTrack.close();
   // await agoraObject.client.leave();
-  window.g_app._store.dispatch({ type: 'clubhouse/saveListeners', payload: { listeners: [] } });
+  window.g_app._store.dispatch({ type: 'meetingroom/saveListeners', payload: { listeners: [] } });
 }

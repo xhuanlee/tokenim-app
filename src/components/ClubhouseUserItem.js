@@ -5,8 +5,10 @@ import style from './ClubhouseUserItem.less';
 import { DEFAULT_AVATAR } from '@/app/constant';
 
 const ClubhouseUserItem = (props) => {
+  console.log(JSON.stringify(props));
   const { user, online } = props;
   const { id, nickname, avatar, introduce, twitter, facebook, wechat } = user;
+//  const {  nickname, avatar, introduce, twitter, facebook, wechat } = user;
 
   const popContent = (
     <div className={style.userPopover}>

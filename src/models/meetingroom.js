@@ -95,13 +95,14 @@ export default {
       if (code && code === 200) {
         const listeners = [ data.entry, ...oldListeners ];
         yield put({ type: 'saveListeners', payload: { listeners } });
+//        yield put({ type: 'saveOnlineSpeakers', payload: { listeners } });
       }
-      const oldOnlineSpeakers = yield select(state => state.clubhouse.onlineSpeakers);
-      const room = yield select(state => state.clubhouse.currentRoom);
-      if (isHost(room, address)) {
-        const onlineSpeakers = oldOnlineSpeakers.concat(address);
+      const oldOnlineSpeakers = yield select(state => state.meetingroom.onlineSpeakers);
+      // const room = yield select(state => state.clubhouse.currentRoom);
+      // if (isHost(room, address)) {
+        const onlineSpeakers = oldOnlineSpeakers.concat(data.entry);
         yield put({ type: 'saveOnlineSpeakers', payload: { onlineSpeakers } });
-      }
+      // }
     }
   },
 
@@ -143,6 +144,13 @@ export default {
     },
     saveOnlineSpeakers(state, { payload: { onlineSpeakers } }) {
       return { ...state, onlineSpeakers };
+    },
+    addOnlineSpeakers(state, { payload: { speaker } }) {
+      console.log(JSON.stringify(state.onlineSpeakers));
+      console.log(JSON.stringify(speaker));
+      const onlineSpeakers = state.onlineSpeakers.concat(speaker);
+      console.log(JSON.stringify(onlineSpeakers));
+      return { ...state, onlineSpeakers};
     },
   }
 };
