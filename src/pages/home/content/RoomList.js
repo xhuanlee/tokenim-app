@@ -59,7 +59,7 @@ const RoomSummary = ({ room, goToRoom }) => {
 };
 
 const RoomList = props => {
-  const { dispatch, loading, meetingroom } = props;
+  const { server, dispatch, loading, meetingroom } = props;
   const { rooms, totalRoom, hasMore, needCreate, newChatRoomModal, user } = meetingroom;
   const fetchingMore = loading.effects['meetingroom/fetchMore'];
   const savingUser = loading.effects['meetingroom/saveServerUser'];
@@ -68,8 +68,11 @@ const RoomList = props => {
   const [chatRoomForm] = Form.useForm();
 
   useEffect(() => {
-    dispatch({ type: 'meetingroom/fetchRooms' });
-  }, [dispatch]);
+    dispatch({ type: 'meetingroom/setServer', payload: { meetingServer: server } });
+    console.log("meetingroom.server:"+meetingroom.server);
+    console.log("server:"+server);
+    dispatch({ type: 'meetingroom/fetchRooms',payload: { meetingServer: server } });
+  }, [dispatch, meetingroom.server, server]);
   useEffect(() => {
     dispatch({ type: 'meetingroom/fetchUser' });
   }, [dispatch]);

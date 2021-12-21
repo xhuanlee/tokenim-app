@@ -74,6 +74,7 @@ export async function initChannel(isHost,agoraObject, channel, address ) {
   const roomData = { username: address,
     role: 'presenter',
     room: agoraObject.roomname,
+    server:agoraObject.meetingServer,
     roomId: channel,
     type: configFlags.type,
     mediaConfiguration: configFlags.mediaConfiguration };

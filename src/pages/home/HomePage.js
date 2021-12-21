@@ -983,6 +983,7 @@ class HomePage extends Component {
       onlineSpeakers,
       loading,
       meetingroom,
+      meetingServer,
     } = this.props;
     const {
       queryENSAvaiable,
@@ -1043,10 +1044,12 @@ class HomePage extends Component {
         contentBody = <Defis />;
         break;
       case 'kademlia':
-        contentBody = <RoomList dispatch={dispatch} loading={loading} meetingroom={meetingroom} />;
+//        meetingroom.server='https://t.callt.net:3001/';
+        contentBody = <RoomList dispatch={dispatch} loading={loading} meetingroom={meetingroom} server={'https://t.callt.net:3001/'} />;
         break;
       case 'beagle':
-        contentBody = <Beagle />;
+//        meetingroom.server='https://meeting.kad.network:3001/';
+        contentBody = <RoomList dispatch={dispatch} loading={loading} meetingroom={meetingroom} server={'https://meeting.kad.network:3001/'} />;
         break;
       case 'chat':
         contentBody = (
@@ -1056,6 +1059,7 @@ class HomePage extends Component {
             currentRoom={currentRoom}
             listeners={listeners}
             user={roomUser}
+            meetingServer={meetingServer}
             audioEnable={roomAudioEnable}
             onlineSpeakers={onlineSpeakers}
           />
@@ -1554,6 +1558,7 @@ const mapStateToProps = state => {
     loading: state.loading,
     meetingroom: state.meetingroom,
     currentRoom: state.meetingroom.currentRoom,
+    meetingServer:state.meetingroom.meetingServer,
     roomUser: state.meetingroom.user,
     listeners: state.meetingroom.listeners,
     audioEnable: state.meetingroom.audioEnable,

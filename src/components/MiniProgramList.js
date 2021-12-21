@@ -4,8 +4,8 @@ import router from 'umi/router';
 
 const miniProgramList = [
   { name: 'Defi', synopsis: 'Defi', link: '/home?s=defi', tooltip: 'dapps' },
-  { name: 'Kademlia', synopsis: 'Kademlia', link: '/home?s=kademlia', tooltip: 'Kademlia talk' },
-  { name: 'Beagle', synopsis: 'Beagle', link: '/home?s=beagle', tooltip: 'Beagle talk' },
+  { name: '会议室', synopsis: '会议室', link: '/home?s=kademlia', tooltip: '会议室' },
+  { name: 'Meeting Room', synopsis: 'Meeting Room', link: '/home?s=beagle', tooltip: 'Meeting Room' },
 ];
 
 const MiniProgramItem = props => {

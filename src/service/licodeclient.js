@@ -143,8 +143,9 @@ const ROOM_LIST = [
   },
 ];
 
-export async function fetchMoreRoom(page, pageSize, query) {
-  return request.get(`https://t.callt.net:3001/getRooms/`);
+export async function fetchMoreRoom(server, page, pageSize, query) {
+  return request.get(server+'getRooms/');
+//  return request.get(`https://t.callt.net:3001/getRooms/`);
 //  return request.get(`https://t.callt.net:3001/getRooms/?page=${page || ''}&pageSize=${pageSize || ''}&query=${query || ''}`);
 }
 

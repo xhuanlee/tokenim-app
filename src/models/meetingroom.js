@@ -5,6 +5,7 @@ const defaultState = {
   listeners: [],
   totalRoom: 0,
   currentRoom: null,
+  meetingServer:null,
   hasMore: true,
   user: null,
   needCreate: false,
@@ -26,8 +27,10 @@ export default {
 
   effects: {
     *fetchMore(_, { call, put, select }) {
+      const meetingServer = yield select(state => state.meetingroom.meetingServer);
+      console.log("server 1:"+meetingServer);
       const page = yield select(state => state.meetingroom.page);
-      const response = yield call(fetchMoreRoom, page, PAGE_SIZE);
+      const response = yield call(fetchMoreRoom, meetingServer, page, PAGE_SIZE);
       const { code, data } = response;
       if (code && code == 200) {
         const oldRooms = yield select(state => state.meetingroom.rooms);
@@ -40,8 +43,10 @@ export default {
         }
       }
     },
-    *fetchRooms(_, { call, put }) {
-      const response = yield call(fetchMoreRoom, 1, 20);
+    *fetchRooms(_, { call, put, select }) {
+      const meetingServer = yield select(state => state.meetingroom.meetingServer);
+      console.log("server:"+meetingServer);
+      const response = yield call(fetchMoreRoom, meetingServer, 1, 20);
 //      const { code, data } = response;
       const data = response;
 //      if (code && code == 200)
@@ -158,6 +163,9 @@ export default {
       const onlineSpeakers = state.onlineSpeakers.concat(speaker);
       console.log(JSON.stringify(onlineSpeakers));
       return { ...state, onlineSpeakers};
+    },
+    setServer(state, { payload: { meetingServer } }) {
+      return { ...state, meetingServer };
     },
   }
 };

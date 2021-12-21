@@ -223,7 +223,7 @@ const name = addPreZero4(Math.round(Math.random() * 10000));
 let speakersInRoom = 0;
 export const createToken = (roomData, callback) => {
   const req = new XMLHttpRequest();
-  const url = `${serverUrl}createToken/`;
+  const url = roomData.server+`createToken/`;
 
   req.onreadystatechange = () => {
     if (req.readyState === 4) {

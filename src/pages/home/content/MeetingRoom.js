@@ -27,7 +27,7 @@ const agoraObject = {
 };
 
 const MeetingRoom = props => {
-  const { dispatch, id, currentRoom, listeners, user, audioEnable, onlineSpeakers } = props;
+  const { dispatch, id, currentRoom, listeners, user, audioEnable, onlineSpeakers,meetingServer } = props;
 
   useEffect(() => {
     if (!currentRoom || !currentRoom._id) {
@@ -38,6 +38,7 @@ const MeetingRoom = props => {
     const isAHost = isHost(currentRoom, user.address);
     const role = isAHost ? 'host' : 'audience';
     agoraObject.roomname = currentRoom.name;
+    agoraObject.meetingServer = meetingServer;
     //    enterRoom(user.address,currentRoom.name,id);
     //    initChannel(isAHost, agoraObject, `${CHANNEL_PREFIX}_${currentRoom.id}`, user.address);
     agoraObject.client = user;
@@ -56,7 +57,7 @@ const MeetingRoom = props => {
     // return () => {
     //   leaveCall(agoraObject);
     // }
-  }, [currentRoom, dispatch, id, user]);
+  }, [currentRoom, dispatch, id, meetingServer, user]);
   //, [currentRoom, dispatch, id, user.address]);
 
   useEffect(() => {
