@@ -89,14 +89,14 @@ export default {
       }
     },
     *userJoin({ payload: { address } }, { call, put, select }) {
-      const response = yield call(fetchUser, address);
-      const oldListeners = yield select(state => state.clubhouse.listeners);
-      const { code, data } = response;
-      if (code && code === 200) {
-        const listeners = [ data.entry, ...oldListeners ];
-        yield put({ type: 'saveListeners', payload: { listeners } });
-//        yield put({ type: 'saveOnlineSpeakers', payload: { listeners } });
-      }
+//       const response = yield call(fetchUser, address);
+//       const oldListeners = yield select(state => state.clubhouse.listeners);
+//       const { code, data } = response;
+//       if (code && code === 200) {
+//         const listeners = [ data.entry, ...oldListeners ];
+//         yield put({ type: 'saveListeners', payload: { listeners } });
+// //        yield put({ type: 'saveOnlineSpeakers', payload: { listeners } });
+//       }
       // const oldOnlineSpeakers = yield select(state => state.meetingroom.onlineSpeakers);
       // // const room = yield select(state => state.clubhouse.currentRoom);
       // // if (isHost(room, address)) {
@@ -146,9 +146,9 @@ export default {
       return { ...state, onlineSpeakers };
     },
     addListener(state, { payload: { listener } }) {
-      console.log(JSON.stringify(state.listensers));
+      console.log(JSON.stringify(state.listeners));
       console.log(JSON.stringify(listener));
-      const listeners = state.listener.concat(listener);
+      const listeners = state.listeners.concat(listener);
       console.log(JSON.stringify(listeners));
       return { ...state, listeners };
     },

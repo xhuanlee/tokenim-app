@@ -30,6 +30,10 @@ const configFlags = {
   microphone: true,
   camera: false,
 };
+function addPreZero4(num) {
+  return (`0000${num}`).slice(-4);
+}
+const randomname = addPreZero4(Math.round(Math.random() * 10000));
 let speakersInRoom = 0;
 let isTalking = false;
 let slideShowMode = false;
@@ -162,7 +166,7 @@ export async function initChannel(isHost,agoraObject, channel, address ) {
         isTalking = true;
         localStreamid = stream.getID();
       }
-      window.g_app._store.dispatch({ type: 'meetingroom/addOnlineSpeakers', payload: {speaker:{ nickName:stream.getAttributes().actualName, address: stream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` }} });
+      window.g_app._store.dispatch({ type: 'meetingroom/addOnlineSpeakers', payload: {speaker:{ nickname:stream.getAttributes().actualName, address: stream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` }} });
 //      window.g_app._store.dispatch({ type: 'meetingroom/userJoin', payload: { address: stream.getID() } });
     });
 
@@ -228,11 +232,11 @@ export async function createLocalAndPublishAudio(agoraObject, isHost) {
     data: configFlags.data, // true,
     screen: configFlags.screen,
     attributes: {
-      nickname: agoraObject.client.name,
-      actualName: agoraObject.client.name,
+      nickname: agoraObject.client.nickname,
+      actualName: agoraObject.client.nickname,
       avatar: 1333,
       id: agoraObject.client.address,
-      name: agoraObject.client.name,
+      name: agoraObject.client.nickname,
       speaker: !configFlags.onlySubscribe
     }
   };
@@ -246,7 +250,7 @@ export async function createLocalAndPublishAudio(agoraObject, isHost) {
       } else {
         console.log('Published stream', id);
         let stream=localStream;
-        window.g_app._store.dispatch({ type: 'meetingroom/addOnlineSpeakers', payload: {speaker:{ nickName:stream.getAttributes().actualName, address: stream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` }} });
+        window.g_app._store.dispatch({ type: 'meetingroom/addOnlineSpeakers', payload: {speaker:{ nickname:stream.getAttributes().actualName, address: stream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` }} });
       }
     });
     localStream.show('myAudio');
@@ -259,6 +263,7 @@ export async function createLocalAndPublishAudio(agoraObject, isHost) {
     //        room.connect({ singlePC: configFlags.singlePC });
     //        localStream.show('myVideo');
     console.log('access-denied');
+    window.g_app._store.dispatch({ type: 'meetingroom/addListener', payload: {listener:{ nickname:agoraObject.client.nickname, address: agoraObject.client.address,avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${randomname}.png` }} });
     //          room.disconnect();
   });
   localStream.init();
@@ -327,7 +332,7 @@ export function talkMode(audioEnable) {
           console.log('Error publishing stream', error);
         } else {
           console.log('Published stream', id);
-          window.g_app._store.dispatch({ type: 'meetingroom/addOnlineSpeakers', payload: {speaker:{ nickName:stream.getAttributes().actualName, address: stream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` }} });
+          window.g_app._store.dispatch({ type: 'meetingroom/addOnlineSpeakers', payload: {speaker:{ nickname:stream.getAttributes().actualName, address: stream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` }} });
         }
       });
       localStream.show('myAudio');
@@ -357,7 +362,8 @@ export function talkMode(audioEnable) {
     }
     room.unpublish(localStream, (event) => {
       console.log(JSON.stringify(event));
-      window.g_app._store.dispatch({ type: 'meetingroom/addListener', payload: {listener:{ nickName:stream.getAttributes().actualName, address: stream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` }} });
+      let stream = localStream;
+      window.g_app._store.dispatch({ type: 'meetingroom/addListener', payload: {listener:{ nickname:stream.getAttributes().actualName, address: stream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` }} });
     });
     localStream.close();
     const config = { audio: configFlags.microphone, //! configFlags.onlySubscribe,//true,
