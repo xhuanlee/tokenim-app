@@ -62,14 +62,17 @@ export default {
     },
     *fetchUser(_, { call, put, select }) {
       const address = yield select(state => state.account.address);
-      const response = yield call(fetchUser, address);
-      const { code, data } = response || {};
-      if (code && code === 200) {
-        yield put({ type: 'saveNeedCreate', payload: { needCreate: false } });
-        yield put({ type: 'saveUser', payload: { user: data.entry } });
-      } else {
-        yield put({ type: 'saveNeedCreate', payload: { needCreate: true } });
-      }
+      const name = yield select(state => state.account.loginEns);
+      yield put({ type: 'saveNeedCreate', payload: { needCreate: false } });
+      yield put({ type: 'saveUser', payload: { user: {nickname:name,address:address} } });
+      // const response = yield call(fetchUser, address);
+      // const { code, data } = response || {};
+      // if (code && code === 200) {
+      //   // yield put({ type: 'saveUser', payload: { user: data.entry } });
+      //   console.log(data.entry);
+      // } else {
+      //   yield put({ type: 'saveNeedCreate', payload: { needCreate: true } });
+      // }
     },
     *saveServerUser({ payload: { user } }, { call, put, select }) {
       const address = yield select(state => state.account.address);
@@ -153,11 +156,17 @@ export default {
     addListener(state, { payload: { listener } }) {
       console.log(JSON.stringify(state.listeners));
       console.log(JSON.stringify(listener));
+      const listenerExist = state.listeners.find((u) => u.address === listener.address);
+      if (listenerExist)
+        return{...state};
       const listeners = state.listeners.concat(listener);
       console.log(JSON.stringify(listeners));
       return { ...state, listeners };
     },
     addOnlineSpeakers(state, { payload: { speaker } }) {
+      const speakerExist = state.onlineSpeakers.find((u) => u.address === speaker.address);
+      if (speakerExist)
+        return{...state};
       console.log(JSON.stringify(state.onlineSpeakers));
       console.log(JSON.stringify(speaker));
       const onlineSpeakers = state.onlineSpeakers.concat(speaker);

@@ -1231,7 +1231,7 @@ class HomePage extends Component {
                   <Input
                     prefix={<UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                     placeholder={formatMessage({ id: 'home.input_other_ens_name' })}
-                    addonAfter=".fax"
+                    addonAfter=".be"
                     suffix={ensNameCheck}
                     defaultValue={ensName}
                     width={200}

@@ -2,7 +2,7 @@ import { Button } from 'antd';
 import React from 'react';
 
 export default {
-  'allcom': 'BeagleDao团队',
+  'allcom': 'BeagleDao社区',
   'return': '返回',
   'login': '登陆',
   'register': '注册',
@@ -59,9 +59,9 @@ export default {
   'index.quotation': '行情',
   'index.config_peer': '配置连接节点',
   'index.description': '构建在区块链公链基础设施之上，同时也为区块链用户、社区和项目服务的即时通讯服务',
-  'index.visitor': '游客访问',
-  'index.wallet_login': '使用钱包地址登陆',
-  'index.ens_login': '使用ENS名字登陆',
+  'index.visitor': '游客',
+  'index.wallet_login': '钱包地址',
+  'index.ens_login': 'ENS',
   'index.get_wallet': '注册',
   'index.login': '登陆',
   'index.encrypt_coin': '加密货币学习、交流、实践',

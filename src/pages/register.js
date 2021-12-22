@@ -178,7 +178,7 @@ class RegisterPage extends Component {
                 <Input
                   prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                   placeholder={formatMessage({ id: 'register.ens_username' })}
-                  addonAfter=".fax"
+                  addonAfter=".be"
                   suffix={ensNameCheck}
                   onChange={this.onENSNameChange}
                 />

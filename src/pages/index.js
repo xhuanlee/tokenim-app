@@ -202,19 +202,19 @@ class LoginPage extends PureComponent {
     return (
       <>
         <div className={styles.container}>
-          <div>
-            <a href={enLocale ? 'https://beagle.gitbook.io/beagle-dao/' : 'https://beagle.gitbook.io/beagle-dao/'} style={{ marginRight: 10 }}>{formatMessage({ id: 'index.white_paper' })}</a>
-            <a href={enLocale ? 'pages/faqEN.html' : 'pages/faq.html'} style={{ marginRight: 10 }}>{formatMessage({ id: 'index.faq' })}</a>
-            <a href={enLocale ? 'pages/downloadEN.html' : 'pages/download.html'} style={{ marginRight: 10 }}>{formatMessage({ id: 'index.download' })}</a>
-            <a href={`/?locale=${oLocale}`} style={{ marginRight: 10 }}>{oLocaleDes}</a>
-          </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Tooltip title={formatMessage({ id: 'index.config_peer' })}>
               <SettingOutlined style={{ fontSize: 19, cursor: 'pointer' }} onClick={this.openSetting} />
             </Tooltip>
           </div>
+          <div>
+            <a href={enLocale ? 'https://beagle.gitbook.io/beagle-dao/' : 'https://beagle.gitbook.io/beagle-dao/'} style={{ marginRight: 10 }}>{formatMessage({ id: 'index.white_paper' })}</a>
+            <a href={enLocale ? 'pages/faqEN.html' : 'pages/faq.html'} style={{ marginRight: 10 }}>{formatMessage({ id: 'index.faq' })}</a>
+            {/*<a href={enLocale ? 'pages/downloadEN.html' : 'pages/download.html'} style={{ marginRight: 10 }}>{formatMessage({ id: 'index.download' })}</a>*/}
+            <a href={`/?locale=${oLocale}`} style={{ marginRight: 10 }}>{oLocaleDes}</a>
+          </div>
           <div style={{ textAlign: 'center' }}>
-            <h2 style={{ marginBottom: 0, fontWeight: 600 }}>BeagleDAO</h2>
+            <h2 style={{ marginBottom: 0, marginTop:20, fontWeight: 600 }}>BeagleDAO</h2>
             <p style={{ marginBottom: 0 }}>Social Network for Crypto Metaverse</p>
             <p>{formatMessage({ id: 'index.description' })}</p>
             <img src="../image/eth-icon.png" alt="" width="70" style={{ marginBottom: 30 }} />
@@ -232,7 +232,7 @@ class LoginPage extends PureComponent {
                     <Input
                       prefix={<UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                       placeholder={formatMessage({ id: 'index.ens_name' })}
-                      addonAfter=".fax"
+                      addonAfter=".be"
                       suffix={ensNameCheck}
                     />
                   </AutoComplete>
@@ -382,7 +382,7 @@ class LoginPage extends PureComponent {
             </Radio.Group>
           </Modal>
         </div>
-        <p className={styles.copyright}>Copyright © 2020-2021 <a href="https://www.github.com/clubnetwork">{formatMessage({ id: 'allcom' })}</a></p>
+        <p className={styles.copyright}>Copyright © 2020-2021 <a href="https://www.beagledao.finance">{formatMessage({ id: 'allcom' })}</a></p>
           {/*<p className={styles.beian}><a href="https://beian.miit.gov.cn/" target="_blank"> 沪ICP备14021271号-4</a></p>*/}
       </>
     );

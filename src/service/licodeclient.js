@@ -158,7 +158,7 @@ export async function saveUser(user) {
 }
 
 export async function saveChatRoom(room) {
-  return request.post('https://t.callt.net:3001/CreateToken/', { data: room });
+  return request.post('/CreateToken/', { data: room });
 }
 
 export function isHost(room, address) {

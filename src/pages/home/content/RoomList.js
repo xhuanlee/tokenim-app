@@ -113,7 +113,7 @@ const RoomList = props => {
         for (let key in values) {
           user.append(key, values[key] || '');
         }
-        dispatch({ type: 'clubhouse/saveServerUser', payload: { user } });
+        dispatch({ type: 'meetingroom/saveServerUser', payload: { user } });
       })
       .catch(error => {});
   }, [dispatch, form]);

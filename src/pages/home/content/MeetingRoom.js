@@ -16,7 +16,7 @@ import {
 } from '@/app/licode';
 import { Button, Tooltip } from 'antd';
 import NeedLogin from '@/pages/home/NeedLogin';
-import { isHost } from '@/service/clubhouse';
+import { isHost } from '@/service/licodeclient';
 import { enterRoom } from './LicodeClient';
 
 const CHANNEL_PREFIX = 'meetingroom';
