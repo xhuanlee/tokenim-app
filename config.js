@@ -9,12 +9,12 @@ const admin_account = '0xD227AF0e36AE44e673b0143d7765Dc4dA9B64B68';
 
 module.exports = {
   network_id: '1515',
-  ethereum_host: '222.44.63.242',
+  ethereum_host: 'app.beagledao.finance',
   ethereum_port: 8545,
-  ethereum_rpc_endpoint: 'https://t.callt.net/eth',
-  swarm_http_endpoint: 'https://t.callt.net/swarm',
-  api_http_endpoint: 'https://t.callt.net/api',
-  substrate_rpc_endpoint: 'wss://t.callt.net/substrate',
+  ethereum_rpc_endpoint: 'https://app.beagledao.finance/eth',
+  swarm_http_endpoint: 'https://app.beagledao.finance/swarm',
+  api_http_endpoint: 'https://app.beagledao.finance/api',
+  substrate_rpc_endpoint: 'wss://app.beagledao.finance/substrate',
   substrate_shh_contract_addr: '5FBR2NTgWuNrMZQDvo7GShHAf6pvxVt3QcVFkGXVXBEh3gEG',
 
   admin: {

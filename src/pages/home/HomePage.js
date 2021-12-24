@@ -1333,7 +1333,7 @@ class HomePage extends Component {
           >
             <div style={{ display: 'flex', margin: 20 }}>
               <span style={{ width: 100 }}>{formatMessage({ id: 'home.current_balance' })}</span>
-              <span>{faxBalance} FAX</span>
+              <span>{faxBalance} App</span>
             </div>
 
             <div style={{ display: 'flex', margin: 20 }}>
@@ -1350,7 +1350,7 @@ class HomePage extends Component {
               <Input
                 placeholder={formatMessage({ id: 'home.input_transfer_fax_amount' })}
                 style={{ width: 380 }}
-                addonAfter="FAX"
+                addonAfter="App"
                 onChange={e => this.setState({ fax: e.target.value })}
               />
               <span style={{ color: '#f5222d' }}>*</span>

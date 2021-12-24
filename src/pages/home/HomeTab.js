@@ -145,7 +145,7 @@ class HomeTab extends Component {
             ]}
             dataSource={[
               { key: 'address', row: formatMessage({ id: 'home.table_account_address' }), val: address || formatMessage({ id: 'home.no_usable_wallet' }) },
-              { key: 'token', row: 'Fax Token', val: token },
+              { key: 'token', row: 'App Token', val: token },
               { key: 'ether', row: 'Balance', val: displayEther },
               { key: 'shh', row: 'Whisper', val: shhStatus },
             ]}
@@ -155,15 +155,15 @@ class HomeTab extends Component {
         {
           at !== accountType.substrate ?
             <>
-              <Title level={4}>{formatMessage({ id: 'home.account_operation' })}</Title>
-              <hr style={{ borderColor: 'rgb(232,232,232)' }} />
-              <div style={{ margin: 30, display: 'flex' }}>
-                <IconButton current={operation} okey='transEther' action={this.toggleOperation} icon={<SwapOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.transfer_eth' })} />
-                <IconButton current={operation} okey='transFax' action={this.toggleOperation} icon={<InteractionOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.transfer_fax' })} />
-                <IconButton current={operation} okey='buyFax' action={this.toggleOperation} icon={<ShoppingCartOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.buy_fax' })} />
-                <IconButton current={operation} okey='approveContract' action={this.toggleOperation} icon={<AuditOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.approve_contract_quota' })} />
-                <IconButton current={operation} okey='openContractPage' action={this.openContractStatePage} icon={<FileSearchOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.check_contract_status' })} />
-              </div>
+              {/*<Title level={4}>{formatMessage({ id: 'home.account_operation' })}</Title>*/}
+              {/*<hr style={{ borderColor: 'rgb(232,232,232)' }} />*/}
+              {/*<div style={{ margin: 30, display: 'flex' }}>*/}
+              {/*  <IconButton current={operation} okey='transEther' action={this.toggleOperation} icon={<SwapOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.transfer_eth' })} />*/}
+              {/*  <IconButton current={operation} okey='transFax' action={this.toggleOperation} icon={<InteractionOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.transfer_fax' })} />*/}
+              {/*  <IconButton current={operation} okey='buyFax' action={this.toggleOperation} icon={<ShoppingCartOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.buy_fax' })} />*/}
+              {/*  <IconButton current={operation} okey='approveContract' action={this.toggleOperation} icon={<AuditOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.approve_contract_quota' })} />*/}
+              {/*  <IconButton current={operation} okey='openContractPage' action={this.openContractStatePage} icon={<FileSearchOutlined style={{ fontSize: '30px' }} />} text={formatMessage({ id: 'home.check_contract_status' })} />*/}
+              {/*</div>*/}
               <div style={{ marginLeft: 50, marginRight: 220 }}>
                 {operation
                   ? operation === 'transEther'

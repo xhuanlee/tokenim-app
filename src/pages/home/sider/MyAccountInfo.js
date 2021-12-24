@@ -64,7 +64,7 @@ class MyAccountInfo extends Component {
               </div>
               <div style={{ display: 'flex', fontWeight: 500 }}>
                 <div style={{ margin: 0, fontSize: 13, width: 110 }}>
-                  FAX: {faxBalance}
+                  App: {faxBalance}
                 </div>
 
                 {

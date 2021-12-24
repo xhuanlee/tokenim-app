@@ -38,7 +38,7 @@ export async function connectMetamask() {
                           symbol: 'BDSN',
                           decimals: 18
                         },
-                       rpcUrls: ['https://t.callt.net/eth'],
+                       rpcUrls: ['https://app.beagledao.finance/eth'],
                        // blockExplorerUrls: ['https://beagledao.finance/']
                     /* ... */ }],
           });

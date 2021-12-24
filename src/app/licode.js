@@ -94,41 +94,42 @@ export async function initChannel(isHost,agoraObject, channel, address ) {
       speakersInRoom = 0;
       room.addEventListener('stream-subscribed', (streamEvent) => {
         const stream = streamEvent.stream;
-        const div = document.createElement('div');
-        if (!stream.hasVideo()) {
-          div.setAttribute('style', 'width: 78px; height: 78px;backgroud:yellow;float:left;padding:5px');
-        } else {
-          div.setAttribute('style', 'width: 320px; height: 240px;backgroud:yellow;float:left;padding-left:5px');
-        }
-        div.setAttribute('id', `test${stream.getID()}`);
+        // const div = document.createElement('div');
+        // if (!stream.hasVideo()) {
+        //   div.setAttribute('style', 'width: 78px; height: 78px;backgroud:yellow;float:left;padding:5px');
+        // } else {
+        //   div.setAttribute('style', 'width: 320px; height: 240px;backgroud:yellow;float:left;padding-left:5px');
+        // }
+        // div.setAttribute('id', `test${stream.getID()}`);
 
         //      div.textContent=stream.getAttributes().actualName+"-"+stream.getAttributes().avatar;
-        if (stream.getAttributes().avatar && stream.hasVideo() === false) {
-          const img = document.createElement('img');
-          img.setAttribute('style', 'border-radius:50%;width: 78px; height: 78px;background:antiquewhite;float:left;');
-          img.setAttribute('id', stream.getAttributes().avatar);
-          img.setAttribute('src', `https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png`);
-          // img.textContent=stream.getAttributes().actualName;
-          div.appendChild(img);
-        }
-        const label = document.createElement('label');
-        label.setAttribute('style', 'width: 78px; font-size:small;text-align:center;');
-        label.textContent = stream.getAttributes().actualName;
-        //        div.appendChild("<label>"+stream.getAttributes().actualName+"</label>");
-        div.appendChild(label);
-        console.log(`${stream.hasVideo()} video appaend:${JSON.stringify(div)}`);
-        if (stream.hasAudio() || stream.hasVideo()) {
-          document.getElementById('videoContainer').appendChild(div);
-          stream.show(`test${stream.getID()}`);
-        } else {
-          document.getElementById('listenerContainer').appendChild(div);
-        }
-        if (stream.hasVideo()) {
-          document.getElementById('videoContainer').setAttribute('style', 'background:lightcyan;width:100%;min-height: 260px');
-        }
+//         if (stream.getAttributes().avatar && stream.hasVideo() === false) {
+//           const img = document.createElement('img');
+//           img.setAttribute('style', 'border-radius:50%;width: 78px; height: 78px;background:antiquewhite;float:left;');
+//           img.setAttribute('id', stream.getAttributes().avatar);
+//           img.setAttribute('src', `https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png`);
+//           // img.textContent=stream.getAttributes().actualName;
+//           div.appendChild(img);
+//         }
+//         const label = document.createElement('label');
+//         label.setAttribute('style', 'width: 78px; font-size:small;text-align:center;');
+//         label.textContent = stream.getAttributes().actualName;
+//         //        div.appendChild("<label>"+stream.getAttributes().actualName+"</label>");
+//         div.appendChild(label);
+//         console.log(`${stream.hasVideo()} video appaend:${JSON.stringify(div)}`);
+//         if (stream.hasAudio() || stream.hasVideo()) {
+// //          document.getElementById('videoContainer').appendChild(div);
+// //          stream.show(`test${stream.getID()}`);
+//         } else {
+//           document.getElementById('listenerContainer').appendChild(div);
+//         }
+//         if (stream.hasVideo()) {
+//           document.getElementById('videoContainer').setAttribute('style', 'background:lightcyan;width:100%;min-height: 260px');
+//         }
         console.log(`${stream.getID()}:${JSON.stringify(stream.getAttributes())}`);
 //        window.g_app._store.dispatch({ type: 'meetingroom/userJoin', payload: { address: stream.getID() } });
-        window.g_app._store.dispatch({ type: 'meetingroom/addOnlineSpeakers', payload:{speaker: {id: getAttributes().avatar, nickmame:stream.getAttributes().actualName, address: stream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` } }});
+        const {id,avatar,actualName,address,userId,addressId}=stream.getAttributes();
+        window.g_app._store.dispatch({ type: 'meetingroom/addOnlineSpeakers', payload:{speaker: {stream:stream, id: avatar, nickname:actualName, address: stream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${avatar}.png` } }});
 
         stream.addEventListener('stream-data', (evt) => {
           console.log('stream Received data ', evt.msg, 'from stream ', evt.stream.getAttributes().name);
@@ -167,7 +168,7 @@ export async function initChannel(isHost,agoraObject, channel, address ) {
         isTalking = true;
         localStreamid = stream.getID();
       }
-      window.g_app._store.dispatch({ type: 'meetingroom/addOnlineSpeakers', payload: {speaker:{ nickname:stream.getAttributes().actualName, address: stream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` }} });
+      window.g_app._store.dispatch({ type: 'meetingroom/addOnlineSpeakers', payload: {speaker:{stream:stream, nickname:stream.getAttributes().actualName, address: stream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` }} });
 //      window.g_app._store.dispatch({ type: 'meetingroom/userJoin', payload: { address: stream.getID() } });
     });
 

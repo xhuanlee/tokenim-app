@@ -155,22 +155,21 @@ export default {
     },
     addListener(state, { payload: { listener } }) {
       console.log(JSON.stringify(state.listeners));
-      console.log(JSON.stringify(listener));
+      console.log("listener:"+JSON.stringify(listener.address));
       const listenerExist = state.listeners.find((u) => u.address === listener.address);
       if (listenerExist)
         return{...state};
       const listeners = state.listeners.concat(listener);
-      console.log(JSON.stringify(listeners));
+      console.log("listeners:"+JSON.stringify(listeners.length));
       return { ...state, listeners };
     },
     addOnlineSpeakers(state, { payload: { speaker } }) {
       const speakerExist = state.onlineSpeakers.find((u) => u.address === speaker.address);
       if (speakerExist)
         return{...state};
-      console.log(JSON.stringify(state.onlineSpeakers));
-      console.log(JSON.stringify(speaker));
+      console.log("speaker："+JSON.stringify(speaker.address));
       const onlineSpeakers = state.onlineSpeakers.concat(speaker);
-      console.log(JSON.stringify(onlineSpeakers));
+      console.log("speakers total："+JSON.stringify(onlineSpeakers.length));
       return { ...state, onlineSpeakers};
     },
     setServer(state, { payload: { meetingServer } }) {
