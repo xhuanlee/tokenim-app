@@ -217,7 +217,7 @@ class LoginPage extends PureComponent {
             <h2 style={{ marginBottom: 0, marginTop:20, fontWeight: 600 }}>BeagleDAO</h2>
             <p style={{ marginBottom: 0 }}>Social Network for Crypto Metaverse</p>
             <p>{formatMessage({ id: 'index.description' })}</p>
-            <img src="../image/eth-icon.png" alt="" width="70" style={{ marginBottom: 30 }} />
+            <img src="../image/happy_beagles.jpg" alt="" width="200" style={{ marginBottom: 30 }} />
           </div>
           <Spin spinning={loginLoading || ensLoading} tip={loginTip}>
             <Form onFinish={this.handleSubmit} className="login-form" >
@@ -232,7 +232,7 @@ class LoginPage extends PureComponent {
                     <Input
                       prefix={<UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                       placeholder={formatMessage({ id: 'index.ens_name' })}
-                      addonAfter=".be"
+                      addonAfter=".beagles"
                       suffix={ensNameCheck}
                     />
                   </AutoComplete>
@@ -293,10 +293,10 @@ class LoginPage extends PureComponent {
           </Spin>
 
           <div style={{ textAlign: 'center' }}>
-            <p style={{ marginBottom: 0 }}>{formatMessage({ id: 'index.encrypt_coin' })}</p>
-            <p>{formatMessage({ id: 'index.digital_currency' })}</p>
+            {/*<p style={{ marginBottom: 0 }}>{formatMessage({ id: 'index.encrypt_coin' })}</p>*/}
+            {/*<p>{formatMessage({ id: 'index.digital_currency' })}</p>*/}
 
-            <a href="http://beagle.chat:3000/" target="_blank"><FundOutlined />{formatMessage({ id: 'index.network_status' })}</a>
+            <a href="http://app.beagledao.finance:3000/" target="_blank"><FundOutlined />{formatMessage({ id: 'index.network_status' })}</a>
             <p style={{ marginBottom: 0 }}>
               {/*<span>{formatMessage({ id: 'index.contact' })}:</span>*/}
               {/*<PhoneOutlined style={{ transform: 'rotate(90deg)', color: '#5190ff' }} />*/}
