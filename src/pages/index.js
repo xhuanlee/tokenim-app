@@ -286,9 +286,9 @@ class LoginPage extends PureComponent {
                   :
                   null
               }
-              <FormItem>
-                <Button loading={connectingSubstrate} onClick={this.connectSubstrate} block  danger type="dashed"><img src={PolkadotSvg} alt="" width="20" style={{ marginRight: 8 }} />{formatMessage({ id: 'index.substrateconnect' })}</Button>
-              </FormItem>
+              {/*<FormItem>*/}
+              {/*  <Button loading={connectingSubstrate} onClick={this.connectSubstrate} block  danger type="dashed"><img src={PolkadotSvg} alt="" width="20" style={{ marginRight: 8 }} />{formatMessage({ id: 'index.substrateconnect' })}</Button>*/}
+              {/*</FormItem>*/}
             </Form>
           </Spin>
 

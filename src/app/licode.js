@@ -5,8 +5,8 @@ import {createToken} from '../pages/home/content/LicodeClient';
 
 //const Erizo = require('../pages/home/content/erizo');
 const serverUrl = 'https://t.callt.net:3001/';
-let localStream;
-let localStreamid;
+let localStream=null;
+let localStreamid=null;
 let room;
 let recording = false;
 let recordingId = '';
@@ -236,14 +236,14 @@ export async function createLocalAndPublishAudio(agoraObject, isHost) {
     attributes: {
       nickname: agoraObject.client.nickname,
       actualName: agoraObject.client.nickname,
-      avatar: 1333,
+      avatar: randomname,
       id: agoraObject.client.address,
       name: agoraObject.client.nickname,
       speaker: !configFlags.onlySubscribe
     }
   };
   Erizo.Logger.setLogLevel(Erizo.Logger.TRACE);
-  const localStream = Erizo.Stream(config);
+  localStream = Erizo.Stream(config);
   localStream.addEventListener('access-accepted', () => {
     room.publish(localStream, { maxVideoBW: 300, handlerProfile: 0 }, (id, error) => {
       if (id === undefined) {
@@ -314,9 +314,10 @@ export async function leaveCall(agoraObject) {
 }
 
 export function talkMode(audioEnable) {
-  if (!configFlags.microphone && localStream.getID()) {
+  if (audioEnable && !configFlags.microphone && !localStream.hasAudio() && localStream.getID()) {
+    // data only publisher
     configFlags.microphone = true;
-    document.getElementById('microphone').checked = configFlags.microphone;
+//    document.getElementById('microphone').checked = configFlags.microphone;
     room.unpublish(localStream, (event) => {
       console.log(JSON.stringify(event));
     });
@@ -353,37 +354,53 @@ export function talkMode(audioEnable) {
     return;
   }
 
-  if (!localStream.audioMuted) {
+  if (localStream && localStream.hasAudio())
+  if (!audioEnable && !localStream.audioMuted) {
     isTalking = false;
     configFlags.microphone = false;
     localStream.muteAudio(true);
-    document.getElementById('talkMode').textContent = 'Cancel Mute';
+//    document.getElementById('talkMode').textContent = 'Cancel Mute';
+    console.log("speakersInRoom is "+speakersInRoom);
     if (speakersInRoom<5) {
-      document.getElementById('microphone').checked = configFlags.microphone;
+//      document.getElementById('microphone').checked = configFlags.microphone;
       return;
     }
     room.unpublish(localStream, (event) => {
       console.log(JSON.stringify(event));
       let stream = localStream;
       window.g_app._store.dispatch({ type: 'meetingroom/addListener', payload: {listener:{ nickname:stream.getAttributes().actualName, address: stream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` }} });
+      localStream.close();
+      const config = { audio: configFlags.microphone, //! configFlags.onlySubscribe,//true,
+        video: configFlags.camera, //! configFlags.onlyAudio,
+        data: configFlags.data, // true,
+        screen: configFlags.screen,
+        attributes: { nickname: `web${name}`, actualName: `web${name}`, avatar: `${name}`, id: `${name}`, name: `${name}`, speaker: !configFlags.onlySubscribe } };
+      localStream = Erizo.Stream(config);
+      window.localStream = localStream;
+      localStream.init();
+      room.publish(localStream, { maxVideoBW: 300, handlerProfile: 0 }, (id, error) => {
+        if (id === undefined) {
+          console.log('Error publishing stream', error);
+        } else {
+          console.log('data only Published stream', id);
+//          window.g_app._store.dispatch({ type: 'meetingroom/addOnlineSpeakers', payload: {speaker:{ nickname:stream.getAttributes().actualName, address: stream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` }} });
+        }
+      });
+//      localStream.show('myAudio');
+      localStream.addEventListener('stream-data', (evt) => {
+        console.log('Received data ', evt.msg, 'from stream ', evt.stream.getAttributes().name);
+        // $('#messages').append($('<li>').text(evt.msg));
+      });
     });
-    localStream.close();
-    const config = { audio: configFlags.microphone, //! configFlags.onlySubscribe,//true,
-      video: configFlags.camera, //! configFlags.onlyAudio,
-      data: configFlags.data, // true,
-      screen: configFlags.screen,
-      attributes: { nickname: `web${name}`, actualName: `web${name}`, avatar: `${name}`, id: `${name}`, name: `${name}`, speaker: !configFlags.onlySubscribe } };
-    localStream = Erizo.Stream(config);
-    window.localStream = localStream;
-    localStream.init();
-  } else {
+  } else if (audioEnable && localStream.hasAudio()) {
     // room.publish(localStream);
     //    configFlags.microphone = true;
     localStream.muteAudio(false);
+    console.log('audioEnable:'+audioEnable);
     //    isTalking=true;
-    document.getElementById('talkMode').textContent = 'Mute';
+    //document.getElementById('talkMode').textContent = 'Mute';
   }
-  document.getElementById('microphone').checked = configFlags.microphone;
+  //document.getElementById('microphone').checked = configFlags.microphone;
 }
 function cameraMode() {
   if (configFlags.camera) {

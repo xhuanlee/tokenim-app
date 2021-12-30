@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import { connect } from 'dva';
 import AgoraRTC from 'agora-rtc-sdk-ng';
 import style from '../../ClubHouse.less';
-import { AudioOutlined, AudioMutedOutlined } from '@ant-design/icons';
+import { AudioOutlined, AudioMutedOutlined, StopOutlined } from '@ant-design/icons';
 import ClubhouseUserItem from '@/components/ClubhouseUserItem';
 import {
   createLocalAndPublishAudio,
@@ -69,6 +69,7 @@ const MeetingRoom = props => {
   //}, [dispatch, user.address]);
   const toggleAudioEnable = useCallback(() => {
 //    agoraObject.localAudioTrack.setEnabled(!audioEnable);
+    talkMode(!audioEnable);
     dispatch({ type: 'meetingroom/saveAudioEnable', payload: { audioEnable: !audioEnable } });
   }, [audioEnable, dispatch]);
 
@@ -87,17 +88,22 @@ const MeetingRoom = props => {
             {title}
             {audioEnable ? (
               <Tooltip title="mute">
-                <Button size="large" type="link" onClick={toggleAudioEnable}>
-                  <AudioMutedOutlined style={{ fontSize: '24px' }} />
+                <Button size="large" type="link" onClick={toggleAudioEnable} style={{marginLeft:"50%" }}>
+                  <AudioMutedOutlined style={{ fontSize: '24px'}} />
                 </Button>
               </Tooltip>
             ) : (
               <Tooltip title="unmute">
-                <Button size="large" type="link" onClick={toggleAudioEnable}>
-                  <AudioOutlined style={{ fontSize: '24px' }} />
+                <Button size="large" type="link" onClick={toggleAudioEnable} style={{marginLeft:"50%" }}>
+                  <AudioOutlined style={{ fontSize: '24px'}} />
                 </Button>
               </Tooltip>
             )}
+            <Tooltip title="Stop">
+              <Button size="large" type="link" onClick={stopConference}>
+                <StopOutlined style={{ fontSize: '24px' ,color:'red'}} />
+              </Button>
+            </Tooltip>
           </h1>
         </div>
         <div className={style.userContainer}>
@@ -120,13 +126,13 @@ const MeetingRoom = props => {
           <h2>listeners</h2>
           {listeners && listeners.map(item => <ClubhouseUserItem user={item} online />)}
         </div>
-        <div className={style.userContainer} >
-          <button key="stopButton" id="stopButton" onClick={stopConference}  >End</button>
-          <button key="talkMode" id="talkMode" onClick={()=>{console.log("talkMode()")}} >Mute</button>
-          <button key="cameraMode" id="cameraMode" onClick={()=>{console.log("cameraMode()")}} >Video</button>
-          <button key="recordButton" id="recordButton" onClick={()=>{console.log("startRecording()")}} disabled>Recording
-          </button>
-        </div>
+        {/*<div className={style.userContainer} >*/}
+        {/*  <button key="stopButton" id="stopButton" onClick={stopConference}  >End</button>*/}
+        {/*  <button key="talkMode" id="talkMode" onClick={()=>{console.log("talkMode()")}} >Mute</button>*/}
+        {/*  <button key="cameraMode" id="cameraMode" onClick={()=>{console.log("cameraMode()")}} >Video</button>*/}
+        {/*  <button key="recordButton" id="recordButton" onClick={()=>{console.log("startRecording()")}} disabled>Recording*/}
+        {/*  </button>*/}
+        {/*</div>*/}
       </div>
     </NeedLogin>
   );
