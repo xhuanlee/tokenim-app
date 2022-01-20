@@ -101,6 +101,11 @@ class HomePage extends Component {
     this.groupShhPubKey = {};
     this.groupCandidate = {};
     this.groupRemoteStream = {};
+    const {loginEns,loginAddress} = this.props.account;
+    if (loginEns && loginEns.length>7 && loginEns[5]=='.' && loginEns[6]=='.' && loginEns[7]=='.') {
+      this.setState({ nameModal: true });
+      console.log('nameModal:'+this.state.nameModal);
+    }
   }
 
   componentDidMount() {
@@ -116,7 +121,13 @@ class HomePage extends Component {
     this.props.dispatch({ type: 'contract/getContractInfo' });
     this.props.dispatch({ type: 'user/readChatHistory' });
 
+    const {loginEns,loginAddress} = this.props.account;
+    if (loginEns && loginEns.length>7 && loginEns[5]=='.' && loginEns[6]=='.' && loginEns[7]=='.') {
+      this.setState({ nameModal: true });
+      console.log('nameModal2:'+this.state.nameModal);
+    }
     IMApp.setSiganlCallback(this.onSignalMessage);
+
   }
 
   componentWillUnmount() {
@@ -1531,7 +1542,7 @@ class HomePage extends Component {
           </Modal>
         </div>
         <Modal
-          title="Modify Name"
+          title="Your Name"
           visible={this.state.nameModal}
           cancelText="Cancel"
           okText="Ok"

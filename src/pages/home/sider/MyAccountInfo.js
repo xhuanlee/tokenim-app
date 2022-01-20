@@ -45,8 +45,8 @@ class MyAccountInfo extends Component {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', height: 65, width: 135 }}>
           <div style={{ display: 'flex', margin: '5px 0 0', fontSize: 13, alignItems: 'center' }}>
-            <p style={{ width: 60, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', cursor: 'pointer' }} onClick={this.props.onClick}>{display_username}</p>
-            <Tooltip title={formatMessage({ id: 'account.logout_tooltip' })}>
+            <p style={{ width: '80%', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', cursor: 'pointer' }} onClick={this.props.onClick}>{display_username}</p>
+            <Tooltip style={{width:'10%'}} title={formatMessage({ id: 'account.logout_tooltip' })}>
               <LogoutOutlined onClick={this.showConfirm} />
             </Tooltip>
           </div>
@@ -68,7 +68,7 @@ class MyAccountInfo extends Component {
                 </div>
 
                 {
-                  !isMetamask ?
+                  !isMetamask || true ?
                     <Popover
                       title={formatMessage({ id: 'account.get_token' })}
                       content={<div>
