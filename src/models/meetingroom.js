@@ -175,5 +175,12 @@ export default {
     setServer(state, { payload: { meetingServer } }) {
       return { ...state, meetingServer };
     },
+    setSpeakerMute(state, { payload: { address, muted } }) {
+      const speakers = state.onlineSpeakers.filter((a) => a.address === address);
+      if (speakers.length>0) {
+        speakers[0].muted=muted;
+        return { ...state, speakers };
+      }
+    },
   }
 };

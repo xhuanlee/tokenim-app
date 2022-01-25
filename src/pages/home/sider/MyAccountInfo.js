@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { Avatar, Tooltip, Button, Popover, Spin, Modal } from 'antd';
 import { formatMessage } from 'umi-plugin-locale';
 import { LogoutOutlined, CopyOutlined, InfoCircleOutlined } from '@ant-design/icons';
-import { shortenAddress, copyToClipboard } from '@/app/util'
+import { shortenAddress, copyToClipboard,converEther } from '@/app/util'
 
 const confirm = Modal.confirm;
 
@@ -35,7 +35,7 @@ class MyAccountInfo extends Component {
 
   render() {
     const { loginAddress, loginEns, visitorMode, isMetamask } = this.props.account;
-    const { balanceLoading, registerReward, loginReward, faxBalance, registerRewardLoading, loginRewardLoading } = this.props.user;
+    const { balanceLoading, registerReward, loginReward, etherBalance, faxBalance, registerRewardLoading, loginRewardLoading } = this.props.user;
     const short_address = shortenAddress(loginAddress, 12);
     const display_username = visitorMode ? formatMessage({ id: 'account.visitor' }) : (loginEns || formatMessage({ id: 'account.my_account' }))
     return (
@@ -64,11 +64,11 @@ class MyAccountInfo extends Component {
               </div>
               <div style={{ display: 'flex', fontWeight: 500 }}>
                 <div style={{ margin: 0, fontSize: 13, width: 110 }}>
-                  App: {faxBalance}
+                  bETH: {converEther(etherBalance).value}
                 </div>
 
                 {
-                  !isMetamask || true ?
+                  !isMetamask  ?
                     <Popover
                       title={formatMessage({ id: 'account.get_token' })}
                       content={<div>

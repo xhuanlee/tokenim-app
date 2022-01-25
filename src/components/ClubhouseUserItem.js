@@ -1,13 +1,13 @@
 import React from 'react';
-import { Avatar, Divider, Popover, Badge } from 'antd';
-import { TwitterOutlined, FacebookOutlined, WechatOutlined } from '@ant-design/icons';
+import { Avatar, Divider, Popover, Badge, Button } from 'antd';
+import { TwitterOutlined, FacebookOutlined, WechatOutlined, AudioOutlined,AudioMutedOutlined } from '@ant-design/icons';
 import style from './ClubhouseUserItem.less';
 import { DEFAULT_AVATAR } from '@/app/constant';
 
 const ClubhouseUserItem = (props) => {
 //  console.log(JSON.stringify(props));
   const { user, online } = props;
-  const { stream,id, address, nickname, avatar, introduce, twitter, facebook, wechat } = user;
+  const { stream,id, address, nickname, avatar, introduce, twitter, facebook, wechat,muted } = user;
   if (user)
     console.log(user.address+':'+user.id);
 //  const {  nickname, avatar, introduce, twitter, facebook, wechat } = user;
@@ -30,7 +30,8 @@ const ClubhouseUserItem = (props) => {
     <Popover title={nickname} content={popContent} trigger="click">
       <div className={style.userItemContainer} id={address}>
         <Avatar alt={nickname} shape="square" size={64} src={avatar && avatar !== '' ? avatar : DEFAULT_AVATAR} />
-        <div className={style.nickname}><Badge status={ online ? 'success' : 'error' } text={nickname} /></div>
+        <div className={style.nickname}>{muted?<AudioMutedOutlined style={{ fontSize: '18px',color:'red'}} />:null}<Badge status={ online ? 'success' : 'error' } text={nickname} /></div>
+
       </div>
     </Popover>
   );

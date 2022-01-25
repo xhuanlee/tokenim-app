@@ -129,7 +129,7 @@ function talkMode() {
       });
       localStream.show('myAudio');
       localStream.addEventListener('stream-data', (evt) => {
-        console.log('Received data ', evt.msg, 'from stream ', evt.stream.getAttributes().name);
+        console.log('Received data ', JSON.stringify(evt), 'from stream ', evt.stream.getAttributes().name);
         // $('#messages').append($('<li>').text(evt.msg));
       });
     });
@@ -362,7 +362,7 @@ export const enterRoom = (username, room, roomid) => {
         //        room.publish(localStream, options);
         room.publish(localStream, { maxVideoBW: 300, handlerProfile: 0 });
         localStream.addEventListener('stream-data', (evt) => {
-          console.log('Received data ', evt.msg, 'from stream ', evt.stream.getAttributes().name);
+          console.log('Received data ', JSON.stringify(evt), 'from stream ', evt.stream.getAttributes().name);
           // $('#messages').append($('<li>').text(evt.msg));
         });
 
@@ -442,7 +442,7 @@ export const enterRoom = (username, room, roomid) => {
       }
       console.log(`${stream.getID()}:${JSON.stringify(stream.getAttributes())}`);
       stream.addEventListener('stream-data', (evt) => {
-        console.log('stream Received data ', evt.msg, 'from stream ', evt.stream.getAttributes().name);
+        console.log('stream Received data ', JSON.stringify(evt), 'from stream ', evt.stream.getAttributes().name);
         // $('#messages').append($('<li>').text(`${evt.msg.from}:${evt.msg.text}`));
       });
     });

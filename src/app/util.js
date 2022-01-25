@@ -42,7 +42,7 @@ export const converEther = (value, unit) => {
       if (value / converter.Ether > 0.0001) {
         return {
           value: value / converter.Ether,
-          unit: 'Ether',
+          unit: 'bETH',//'Ether',
           secondValue: value / converter.Wei,
           secondUnit: 'Wei'
         }

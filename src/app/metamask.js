@@ -35,7 +35,7 @@ export async function connectMetamask() {
                         chainName: 'BeagleDAO App Chain',
                         nativeCurrency: {
                           name: 'beagledao',
-                          symbol: 'BDSN',
+                          symbol: 'bETH',
                           decimals: 18
                         },
                        rpcUrls: ['https://app.beagledao.finance/eth'],
@@ -104,6 +104,11 @@ export async function connectMetamask() {
     window.g_app._store.dispatch({ type: 'user/getBalance' });
     window.g_app._store.dispatch({ type: 'media/saveChatUser', payload: { chatUser: null } });
     showNotification('connect_metamask', 'success');
+
+    // should get free 1 Ether to new account
+    // IMApp.getFreeEther(address).then(() => {
+    //   console.log('success get ether')
+    // });
 
     return true;
   } catch (e) {

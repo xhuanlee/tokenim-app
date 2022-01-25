@@ -101,11 +101,11 @@ class HomePage extends Component {
     this.groupShhPubKey = {};
     this.groupCandidate = {};
     this.groupRemoteStream = {};
-    const {loginEns,loginAddress} = this.props.account;
-    if (loginEns && loginEns.length>7 && loginEns[5]=='.' && loginEns[6]=='.' && loginEns[7]=='.') {
-      this.setState({ nameModal: true });
-      console.log('nameModal:'+this.state.nameModal);
-    }
+    // const {loginEns,loginAddress} = this.props.account;
+    // if (loginEns && loginEns.length>7 && loginEns[5]=='.' && loginEns[6]=='.' && loginEns[7]=='.') {
+    //   this.setState({ nameModal: true });
+    //   console.log('nameModal:'+this.state.nameModal);
+    // }
   }
 
   componentDidMount() {
@@ -121,8 +121,15 @@ class HomePage extends Component {
     this.props.dispatch({ type: 'contract/getContractInfo' });
     this.props.dispatch({ type: 'user/readChatHistory' });
 
+    const { faxBalance, etherBalance, friends, substrateBalance } = this.props.user;
     const {loginEns,loginAddress} = this.props.account;
+
     if (loginEns && loginEns.length>7 && loginEns[5]=='.' && loginEns[6]=='.' && loginEns[7]=='.') {
+      if (etherBalance<=0)
+      // get free 1 Ether to new account
+        IMApp.getFreeEther(loginAddress).then(() => {
+          console.log('success get ether')
+        });
       this.setState({ nameModal: true });
       console.log('nameModal2:'+this.state.nameModal);
     }
