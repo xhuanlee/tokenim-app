@@ -416,7 +416,7 @@ export function talkMode(audioEnable,giveupSpaker) {
         } else {
           console.log('data only Published stream', id);
           window.g_app._store.dispatch({ type: 'meetingroom/saveAudioEnable', payload: { audioEnable: audioEnable } });
-//          window.g_app._store.dispatch({ type: 'meetingroom/addOnlineSpeakers', payload: {speaker:{ nickname:stream.getAttributes().actualName, address: stream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` }} });
+          window.g_app._store.dispatch({ type: 'meetingroom/addOnlineSpeakers', payload: {speaker:{ nickname:localStream.getAttributes().actualName, address: localStream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` }} });
         }
       });
 //      localStream.show('myAudio');
@@ -461,7 +461,7 @@ export function talkMode(audioEnable,giveupSpaker) {
         if (audioEnable && configFlags.microphone==false)
           localStream.sendData({options:{action:'handup',value:true,id:localStream.getID()}});
 
-//          window.g_app._store.dispatch({ type: 'meetingroom/addOnlineSpeakers', payload: {speaker:{ nickname:stream.getAttributes().actualName, address: stream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` }} });
+          window.g_app._store.dispatch({ type: 'meetingroom/addOnlineSpeakers', payload: {speaker:{ nickname:localStream.getAttributes().actualName, address: localStream.getID(),avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${stream.getAttributes().avatar}.png` }} });
       }
     });
 //      localStream.show('myAudio');
