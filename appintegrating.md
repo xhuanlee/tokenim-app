@@ -46,3 +46,104 @@
 - 如果Web端有已经保存的用户好友信息，把好友信息发到App端，App插入好友数据（有个同步的问题，以手机端为准）
 - 显示绑定成功；
 - Web端把收到的信息提交到合约中保存
+
+# 5.API
+- IMApp.API_URL: https://app.beagledao.finance/api
+-  GET_FREE_ETHER: `/getfreeEther/`,
+```
+      sendRequest(`${IMApp.API_URL}${ETHEREUM_API.GET_FREE_ETHER}${address}`, (err, res) => {
+
+```
+-  REGISTER_ENS: `/registerEns/`,
+```
+      `${IMApp.API_URL}${ETHEREUM_API.REGISTER_ENS}${this.props.account.address}/${nameValue}`,
+```
+
+# 6. Web3 智能合约调用
+- 合约地址
+```
+  initShhDataContract: () => {
+    // web3 contract instance
+    const c = FaxTokenImAPI.web3.eth.contract(ShhData.abi)
+    FaxTokenImAPI.web3ShhDataContract = c.at(ShhData.networks[network_id].address);
+
+    // truffle contract instance
+    const shhDataContract = contract(ShhData);
+    shhDataContract.setProvider(FaxTokenImAPI.web3.currentProvider);
+
+    return new Promise((resolve, reject) => {
+      shhDataContract.deployed().then(instance => {
+        FaxTokenImAPI.shhDataContract = instance;
+        resolve(instance.address);
+      }).catch(err => {
+        reject(err);
+      })
+    })
+  },
+
+```
+- 调用合约
+```
+export async function saveShhName(name) {
+  try {
+    const nonce = await FaxTokenImAPI.getTransactionCount(window.ethereum.selectedAddress);
+    const data = FaxTokenImAPI.web3ShhDataContract.saveShhName.getData(name);
+    const param = {
+      nonce: window.FaxTokenImAPI.web3.toHex(nonce),
+      gas: '0x15f90',
+      gasPrice: '0x4a817c800',
+      from: window.ethereum.selectedAddress,
+      to: FaxTokenImAPI.shhDataContract.address,
+      value: '0x0',
+      data,
+      chainId: window.ethereum.chainId,
+    };
+    const txHash = await window.ethereum.request({
+      method: 'eth_sendTransaction',
+      params: [param],
+    });
+    console.log(`save shh name hash: ${txHash}`);
+
+    window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { loginEns: name } });
+  } catch (e) {
+    message.error('save shh name error!');
+  }
+}
+```
+# 7. ENS
+```
+  initENSContract: () => {
+    // web3 contract instance
+    const c = FaxTokenImAPI.web3.eth.contract(ENSRegistry.abi)
+    FaxTokenImAPI.web3EnsContract = c.at(ENSRegistry.networks[network_id].address);
+
+    // truffle contract instance
+    const ensRegistryContract = contract(ENSRegistry);
+    ensRegistryContract.setProvider(FaxTokenImAPI.web3.currentProvider);
+
+    return new Promise((resolve, reject) => {
+      ensRegistryContract.deployed().then(instance => {
+        FaxTokenImAPI.ensContract = instance;
+        resolve(instance.address);
+      }).catch(err => {
+        reject(err);
+      })
+    })
+  },
+
+  getENSAddressByName: (name) => {
+    return FaxTokenImAPI.ensContract.resolver.call(namehash.hash(name)).then((resolverAddr) => {
+      if (resolverAddr === '0x0000000000000000000000000000000000000000') {
+        throw `no resolver address for name: ${name}`;
+      } else if (resolverAddr.toLowerCase() !== FaxTokenImAPI.resolverContract.address.toLowerCase()) {
+        throw `resolver not supported yet (only support .fax subdomain)`
+      } else {
+        return FaxTokenImAPI.resolverContract.addr.call(namehash.hash(name));
+      }
+    })
+  },
+
+  checkENSName: (name) => {
+    return FaxTokenImAPI.ensContract.owner.call(namehash.hash(`${name}.fax`))
+  },
+```
