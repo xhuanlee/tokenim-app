@@ -55,7 +55,7 @@ export default {
   'index.download': 'Download',
   'index.quotation': 'Quotation',
   'index.config_peer': 'config connect peer',
-  'index.description': 'Built on top of the infrastructure of blockchain, IClub is a cross chain instant messaging network for the blockchain communities',
+  'index.description': 'Built on top of the infrastructure of blockchain, beagle.chat is a cross chain instant messaging network for the blockchain communities',
   'index.visitor': 'Visitor',
   'index.wallet_login': 'Ethereum Address',
   'index.ens_login': 'ENS',

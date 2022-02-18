@@ -1,24 +1,142 @@
-# 1. metamask support
+#链上账号
+## 1. 背景：
+-传统系统的账号系统一般都在中心化服务器上实现和存储，kademlia目前没有网上的账号系统。
+-kademlia准备使用Web3的基础设施（ens，swarm，evm compatible smart contract）来实现账号的存储和管理，不依赖于具体的服务器；
+## 2. 概念
+### 2.1 BAppChain
+- BeagleDao App Chain
+- ethereum POA blockchain with ENS, WHISPER and SWARM
+### 2.2 ethereum address
+- 以太坊的钱包地址作为登录授权的唯一地址
+- 用户可以使用以太坊钱包的地址通过metamask或者walletConnect授权登陆，
+- 也可以通过EthereumApi获得云端钱包地址和名字
+- https://app.beagledao.finance/api
+```
+export const ETHEREUM_API = {
+  GET_KEYSTORE: `/getKeystore/`,
+  SAVE_KEYSTORE: `/saveKeystore/`,
+  GET_FREE_ETHER: `/getfreeEther/`,
+  REGISTER_ENS: `/registerEns/`,
+  SET_SYM_KEY: `/userData/setSymKey/`,
+  SET_SHH_KEY: `/userData/setShhKey/`,
+  SET_DEVICE_TOKEN: `/userData/setDeviceToken/`,
+  SEND_ANNOUNCEMENT: `/userData/sendAnnouncement`
+}
+
+- https://app.beagledao.finance/api/account/registerENS ,payload: { ensName, password }
+    // check name error
+    if (!skipEnsName && !(ensName && /^[a-zA-Z][a-zA-Z0-9]*$/.test(ensName))) {
+      alert(formatMessage({ id: 'index.ens_format_error' }));
+      return;
+    }
+    if (!skipEnsName && !queryENSAvaiable) {
+      alert(formatMessage({ id: 'register.ens_no_usable' }));
+      return;
+    }
+
+    // submit
+    if (!skipEnsName) {
+      this.props.dispatch({ type: 'account/registerENS', payload: { ensName, password } })
+    } else {
+      this.props.dispatch({ type: 'account/registerWallet', payload: { password } })
+    }
+
+```
+### 2.3 name：
+- 唯一可读的名字，如ens的名字beagles.eth,tns的readyplayer.tns
+- 已有ens或者tns名字直接用ens的进行验证和授权，把ens中的对应数据复制同步到BAppChain的对应ENS合约上
+- 申请或者使用我们的名字，目前的后缀是.beagles.eth, 目前在我们的BAppChain链上部署有ens兼容的合约，保持ens调用方式
+### 2.4 profile
+- ens除了以太坊地址以为还可以记录text, contenthash, email、社交账号等等；
+- 由于ens的gas费太高，所有操作都在我们的应用链上完成
+- https://docs.ens.domains/dapp-developer-guide/resolving-names
+- TEXT metadata: 记录用户的显示名字或者别称nickname,也可以用来记录carrier地址或者email address (option)
+
+````
+ens.setText('iam.alice.eth', 'nickname', 'Test record', {from: ...});
+ens.setText('iam.alice.eth', 'carrieraddress', 'Test record', {from: ...});
+ens.setText('iam.alice.eth', 'carrierid', 'Test record', {from: ...});
+````
+- Content hashes: 记录用户头像
+```
+// Getting contenthash
+web3.eth.ens.getContenthash('ethereum.eth').then(function (result) {
+    console.log(result);
+});
+// Setting contenthash
+web3.eth.ens.setContenthash('ethereum.eth', hash);
+```
+- 头像上传到swarm，返回值作为contentHash提交到ens
+```
+https://github.com/allcomsh/Ethereum/blob/master/swarm.txt
+1. upload file
+curl -H "Content-Type:image/jpeg" --data-binary @cat.jpg https://app.beagledao.finance/swarm/bzz:/
+fb45d1e785834e3a12842c4c26e00f4c7dd78c5aafd371017717b94c79c7694d
+2. view file
+https://app.beagledao.finance/swarm/bzz:/83e23a04962eb6c7a2e26c10f50f76660a1c5195c0a5cffb3ecab56a1f9785f2/
+```
+```
+ const contentHash = require('content-hash')
+const encoded = 'e3010170122029f2d17be6139079dc48696d1f582a8530eb9805b561eda517e22a892c7e3f1f'
+const content = contentHash.decode(encoded)
+// 'QmRAQB6YaCyidP37UdDnjFY5vQuiBrcqdyoW1CuDgwxkD4'
+
+const onion = 'zqktlwi4fecvo6ri'
+contentHash.encode('onion', onion);
+// 'bc037a716b746c776934666563766f367269'
+
+const encoded = 'e40101701b20d1de9994b4d039f6548d191eb26786769f580809256b4685ef316805265ea162'
+
+const codec = contentHash.getCodec(encoded) // 'swarm-ns'
+codec === 'ipfs-ns' // false
+```
+### 2.5 Contacts
+记录好友的ens名字（如果有的话）或者地址
+- 给好友加备注（我给好友的名字或者标签）
+- 记录好友添加时间, 发其添加好友请求的时候就记录
+- To Be Done:
+-- BAppChain上的智能合约
+-- 钱包签字授权登录
+
+### 2.6 Meeting Rooms
+会议室的名字、描述、所有者（可以是多个）和成员
+- 创建
+- 加入
+- 添加合伙人（所有者）
+- 转让
+- 注销
+- 黑名单
+- To Be Done:
+- - BAppChain上的智能合约
+- - 钱包签字授权登录
+- 会议记录
+- 录音
+
+## 3. App前端开发
+### 3.1. metamask support on Web
 - login in by sign with metamask (maybe other ethereum main or test chain, 
-but it will conntent to our own whisper blockchain and we could give him some EHT of our own private chain)
-## UI
-- name
-- email address (option)
-## smart contract
-- register: eth address, whisper related information(how to get): id, public and private key
-- query for myself:
-## ENS register
-- option: register and publish name (using ENS api)
-## login/listen whisper message
-- public message
-## call/answer
-- should be able to call other club user or metamask 
-
-# 2. ENS name end with .club
-- current .fax
-
-# 3. Profile: name for chat
-## Home - add a row to add or edit name, name can keep in a new smart contract which can search by address
+but it will connnent to our own whisper blockchain and we could give him some EHT of our own private chain)
+### 3.2 walletConnect on mobile
+### 3.3 UI
+- ENS name support
+- Add a row to add or edit name, name can keep in a new smart contract which can search by address
 - this name should be treated as the name of profile
 - should have a ICON too
-## Public Chat Root - click the name icon and enter the chat dialog window
+- Public Chat Room - click the name icon and enter the chat dialog window to receive whisper messages
+
+## 4. smart contract开发
+- register: simple ens by deploy a contract to register the following infromation in ENS: eth address, whisper related information(how to get): id, public and private key
+- contacts:
+- meeting room
+
+## 5. EthereumAPI开发
+### 5.1 ENS register
+- ENS name end with .beagles.eth
+- current .fax
+- option: register and publish name (using ENS api)
+## 5.2 login/listen whisper message
+- public message
+## 5.3 call/answer
+- should be able to call other beagle user or metamask 
+#  5.4 Profile
+- create/update
