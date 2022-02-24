@@ -1076,10 +1076,10 @@ class HomePage extends Component {
           <MeetingRoom
             dispatch={dispatch}
             id={room}
-            currentRoom={currentRoom}
+            currentRoom={currentRoom?currentRoom:{_id:room,name:'Beagles'}}
             listeners={listeners}
-            user={roomUser}
-            meetingServer={meetingServer}
+            user={roomUser?roomUser:{address:this.props.account.address,loginEns:this.props.account.loginEns}}
+            meetingServer={meetingServer?meetingServer:'https://t.callt.net:3001/'}
             audioEnable={roomAudioEnable}
             onlineSpeakers={onlineSpeakers}
           />
