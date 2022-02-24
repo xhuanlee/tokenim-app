@@ -88,8 +88,16 @@ function processAction(address, options) {
         break;
   }
 }
+let createTokenInProcess = false;
 export async function initChannel(isHost,agoraObject, channel, address ) {
 //  await joinChannel(agoraObject, channel, address);
+  if (createTokenInProcess)
+    return;
+  if (room && room.state > 0){
+    //room.state to access the current state of the room. States can be 0 if it is disconnected, 1 if it is connecting, and 2 if it is connected.
+    console.log('room state:' + room.state)
+    return;
+  }
   console.log(isHost+":"+agoraObject.roomname+":"+channel+":"+address)
   const roomData = { username: address,
     role: 'presenter',
@@ -98,7 +106,9 @@ export async function initChannel(isHost,agoraObject, channel, address ) {
     roomId: channel,
     type: configFlags.type,
     mediaConfiguration: configFlags.mediaConfiguration };
+  createTokenInProcess = true;
   createToken(roomData,(response)=> {
+    createTokenInProcess = false;
     const token = response;
     console.log(token);
     if (token == "")
