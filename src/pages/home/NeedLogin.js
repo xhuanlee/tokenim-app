@@ -9,8 +9,14 @@ class NeedLogin extends Component {
     super(props);
     const { auth, visitorMode } = this.props.account;
     if (!(auth || visitorMode)) {
+      const { location } = props;
+      const { pathname, query } = location || {};
+      let q = {};
+      if (query) {
+        q = { ...query, redirect_uri: pathname };
+      }
       message.warning(formatMessage({ id: 'need_login' }));
-      this.props.dispatch(routerRedux.push('/'))
+      this.props.dispatch(routerRedux.push({ pathname: '/', query: q }))
     }
   }
 

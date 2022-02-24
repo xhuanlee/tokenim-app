@@ -35,14 +35,14 @@ const MeetingRoom = props => {
       return;
     }
 
-    const isAHost = isHost(currentRoom, user.address);
+    const isAHost = isHost(currentRoom, user && user.address);
     const role = isAHost ? 'host' : 'audience';
     agoraObject.roomname = currentRoom.name;
     agoraObject.meetingServer = meetingServer;
     //    enterRoom(user.address,currentRoom.name,id);
     //    initChannel(isAHost, agoraObject, `${CHANNEL_PREFIX}_${currentRoom.id}`, user.address);
     agoraObject.client = user;
-    initChannel(isAHost, agoraObject, currentRoom._id, user.address);
+    initChannel(isAHost, agoraObject, currentRoom._id, user && user.address);
     return () => {
       leaveCall(agoraObject);
     };
@@ -61,11 +61,11 @@ const MeetingRoom = props => {
   //, [currentRoom, dispatch, id, user.address]);
 
   useEffect(() => {
-    dispatch({ type: 'meetingroom/userJoin', payload: { address: user.address } });
+    dispatch({ type: 'meetingroom/userJoin', payload: { address: user && user.address } });
     return () => {
-      dispatch({ type: 'meetingroom/userLeft', payload: { address: user.address } });
+      dispatch({ type: 'meetingroom/userLeft', payload: { address: user && user.address } });
     };
-  }, [dispatch, user.address]);
+  }, [dispatch, user]);
   //}, [dispatch, user.address]);
   const toggleAudioEnable = useCallback(() => {
 //    agoraObject.localAudioTrack.setEnabled(!audioEnable);
@@ -80,61 +80,59 @@ const MeetingRoom = props => {
   const { title, moderators, speakers } = currentRoom || {};
 
   return (
-    <NeedLogin>
-      <div className={style.roomTitleContainer}>
-        <script type="text/javascript" src="erizo.js"></script>
-        <div>
-          <h1>
-            {title}
-            {audioEnable ? (
-              <Tooltip title="mute">
-                <Button size="large" type="link" onClick={toggleAudioEnable} style={{marginLeft:"50%" }}>
-                  <AudioMutedOutlined style={{ fontSize: '24px'}} />
-                </Button>
-              </Tooltip>
-            ) : (
-              <Tooltip title="unmute">
-                <Button size="large" type="link" onClick={toggleAudioEnable} style={{marginLeft:"50%" }}>
-                  <AudioOutlined style={{ fontSize: '24px'}} />
-                </Button>
-              </Tooltip>
-            )}
-            <Tooltip title="Stop">
-              <Button size="large" type="link" onClick={stopConference}>
-                <StopOutlined style={{ fontSize: '24px' ,color:'red'}} />
+    <div className={style.roomTitleContainer}>
+      <script type="text/javascript" src="erizo.js"></script>
+      <div>
+        <h1>
+          {title}
+          {audioEnable ? (
+            <Tooltip title="mute">
+              <Button size="large" type="link" onClick={toggleAudioEnable} style={{marginLeft:"50%" }}>
+                <AudioMutedOutlined style={{ fontSize: '24px'}} />
               </Button>
             </Tooltip>
-          </h1>
-        </div>
-        <div className={style.userContainer}>
-          <h2>Speakers</h2>
-          <div>
-            {onlineSpeakers &&
-            onlineSpeakers.map(item => (
-                <ClubhouseUserItem user={item} online />
-              ))}
-          </div>
-        </div>
-        {/*<div className={style.userContainer} id="videoContainer" >*/}
-        {/*  <h2>speakers</h2>*/}
-        {/*  {speakers &&*/}
-        {/*    speakers.map(item => (*/}
-        {/*      <ClubhouseUserItem user={item} online />*/}
-        {/*    ))}*/}
-        {/*</div>*/}
-        <div className={style.userContainer}  id="listenerContainer">
-          <h2>listeners</h2>
-          {listeners && listeners.map(item => <ClubhouseUserItem user={item} online />)}
-        </div>
-        {/*<div className={style.userContainer} >*/}
-        {/*  <button key="stopButton" id="stopButton" onClick={stopConference}  >End</button>*/}
-        {/*  <button key="talkMode" id="talkMode" onClick={()=>{console.log("talkMode()")}} >Mute</button>*/}
-        {/*  <button key="cameraMode" id="cameraMode" onClick={()=>{console.log("cameraMode()")}} >Video</button>*/}
-        {/*  <button key="recordButton" id="recordButton" onClick={()=>{console.log("startRecording()")}} disabled>Recording*/}
-        {/*  </button>*/}
-        {/*</div>*/}
+          ) : (
+            <Tooltip title="unmute">
+              <Button size="large" type="link" onClick={toggleAudioEnable} style={{marginLeft:"50%" }}>
+                <AudioOutlined style={{ fontSize: '24px'}} />
+              </Button>
+            </Tooltip>
+          )}
+          <Tooltip title="Stop">
+            <Button size="large" type="link" onClick={stopConference}>
+              <StopOutlined style={{ fontSize: '24px' ,color:'red'}} />
+            </Button>
+          </Tooltip>
+        </h1>
       </div>
-    </NeedLogin>
+      <div className={style.userContainer}>
+        <h2>Speakers</h2>
+        <div>
+          {onlineSpeakers &&
+          onlineSpeakers.map(item => (
+            <ClubhouseUserItem user={item} online />
+          ))}
+        </div>
+      </div>
+      {/*<div className={style.userContainer} id="videoContainer" >*/}
+      {/*  <h2>speakers</h2>*/}
+      {/*  {speakers &&*/}
+      {/*    speakers.map(item => (*/}
+      {/*      <ClubhouseUserItem user={item} online />*/}
+      {/*    ))}*/}
+      {/*</div>*/}
+      <div className={style.userContainer}  id="listenerContainer">
+        <h2>listeners</h2>
+        {listeners && listeners.map(item => <ClubhouseUserItem user={item} online />)}
+      </div>
+      {/*<div className={style.userContainer} >*/}
+      {/*  <button key="stopButton" id="stopButton" onClick={stopConference}  >End</button>*/}
+      {/*  <button key="talkMode" id="talkMode" onClick={()=>{console.log("talkMode()")}} >Mute</button>*/}
+      {/*  <button key="cameraMode" id="cameraMode" onClick={()=>{console.log("cameraMode()")}} >Video</button>*/}
+      {/*  <button key="recordButton" id="recordButton" onClick={()=>{console.log("startRecording()")}} disabled>Recording*/}
+      {/*  </button>*/}
+      {/*</div>*/}
+    </div>
   );
 };
 

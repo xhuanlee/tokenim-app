@@ -166,7 +166,7 @@ const RoomList = props => {
   };
 
   return (
-    <NeedLogin>
+    <div>
       <PageHeader
         avatar={{ src: user && user.avatar && user.avatar !== '' ? user.avatar : DEFAULT_AVATAR }}
         className="site-page-header"
@@ -303,7 +303,7 @@ const RoomList = props => {
           </Form.Item>
         </Form>
       </Modal>
-    </NeedLogin>
+    </div>
   );
 };
 

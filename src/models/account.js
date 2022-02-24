@@ -204,14 +204,14 @@ export default {
       window.App.loginInVisitorMode();
     },
 
-    *loginWithAddress({ payload: { address, password } }, { put }) {
+    *loginWithAddress({ payload: { address, password, query } }, { put }) {
       yield put({ type: 'saveAccountState', payload: { wallet: null, loginLoading: true, ensLoading: false, loginAddress: address, loginEns: '', loginKeystore: '' } })
-      setTimeout(() => window.App.loginWithAddress(address, password), 1000);
+      setTimeout(() => window.App.loginWithAddress(address, password, query), 1000);
     },
 
-    *loginWithEns({ payload: { ensName, password } }, { put }) {
+    *loginWithEns({ payload: { ensName, password, query } }, { put }) {
       yield put({ type: 'saveAccountState', payload: { wallet: null, loginLoading: false, ensLoading: true, loginAddress: '', loginEns: '', loginKeystore: '' } })
-      setTimeout(() => window.App.loginWithEns(ensName, password), 1000);
+      setTimeout(() => window.App.loginWithEns(ensName, password, query), 1000);
     },
 
     *saveEnsName(_, { select }) {
@@ -270,12 +270,17 @@ export default {
       window.App.getAddressUserData(address);
     },
 
-    *loginWithMetamask(_, { call, put }) {
+    *loginWithMetamask({ payload: { query } }, { call, put }) {
       const result = yield call(connectMetamask);
       yield put({ type: 'saveIsMetamask', payload: { isMetamask: result } });
       if (result) {
         yield put({ type: 'saveAccountType', payload: { accountType: accountType.metamask } });
-        yield put(routerRedux.push('/home'));
+        let q = {};
+        if (query) {
+          q = query;
+          delete q['redirect_uri'];
+        }
+        yield put(routerRedux.push({ pathname: '/home', query: q }));
         window.ethereum.on('accountsChanged', function () {
           connectMetamask();
         });
