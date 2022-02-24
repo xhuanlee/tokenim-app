@@ -20,7 +20,7 @@ import style from '../../ClubHouse.less';
 import { DEFAULT_AVATAR } from '@/app/constant';
 import NeedLogin from '@/pages/home/NeedLogin';
 
-const RoomSummary = ({ room, goToRoom }) => {
+const RoomSummary = ({ room, goToRoom , defaultRoom}) => {
   const { name, _id, id, title, description, dueTime, moderators, speakers } = room;
   let authors = [];
   if (moderators && moderators.length > 0) {
@@ -29,7 +29,14 @@ const RoomSummary = ({ room, goToRoom }) => {
   if (speakers && speakers.length > 0) {
     authors = authors.concat(speakers);
   }
-
+  let fontSize = 14;
+  let fontWeight = 'unset';
+  let fontColor = 'black';
+  if (_id==defaultRoom) {
+    fontSize = 24;
+    fontWeight = 'bold';
+    fontColor = 'blue';
+  }
   return (
     <div
       className={style.roomItem}
@@ -37,7 +44,7 @@ const RoomSummary = ({ room, goToRoom }) => {
       onClick={() => goToRoom(room)}
     >
       <h2 style={{ marginBottom: '0px' }}>
-        <span>{name}</span>
+        <span style={{ fontWeight: fontWeight,color:fontColor}}>{name}</span>
         <span style={{ fontSize: 14, fontWeight: 'unset', marginLeft: '16px' }}>{dueTime}</span>
       </h2>
       <Avatar.Group>
@@ -59,7 +66,7 @@ const RoomSummary = ({ room, goToRoom }) => {
 };
 
 const RoomList = props => {
-  const { server, dispatch, loading, meetingroom } = props;
+  const { server, dispatch, loading, meetingroom,targetRoom } = props;
   const { rooms, totalRoom, hasMore, needCreate, newChatRoomModal, user } = meetingroom;
   const fetchingMore = loading.effects['meetingroom/fetchMore'];
   const savingUser = loading.effects['meetingroom/saveServerUser'];
@@ -190,7 +197,7 @@ const RoomList = props => {
         >
           <List
             dataSource={rooms}
-            renderItem={item => <RoomSummary room={item} goToRoom={goToRoom} />}
+            renderItem={item => <RoomSummary room={item} goToRoom={goToRoom} defaultRoom={targetRoom}/>}
           >
             {hasMore && fetchingMore && (
               <div style={{ textAlign: 'center' }}>

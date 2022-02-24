@@ -1059,6 +1059,7 @@ class HomePage extends Component {
         substrateBalance={substrateBalance}
       />
     );
+    console.log(s,JSON.stringify(this.state));
     switch (s) {
       case 'defi':
         contentBody = <Defis />;
@@ -1072,18 +1073,26 @@ class HomePage extends Component {
         contentBody = <RoomList dispatch={dispatch} loading={loading} meetingroom={meetingroom} server={'https://meeting.kad.network:3001/'} />;
         break;
       case 'chat':
-        contentBody = (
-          <MeetingRoom
-            dispatch={dispatch}
-            id={room}
-            currentRoom={currentRoom?currentRoom:{_id:room,name:'Beagles'}}
-            listeners={listeners}
-            user={roomUser?roomUser:{address:this.props.account.address,loginEns:this.props.account.loginEns}}
-            meetingServer={meetingServer?meetingServer:'https://t.callt.net:3001/'}
-            audioEnable={roomAudioEnable}
-            onlineSpeakers={onlineSpeakers}
-          />
-        );
+        if (roomUser && roomUser.address && roomUser.address.length>0
+            && currentRoom && currentRoom._id && currentRoom._id.length>0)
+          contentBody = (
+            <MeetingRoom
+              dispatch={dispatch}
+              id={room}
+              currentRoom={currentRoom?currentRoom:{_id:room,name:'Beagles'}}
+              listeners={listeners}
+              user={roomUser && roomUser.address && roomUser.address.length>0?roomUser:{address:this.props.account.address,loginEns:this.props.account.loginEns}}
+              meetingServer={meetingServer?meetingServer:'https://t.callt.net:3001/'}
+              audioEnable={roomAudioEnable}
+              onlineSpeakers={onlineSpeakers}
+            />
+          );
+        else {
+                   contentBody=(<RoomList dispatch={dispatch} loading={loading} meetingroom={meetingroom} targetRoom={room} server={'https://t.callt.net:3001/'} />);
+          //contentBody = <div>waiting ...</div>
+          //dispatch({ type: 'meetingroom/saveCurrentRoom', payload: {currentRoom: { _id:room,name:'Beagles',title:'beagles'}}} );
+          console.log(roomUser, currentRoom);
+        }
         break;
       default:
         if (chatUser) {
