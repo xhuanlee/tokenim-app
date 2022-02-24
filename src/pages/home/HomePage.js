@@ -106,6 +106,8 @@ class HomePage extends Component {
     //   this.setState({ nameModal: true });
     //   console.log('nameModal:'+this.state.nameModal);
     // }
+
+    console.log('home_props: ', this.props)
   }
 
   componentDidMount() {
@@ -1098,7 +1100,7 @@ class HomePage extends Component {
     }
 
     return (
-      <NeedLogin>
+      <NeedLogin location={this.props.location}>
         <div style={{ height: '100vh', backgroundColor: 'rgb(213,216,225)' }}>
           <Layout style={{ height: '100vh', margin: 'auto', backgroundColor: 'rgb(213,216,225)' }}>
             <Sider

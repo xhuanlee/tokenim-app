@@ -816,7 +816,7 @@ const IMApp = {
     }
   },
 
-  loginWithAddress: async (address, password) => {
+  loginWithAddress: async (address, password, query) => {
     const pk_info = await IMApp.getEncryptPrivateKeyByAddress(address) || {};
     const { aes_pk, md5_pk } = pk_info;
     if (aes_pk && md5_pk) {
@@ -828,7 +828,12 @@ const IMApp = {
         FaxTokenImAPI.setupNewTransactionListener(address, (filter) => { IMApp.transactionFilter = filter }, IMApp.newTransactionArrive)
         window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { wallet, loginLoading: false, loginPkAes: aes_pk, loginPkMd5: md5_pk, auth: true, loginAddress: address, address, visitorMode: false } })
         showNotification('login', 'success');
-        window.g_app._store.dispatch(routerRedux.push('/home'))
+        let q = {};
+        if (query) {
+          q = query;
+          delete q['redirect_uri'];
+        }
+        window.g_app._store.dispatch(routerRedux.push({ pathname: '/home', query: q }));
       } else {
         showNotification('login', 'error', formatMessage({ id: 'password_error_notice' }));
         window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { wallet, loginLoading: false, loginPkAes: aes_pk, loginPkMd5: md5_pk } })
@@ -840,10 +845,10 @@ const IMApp = {
     }
   },
 
-  loginWithEns: (ensName, password) => {
+  loginWithEns: (ensName, password, query) => {
     FaxTokenImAPI.getENSAddressByName(`${ensName}.fax`).then((address) => {
       window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { loginLoading: true, ensLoading: false, loginEns: ensName } })
-      setTimeout(() => IMApp.loginWithAddress(address, password), 1000);
+      setTimeout(() => IMApp.loginWithAddress(address, password, query), 1000);
     }).catch((err) => {
       console.log(`can't find address for ${ensName}.fax`)
       console.log(err)

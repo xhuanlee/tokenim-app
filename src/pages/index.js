@@ -83,10 +83,11 @@ class LoginPage extends PureComponent {
     }
 
     // submit
+    const { location: { query } } = this.props;
     if (signInWithENS) {
-      this.props.dispatch({ type: 'account/loginWithEns', payload: { ensName, password } })
+      this.props.dispatch({ type: 'account/loginWithEns', payload: { ensName, password, query } })
     } else {
-      this.props.dispatch({ type: 'account/loginWithAddress', payload: { address, password } })
+      this.props.dispatch({ type: 'account/loginWithAddress', payload: { address, password, query } })
     }
   }
 
@@ -120,8 +121,8 @@ class LoginPage extends PureComponent {
   }
 
   connectMetamask = () => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'account/loginWithMetamask' });
+    const { dispatch, location: { query } } = this.props;
+    dispatch({ type: 'account/loginWithMetamask', payload: { query } });
   }
 
   connectSubstrate = () => {
