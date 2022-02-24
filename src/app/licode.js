@@ -31,6 +31,7 @@ const configFlags = {
   camera: false,
   name:'',
   user:null,
+  maxSpeakers:10,
 };
 function addPreZero4(num) {
   return (`0000${num}`).slice(-4);
@@ -339,7 +340,7 @@ export async function leaveCall(agoraObject) {
 
 export function talkMode(audioEnable,giveupSpaker) {
   if (audioEnable && !configFlags.microphone && !localStream.hasAudio() && localStream.getID()) {
-    if (speakersInRoom>=3){
+    if (speakersInRoom>=configFlags.maxSpeakers){
       alert(`Too many speakers(${speakersInRoom}), ask others to release please wait`);
       localStream.sendData({options:{action:'handup',value:true,id:localStream.getID()}});
       return;
@@ -392,7 +393,7 @@ export function talkMode(audioEnable,giveupSpaker) {
     localStream.sendData({options:{action:'mute',value:true}});
 //    document.getElementById('talkMode').textContent = 'Cancel Mute';
     console.log("speakersInRoom is "+speakersInRoom);
-    if (speakersInRoom<=3 && !giveupSpaker) {
+    if (speakersInRoom<=configFlags.maxSpeakers && !giveupSpaker) {
 //      document.getElementById('microphone').checked = configFlags.microphone;
       return;
     }
@@ -436,7 +437,7 @@ export function talkMode(audioEnable,giveupSpaker) {
     //document.getElementById('talkMode').textContent = 'Mute';
   }
   if (!localStream){
-    if (speakersInRoom>=3){
+    if (speakersInRoom>=configFlags.maxSpeakers){
       configFlags.microphone = false;
       alert(`Too many speakers(${speakersInRoom}), ask others to release please wait`);
 //      audioEnable = false;

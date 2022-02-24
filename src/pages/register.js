@@ -200,21 +200,21 @@ class RegisterPage extends Component {
             </div>
 
             <div style={{ margin: '10px 0' }}>
-              <Alert message={<div>
-                {formatMessage({ id: 'register.message_1' })}<br />
-                {formatMessage({ id: 'register.message_2' })}<br />
-                {formatMessage({ id: 'register.message_3' })}
-              </div>} type="info" />
+              <Alert message={<div><ul>
+               <li> {formatMessage({ id: 'register.message_1' })}</li>
+                <li>{formatMessage({ id: 'register.message_2' })}</li>
+                <li>{formatMessage({ id: 'register.message_3' })}</li>
+              </ul></div>} type="info" />
             </div>
-            <div style={{ margin: '20px 0', display: 'flex', justifyContent: 'flex-end' }}>
-              <Checkbox onChange={(e) => this.setState({ skipEnsName: e.target.checked })}>{formatMessage({ id: 'register.create_address_only' })}</Checkbox>
-            </div>
+            {/*<div style={{ margin: '20px 0', display: 'flex', justifyContent: 'flex-end' }}>*/}
+            {/*  <Checkbox onChange={(e) => this.setState({ skipEnsName: e.target.checked })}>{formatMessage({ id: 'register.create_address_only' })}</Checkbox>*/}
+            {/*</div>*/}
             <FormItem>
-              <Button onClick={this.openImportModal} style={{ width: '45%', marginRight: '10%', }}>
+              <Button onClick={this.openImportModal} style={{ width: '55%', marginRight: '5%', }}>
                 <PlusOutlined theme="outlined" />
                 {formatMessage({ id: 'register.import_private_key' })}
               </Button>
-              <Button type="primary" htmlType="submit" style={{ width: '45%' }}>
+              <Button type="primary" htmlType="submit" style={{ width: '40%' }}>
                 {formatMessage({ id: 'register.create_immediately' })}
               </Button>
             </FormItem>

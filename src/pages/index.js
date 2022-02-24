@@ -264,12 +264,12 @@ class LoginPage extends PureComponent {
                   onChange={(e) => this.setState({ password: e.target.value })}
                 />
               </FormItem>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
-                <a onClick={this.goVisitorMode}><LoginOutlined style={{ marginRight: 10 }} />{formatMessage({ id: 'index.visitor' })}</a>
-                {signInWithENS
-                  ? <a onClick={this.switchToAddressLogin}>{formatMessage({ id: 'index.wallet_login' })}</a>
-                  : <a onClick={this.switchToENSLogin}>{formatMessage({ id: 'index.ens_login' })}</a>}
-              </div>
+              {/*<div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>*/}
+              {/*  <a onClick={this.goVisitorMode}><LoginOutlined style={{ marginRight: 10 }} />{formatMessage({ id: 'index.visitor' })}</a>*/}
+              {/*  {signInWithENS*/}
+              {/*    ? <a onClick={this.switchToAddressLogin}>{formatMessage({ id: 'index.wallet_login' })}</a>*/}
+              {/*    : <a onClick={this.switchToENSLogin}>{formatMessage({ id: 'index.ens_login' })}</a>}*/}
+              {/*</div>*/}
               <FormItem>
                 <Button disabled={connectingMetamask} onClick={this.register} style={{ width: '45%', marginRight: '10%', backgroundColor: 'rgba(58, 141, 218, 0.2)' }}>
                   {formatMessage({ id: 'index.get_wallet' })}
@@ -382,8 +382,9 @@ class LoginPage extends PureComponent {
             </Radio.Group>
           </Modal>
         </div>
-        <p className={styles.copyright}>Copyright © 2020-2021 <a href="https://www.beagledao.finance">{formatMessage({ id: 'allcom' })}</a></p>
+        <p className={styles.copyright}>Copyright © 2020-2022 <a href="https://www.beagledao.finance">{formatMessage({ id: 'allcom' })}</a></p>
           {/*<p className={styles.beian}><a href="https://beian.miit.gov.cn/" target="_blank"> 沪ICP备14021271号-4</a></p>*/}
+        {<p className={styles.beian}><a href="https://app.ens.domains/name/beagles.eth" >beagles.eth</a></p>}
       </>
     );
   }
