@@ -1560,7 +1560,7 @@ class HomePage extends Component {
           </Modal>
         </div>
         <Modal
-          title="Your Name"
+          title="Claim or Get an ENS Name"
           visible={this.state.nameModal}
           cancelText="Cancel"
           okText="Ok"
@@ -1568,10 +1568,12 @@ class HomePage extends Component {
           onOk={this.modifyEnsName}
           okButtonProps={{ loading: this.state.confirmLoading }}
         >
+          <div style={{marginBottom: 16}}>Claim your ENS name or get a subddomain name of .beagles.eth </div>
           <Input
+            placeholder='.eth or .beagles.eth'
             value={this.state.nameValue}
             onChange={e => this.setState({ nameValue: e.target.value })}
-          />
+          ></Input>
         </Modal>
       </NeedLogin>
     );
