@@ -61,7 +61,18 @@ import { ETHEREUM_API } from '@/app/constant';
 import { routerRedux } from 'dva/router';
 import RoomList from '@/pages/home/content/RoomList';
 import MeetingRoom from '@/pages/home/content/MeetingRoom';
+//import ENS, { getEnsAddress } from '@ensdomains/ensjs';
+import Web3 from 'web3';
+const ensProvider = new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/00a80def04f248feafdc525179f89dbf');
+//const ens = new ENS({ ensProvider, ensAddress: getEnsAddress('1') });
+var ENS = require('ethereum-ens');
+//var Web3 = require('web3');
 
+//var provider = new Web3.providers.HttpProvider();
+var ens = new ENS(ensProvider);
+
+var address = ens.resolver('foo.eth').addr().then(function(addr) {console.log('foo.eth:'+addr) });
+ens.resolver('beagles.eth').addr().then(function(addr) {console.log('beagles.eth:'+addr) });
 const { Content, Sider } = Layout;
 
 class HomePage extends Component {
@@ -908,6 +919,19 @@ class HomePage extends Component {
       return;
     }
 
+    if (nameValue.endsWith('.eth')){
+//      const ifaddress = ens.name(nameValue).getAddress(); // 0x
+      const { loginAddress } = this.props.account;
+      ens.owner(nameValue).then(addr=>console.log(nameValue+' owner:'+addr));
+      ens.resolver(nameValue).addr().then(function(addr) {
+        console.log(nameValue + ':' + addr);
+        if (addr == loginAddress)
+          alert(nameValue + ":" + addr)
+        else
+          alert(nameValue + " is not yours. It belongs to " + addr)
+      });
+    }
+    else
     // should call registerENS
     sendRequest(
       `${IMApp.API_URL}${ETHEREUM_API.REGISTER_ENS}${this.props.account.address}/${nameValue}`,

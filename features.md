@@ -1,7 +1,16 @@
 #链上账号
-## 1. 背景：
--传统系统的账号系统一般都在中心化服务器上实现和存储，kademlia目前没有网上的账号系统。
--kademlia准备使用Web3的基础设施（ens，swarm，evm compatible smart contract）来实现账号的存储和管理，不依赖于具体的服务器；
+## 1. 目标
+- 背景：
+  - 传统系统的账号系统一般都在中心化服务器上实现和存储，kademlia目前没有网上的账号系统。
+  - kademlia准备使用Web3的基础设施（ens，swarm，evm compatible smart contract）来实现账号的存储和管理，不依赖于具体的服务器；
+- 一期目标
+  - 绑定本地钱包地址：使用以太坊地址作为通讯地址
+  - 使用ens域名进行通讯寻址：显示自己的名字，搜索ens名字并发起通讯
+  - Profile: ens名下记录头像、名称、whisper和carrier公开地址，Web上实现，App暂时不做
+- 总目标
+  - contact 通讯录
+  - network 社交关系    
+  - group 群
 ## 2. 概念
 ### 2.1 BAppChain
 - BeagleDao App Chain
@@ -46,6 +55,7 @@ export const ETHEREUM_API = {
 - 唯一可读的名字，如ens的名字beagles.eth,tns的readyplayer.tns
 - 已有ens或者tns名字直接用ens的进行验证和授权，把ens中的对应数据复制同步到BAppChain的对应ENS合约上
 - 申请或者使用我们的名字，目前的后缀是.beagles.eth, 目前在我们的BAppChain链上部署有ens兼容的合约，保持ens调用方式
+- 可以支持更多的顶级域名，如.btc,.sol,.bsc,.ltc
 ### 2.4 profile
 - ens除了以太坊地址以为还可以记录text, contenthash, email、社交账号等等；
 - 由于ens的gas费太高，所有操作都在我们的应用链上完成
@@ -125,7 +135,14 @@ but it will connnent to our own whisper blockchain and we could give him some EH
 - Public Chat Room - click the name icon and enter the chat dialog window to receive whisper messages
 
 ## 4. smart contract开发
-- register: simple ens by deploy a contract to register the following infromation in ENS: eth address, whisper related information(how to get): id, public and private key
+- ENS 合约部署：
+  - https://docs.ens.domains/deploying-ens-on-a-private-chain
+  - 使用以及部署的合约
+- 顶级域名
+  - .fax
+  - .eth  
+- register content: 
+  - simple ens by deploy a contract to register the following infromation in ENS: eth address, whisper related information(how to get): id, public and private key
 - contacts:
 - meeting room
 
