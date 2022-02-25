@@ -140,7 +140,28 @@ but it will connnent to our own whisper blockchain and we could give him some EH
   - 使用以及部署的合约
 - 顶级域名
   - .fax
-  - .eth  
+  - .eth 
+  - 每个域名需要Deploy a Registrar
+    - So far, domains can only be registered manually by the owner of the registry's root node. Fortunately, contracts can also own nodes. This means we can set up a registrar contract as the owner of a node, e.g. "test", in the registry which enables it to distribute subdomains such as "mycontract.test". It allows us to have custom, on-chain logic which governs domain allocation. Once we own a (sub-)node we are free to repeat this process and set up another registrar. If you are part of the "myorg" organisation you could register "myorg.test" and let it point to your custom registrar which only allows certified members of your organisation to claim subdomains such as "bob.myorg.test". 
+```
+const registrar = await FIFSRegistrar.deploy(ens.address, namehash.hash("test"));
+  await registrar.deployed();
+  await ens.setSubnodeOwner("0x0000000000000000000000000000000000000000", sha3("test"), registrar.address);
+})
+```
+- Deploy the Reverse Registrar
+    - Similarly, if you wish to enable reverse resolution on your deployment, you will need to deploy the reverse registrar:
+```
+    const reverseRegistrar = await ReverseRegistrar.deploy(ens.address, resolver.address);
+    await reverseRegistrar.deployed();
+    setupReverseRegistrar(ens, resolver, reverseRegistrar, accounts);
+   
+    
+    async function setupReverseRegistrar(ens, resolver, reverseRegistrar, accounts) {
+      await ens.setSubnodeOwner("0x0000000000000000000000000000000000000000", utils.sha3("reverse"), accounts[0]);
+      await ens.setSubnodeOwner(namehash.hash("reverse"), utils.sha3("addr"), reverseRegistrar.address);
+    }
+```   
 - register content: 
   - simple ens by deploy a contract to register the following infromation in ENS: eth address, whisper related information(how to get): id, public and private key
 - contacts:
