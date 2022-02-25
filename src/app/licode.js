@@ -169,7 +169,7 @@ export async function initChannel(isHost,agoraObject, channel, address ) {
         });
       });
       subscribeToStreams(roomEvent.streams);
-      if (configFlags.microphone && speakersInRoom >= 3) {
+      if (configFlags.microphone && speakersInRoom >= configFlags.maxSpeakers) {
         talkMode(false);
         window.g_app._store.dispatch({ type: 'meetingroom/saveAudioEnable', payload: { audioEnable: false } });
       }
