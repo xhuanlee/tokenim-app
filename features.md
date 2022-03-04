@@ -61,13 +61,18 @@ export const ETHEREUM_API = {
 - 由于ens的gas费太高，所有操作都在我们的应用链上完成
 - https://docs.ens.domains/dapp-developer-guide/resolving-names
 - TEXT metadata: 记录用户的显示名字或者别称nickname,也可以用来记录carrier地址或者email address (option)
-
+- did:elastos:ii7Tgr4tMKzeuYosetnAfPsjdbysRkzYf9
 ````
 ens.setText('iam.alice.eth', 'nickname', 'Test record', {from: ...});
 ens.setText('iam.alice.eth', 'carrieraddress', 'Test record', {from: ...});
 ens.setText('iam.alice.eth', 'carrierid', 'Test record', {from: ...});
 ````
 - Content hashes: 记录用户头像
+- if you’d like to put an NFT that you own, then you enter it in with this format:  
+  - eip155:1/[NFT standard]:[contract address for NFT collection]/[token ID or the number it is in the collection]
+  - eip155:1/erc721:0xb7F7F6C52F2e2fdb1963Eab30438024864c313F6/2430
+- Step-by-Step Guide to Setting an NFT as your ENS Profile Avata
+  - https://medium.com/the-ethereum-name-service/step-by-step-guide-to-setting-an-nft-as-your-ens-profile-avatar-3562d39567fc   
 ```
 // Getting contenthash
 web3.eth.ens.getContenthash('ethereum.eth').then(function (result) {
@@ -136,8 +141,11 @@ but it will connnent to our own whisper blockchain and we could give him some EH
 
 ## 4. smart contract开发
 - ENS 合约部署：
-  - https://docs.ens.domains/deploying-ens-on-a-private-chain
-  - 使用以及部署的合约
+  - 相关术语
+    - https://docs.ens.domains/terminology
+  - 使用
+  - 部署合约
+    - https://docs.ens.domains/deploying-ens-on-a-private-chain
 - 顶级域名
   - .fax
   - .eth 
