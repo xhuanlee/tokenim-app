@@ -5,4 +5,5 @@ export default {
   metamask: 2,
   // substrate 地址
   substrate: 3,
+  walletconnect:4
 }

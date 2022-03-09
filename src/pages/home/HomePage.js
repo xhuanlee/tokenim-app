@@ -919,19 +919,19 @@ class HomePage extends Component {
       return;
     }
 
-//     if (nameValue.endsWith('.eth')){
-// //      const ifaddress = ens.name(nameValue).getAddress(); // 0x
-//       const { loginAddress } = this.props.account;
-//       ens.owner(nameValue).then(addr=>console.log(nameValue+' owner:'+addr));
-//       ens.resolver(nameValue).addr().then(function(addr) {
-//         console.log(nameValue + ':' + addr);
-//         if (addr == loginAddress)
-//           alert(nameValue + ":" + addr)
-//         else
-//           alert(nameValue + " is not yours. It belongs to " + addr)
-//       });
-//     }
-//     else
+    if (nameValue.endsWith('.eth')){
+//      const ifaddress = ens.name(nameValue).getAddress(); // 0x
+      const { loginAddress } = this.props.account;
+      ens.owner(nameValue).then(addr=>console.log(nameValue+' owner:'+addr));
+      ens.resolver(nameValue).addr().then(function(addr) {
+        console.log(nameValue + ':' + addr);
+        if (addr == loginAddress)
+          alert(nameValue + ":" + addr)
+        else
+          alert(nameValue + " is not yours. It belongs to " + addr)
+      });
+    }
+    else
     // should call registerENS
     sendRequest(
       `${IMApp.API_URL}${ETHEREUM_API.REGISTER_ENS}${this.props.account.address}/${nameValue}`,

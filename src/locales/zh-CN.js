@@ -50,6 +50,7 @@ export default {
   'notification_success': '成功',
   'connect_metamask': '连接Metamask',
   'connect_substrate': '连接Substrate',
+  'connect_walletconnect': '连接WalletConnect',
   'transfer': '转账',
   'offline_notice': '对方可能不在线，请稍后再试',
 
@@ -84,6 +85,7 @@ export default {
   'index.swarm_peer': 'Swarm节点',
   'index.api_peer': 'API节点',
   'index.metamaskconnect':'用Metamask登录',
+  'index.walletconnect':'用WalletConnect登录',
   'index.substrateconnect':'用Substrate登录',
   'index.substrate_rpc_peer':'Substrate节点',
 
