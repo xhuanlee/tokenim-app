@@ -912,26 +912,31 @@ class HomePage extends Component {
     dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.init } });
   };
 
-  modifyEnsName = () => {
+  modifyEnsName = async () => {
     const { nameValue } = this.state;
     if (!nameValue || nameValue.trim().length === 0) {
       message.warn('name can not be null');
       return;
     }
 
-    if (nameValue.endsWith('.eth')){
+    if (nameValue.endsWith('.eth')) {
 //      const ifaddress = ens.name(nameValue).getAddress(); // 0x
       const { loginAddress } = this.props.account;
-      ens.owner(nameValue).then(addr=>console.log(nameValue+' owner:'+addr));
-      ens.resolver(nameValue).addr().then(function(addr) {
-        console.log(nameValue + ':' + addr);
-        if (addr == loginAddress)
-          alert(nameValue + ":" + addr)
-        else
-          alert(nameValue + " is not yours. It belongs to " + addr)
-      });
+      let addr = await ens.owner(nameValue);
+//      ens.owner(nameValue).then(addr=>console.log(nameValue+' owner:'+addr));
+      //      ens.resolver(nameValue).addr().then(function(addr) {
+      console.log(nameValue + ':' + addr);
+      if (addr == loginAddress) {
+        alert(nameValue + ":" + addr)
+        return;
+      } else
+        if (addr!='0x0000000000000000000000000000000000000000')
+        {
+        alert(nameValue + " belongs to " + addr+", please switch that account if you have");
+        return;
+      }
     }
-    else
+
     // should call registerENS
     sendRequest(
       `${IMApp.API_URL}${ETHEREUM_API.REGISTER_ENS}${this.props.account.address}/${nameValue}`,
