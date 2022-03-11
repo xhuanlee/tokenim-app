@@ -132,6 +132,11 @@ codec === 'ipfs-ns' // false
 - login in by sign with metamask (maybe other ethereum main or test chain, 
 but it will connnent to our own whisper blockchain and we could give him some EHT of our own private chain)
 ### 3.2 walletConnect on mobile
+- Web, Check the instructions for DAPP
+- https://docs.walletconnect.com/quick-start/dapps/client
+- IOS and Android
+  - https://github.com/WalletConnect/WalletConnectSwift-Example/tree/main/ExampleApps
+  - https://docs.walletconnect.com/quick-start/wallets/swift
 ### 3.3 UI
 - ENS name support
 - Add a row to add or edit name, name can keep in a new smart contract which can search by address
