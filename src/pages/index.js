@@ -7,6 +7,7 @@ import { UserOutlined, SettingOutlined, LockOutlined, LoginOutlined, FundOutline
 import Icon from '@ant-design/icons';
 import { formatTime, LOCALE_CN, LOCALE_EN } from '@/app/util';
 import styles from './index.css';
+import WalletConnectSvg from '@/assets/walletconnect.svg';
 import PolkadotSvg from '@/assets/polkadot-js.svg';
 import MetamaskSvg from '@/assets/metamask-fox.svg';
 
@@ -125,6 +126,10 @@ class LoginPage extends PureComponent {
     dispatch({ type: 'account/loginWithMetamask', payload: { query } });
   }
 
+  connectWalletConnect = () => {
+    const { dispatch, location: { query } } = this.props;
+    dispatch({ type: 'account/loginWithWalletConnect', payload: { query } });
+  }
   connectSubstrate = () => {
     const { dispatch } = this.props;
     dispatch({ type: 'account/loginWithSubstrate' });
@@ -163,6 +168,7 @@ class LoginPage extends PureComponent {
 
     const connectingMetamask = loading.effects['account/loginWithMetamask'];
     const connectingSubstrate = loading.effects['account/loginWithSubstrate'];
+    const connectingWalletConnect = loading.effects['account/loginWithWalletConnect'];
     const loginTip = ensLoading ? formatMessage({ id: 'index.search_ens' }) : loginLoading ? formatMessage({ id: 'index.verify_password' }) : '';
     const errorMessage = signInWithENS && ensName ? nameError ? nameError : (queryENSAvaiable || queryENSLoading || !ensName) ? formatMessage({ id: 'index.ens_not_registered' }) : '' : '';
     const ensNameCheck = null;
@@ -287,6 +293,9 @@ class LoginPage extends PureComponent {
                   :
                   null
               }
+              <FormItem>
+                <Button loading={connectingSubstrate} onClick={this.connectWalletConnect} block  type='primary' ghost><img src={WalletConnectSvg} alt="" width="20" style={{ marginRight: 8 }} />{formatMessage({ id: 'index.walletconnect' })}</Button>
+              </FormItem>
               {/*<FormItem>*/}
               {/*  <Button loading={connectingSubstrate} onClick={this.connectSubstrate} block  danger type="dashed"><img src={PolkadotSvg} alt="" width="20" style={{ marginRight: 8 }} />{formatMessage({ id: 'index.substrateconnect' })}</Button>*/}
               {/*</FormItem>*/}

@@ -16,6 +16,8 @@
     }
   },
   "dependencies": {
+    "@walletconnect/client": "^1.7.1",
+    "@walletconnect/qrcode-modal": "^1.7.1",
     "@ant-design/icons": "^4.3.0",
     "@ensdomains/ensjs": "^2.1.0",
     "@polkadot/api": "^3.6.4",

@@ -47,6 +47,7 @@ export default {
   'notification_success': 'success',
   'connect_metamask': 'connect metamask',
   'connect_substrate': 'connect substrate',
+  'connect_walletconnect': 'connect WalletConnect',
   'transfer': 'transfer ',
   'offline_notice': 'may be offline, you can try again later',
 
@@ -81,6 +82,7 @@ export default {
   'index.swarm_peer': 'Swarm peer',
   'index.api_peer': 'API peer',
   'index.metamaskconnect':'Connect with Metamask',
+  'index.walletconnect':'WalletConnect',
   'index.substrateconnect':'Connect with Substrate',
   'index.index.substrate_rpc_peer':'Substrate Peer',
 
