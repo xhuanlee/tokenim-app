@@ -912,8 +912,8 @@ class HomePage extends Component {
     dispatch({ type: 'media/saveStatus', payload: { status: MediaStatus.init } });
   };
 
-  modifyEnsName = async () => {
-    const { nameValue } = this.state;
+  modifyEnsName = async (nameValue) => {
+//    const { nameValue } = this.state;
     if (!nameValue || nameValue.trim().length === 0) {
       message.warn('name can not be null');
       return;
@@ -921,19 +921,21 @@ class HomePage extends Component {
 
     if (nameValue.endsWith('.eth')) {
 //      const ifaddress = ens.name(nameValue).getAddress(); // 0x
-      const { loginAddress } = this.props.account;
-      let addr = await ens.owner(nameValue);
+      try {
+        let addr = await ens.owner(nameValue);
 //      ens.owner(nameValue).then(addr=>console.log(nameValue+' owner:'+addr));
-      //      ens.resolver(nameValue).addr().then(function(addr) {
-      console.log(nameValue + ':' + addr);
-      if (addr == loginAddress) {
-        alert(nameValue + ":" + addr)
-        return;
-      } else
-        if (addr!='0x0000000000000000000000000000000000000000')
-        {
-        alert(nameValue + " belongs to " + addr+", please switch that account if you have");
-        return;
+        //      ens.resolver(nameValue).addr().then(function(addr) {
+        console.log(nameValue + ':' + addr);
+        const { loginAddress } = this.props.account;
+        if (addr == loginAddress) {
+          alert(nameValue + ":" + addr)
+          return;
+        } else if (addr != '0x0000000000000000000000000000000000000000') {
+          alert(nameValue + " belongs to " + addr + ", please switch that account if you have");
+          return;
+        }
+      } catch (e) {
+        console.log(e);
       }
     }
 
@@ -1594,7 +1596,7 @@ class HomePage extends Component {
           cancelText="Cancel"
           okText="Ok"
           onCancel={() => this.setState({ nameModal: false })}
-          onOk={this.modifyEnsName}
+          onOk={()=>this.modifyEnsName(this.state.nameValue)}
           okButtonProps={{ loading: this.state.confirmLoading }}
         >
           <div style={{marginBottom: 16}}>Claim your ENS name or get a subddomain name of .beagles.eth </div>

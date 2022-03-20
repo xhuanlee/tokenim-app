@@ -47,7 +47,7 @@ class LoginPage extends PureComponent {
     const { ethereumNode, swarmNode, apiNode, substrateProviderUrl } = this.state;
     console.log(ethereumNode, swarmNode, apiNode, substrateProviderUrl);
     this.setState({ settingModule: false })
-///weili    this.props.dispatch({ type: 'init/resetNode', payload: { ethereumNode, swarmNode, apiNode, substrateProviderUrl } });
+    this.props.dispatch({ type: 'init/resetNode', payload: { ethereumNode, swarmNode, apiNode, substrateProviderUrl } });
   }
 
   goVisitorMode = () => {
@@ -217,7 +217,7 @@ class LoginPage extends PureComponent {
           <div>
             <a href={enLocale ? 'https://beagle.gitbook.io/beagle-dao/' : 'https://beagle.gitbook.io/beagle-dao/'} style={{ marginRight: 10 }}>{formatMessage({ id: 'index.white_paper' })}</a>
             <a href={enLocale ? 'pages/faqEN.html' : 'pages/faq.html'} style={{ marginRight: 10 }}>{formatMessage({ id: 'index.faq' })}</a>
-            {/*<a href={enLocale ? 'pages/downloadEN.html' : 'pages/download.html'} style={{ marginRight: 10 }}>{formatMessage({ id: 'index.download' })}</a>*/}
+            <a href={enLocale ? 'pages/downloadEN.html' : 'pages/download.html'} style={{ marginRight: 10 }}>{formatMessage({ id: 'index.download' })}</a>
             <a href={`/?locale=${oLocale}`} style={{ marginRight: 10 }}>{oLocaleDes}</a>
           </div>
           <div style={{ textAlign: 'center' }}>
