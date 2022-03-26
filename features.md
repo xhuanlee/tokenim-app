@@ -137,6 +137,8 @@ but it will connnent to our own whisper blockchain and we could give him some EH
 - IOS and Android
   - https://github.com/WalletConnect/WalletConnectSwift-Example/tree/main/ExampleApps
   - https://docs.walletconnect.com/quick-start/wallets/swift
+  - https://www.argent.xyz/blog/building-ethereum-dapps-on-ios-with-web3-swift/
+  - https://medium.com/mercuryprotocol/introducing-web3-swift-for-ethereum-ios-development-1e02212b662b
 ### 3.3 UI
 - ENS name support
 - Add a row to add or edit name, name can keep in a new smart contract which can search by address

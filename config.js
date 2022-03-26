@@ -5,7 +5,8 @@
  *
  * admin                 : 合约管理员地址（合约创建者、token所属者）
  */
-const admin_account = '0xD227AF0e36AE44e673b0143d7765Dc4dA9B64B68';
+//const admin_account = '0xD227AF0e36AE44e673b0143d7765Dc4dA9B64B68';
+const admin_account = '0x67548a3c43819643390A9Aa5E0BCB284422DEA86';
 
 module.exports = {
   network_id: '1515',
