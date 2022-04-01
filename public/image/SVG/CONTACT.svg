@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="35px" height="30px" viewBox="0 0 35 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>编组 7</title>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="编组-7">
+            <g id="CONTACT-ICON" transform="translate(2.000000, 1.000000)">
+                <rect id="矩形" stroke="#352E50" stroke-width="1.8" x="0.9" y="0.9" width="30.2" height="26.2" rx="10"></rect>
+                <g id="编组-4" transform="translate(9.000000, 8.000000)">
+                    <circle id="椭圆形" fill="#FFAF58" cx="7" cy="3" r="3"></circle>
+                    <path d="M7,6.7 C8.7004538,6.7 10.2435705,7.37368126 11.376965,8.46874638 C12.3526006,9.41138756 13.0247739,10.6662231 13.23223,12.0723782 L13.23223,12.0723782 L0.73988116,12.2871748 C0.903723208,10.8322652 1.56309179,9.52736277 2.54522728,8.54522728 C3.68530304,7.40515152 5.26030304,6.7 7,6.7 Z" id="形状结合" stroke="#FFAF58" stroke-width="1.4"></path>
+                </g>
+                <g id="编组-8" transform="translate(0.000000, 10.000000)" stroke="#FFAF58" stroke-linecap="round" stroke-width="1.4">
+                    <line x1="0" y1="0.5" x2="4" y2="0.5" id="直线-3"></line>
+                    <line x1="0" y1="4.5" x2="4" y2="4.5" id="直线-3备份"></line>
+                    <line x1="0" y1="8.5" x2="4" y2="8.5" id="直线-3备份-2"></line>
+                </g>
+            </g>
+            <rect id="矩形" fill="#D8D8D8" opacity="0" x="0" y="0" width="35" height="30"></rect>
+        </g>
+    </g>
+</svg>
