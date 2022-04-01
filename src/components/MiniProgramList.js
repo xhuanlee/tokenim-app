@@ -1,6 +1,8 @@
 import React, { useCallback } from 'react';
 import { Avatar, Tooltip } from 'antd';
+import Icon from '@ant-design/icons';
 import router from 'umi/router';
+import {ReactComponent as svgRoom} from '../../public/image/SVG/ROOM.svg';
 
 const miniProgramList = [
   // { name: 'Defi', synopsis: 'Defi', link: '/home?s=defi', tooltip: 'dapps' },
@@ -27,7 +29,8 @@ const MiniProgramItem = props => {
           cursor: 'pointer',
         }}
       >
-        <Avatar>{name}</Avatar>
+        {/*<Avatar src={'/image/SVG/ROOM.svg'} style={{width:24,height:24}}></Avatar>*/}
+        <Avatar size={'large'} icon={<Icon component={svgRoom}></Icon>} style={{backgroundColor:'#D8D8D8;',background:'transparent'}}></Avatar>
         <span style={{ marginLeft: 8 }}>{synopsis}</span>
       </div>
     </Tooltip>

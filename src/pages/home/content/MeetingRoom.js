@@ -82,18 +82,18 @@ const MeetingRoom = props => {
   return (
     <div className={style.roomTitleContainer}>
       <script type="text/javascript" src="erizo.js"></script>
-      <div>
-        <h1>
+      <div style={{backgroundColor:'lightgrey'}}>
+        <h1 style={{margin:10}}>
           {title}
           {audioEnable ? (
             <Tooltip title="mute">
-              <Button size="large" type="link" onClick={toggleAudioEnable} style={{marginLeft:"50%" }}>
+              <Button size="large" type="link" onClick={toggleAudioEnable} style={{marginLeft:"70%" }}>
                 <AudioMutedOutlined style={{ fontSize: '24px'}} />
               </Button>
             </Tooltip>
           ) : (
             <Tooltip title="unmute">
-              <Button size="large" type="link" onClick={toggleAudioEnable} style={{marginLeft:"50%" }}>
+              <Button size="large" type="link" onClick={toggleAudioEnable} style={{marginLeft:"70%" }}>
                 <AudioOutlined style={{ fontSize: '24px'}} />
               </Button>
             </Tooltip>
@@ -106,8 +106,8 @@ const MeetingRoom = props => {
         </h1>
       </div>
       <div className={style.userContainer}>
-        <h2>Speakers</h2>
-        <div>
+        <h2 style={{margin:10}}>Speakers</h2>
+        <div style={{margin:10}}>
           {onlineSpeakers &&
           onlineSpeakers.map(item => (
             <ClubhouseUserItem user={item} online />
@@ -122,7 +122,7 @@ const MeetingRoom = props => {
       {/*    ))}*/}
       {/*</div>*/}
       <div className={style.userContainer}  id="listenerContainer">
-        <h2>listeners</h2>
+        <h2 style={{margin:6}}>listeners</h2>
         {listeners && listeners.map(item => <ClubhouseUserItem user={item} online />)}
       </div>
       {/*<div className={style.userContainer} >*/}

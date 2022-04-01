@@ -204,27 +204,28 @@ class LoginPage extends PureComponent {
     const locale = localStorage.getItem('umi_locale');
     const enLocale = (locale === LOCALE_EN);
     const oLocale = enLocale ? LOCALE_CN : LOCALE_EN;
-    const oLocaleDes = enLocale ? 'Chinese' : 'English';
+    const oLocaleDes = enLocale ? 'CH' : 'EN';
 
     return (
-      <>
+      <div>
+        <div className={styles.menu} style={{ textAlign: 'center' }}>
+          <a href={enLocale ? 'https://beagle.gitbook.io/beagle-dao/' : 'https://beagle.gitbook.io/beagle-dao/'} style={{color:'#989A9C', width:'25%',marginRight: "5%" }}>{formatMessage({ id: 'index.white_paper' })}</a>
+          <a href={enLocale ? 'pages/faqEN.html' : 'pages/faq.html'} style={{ color:'#989A9C',  width:'20%', marginRight: '5%' }}>{formatMessage({ id: 'index.faq' })}</a>
+          <a href={enLocale ? 'pages/downloadEN.html' : 'pages/download.html'} style={{ color:'#989A9C',  width:'20%',marginRight: '5%' }}>{formatMessage({ id: 'index.download' })}</a>
+          <a href={`/?locale=${oLocale}`} style={{ color:'#989A9C',  width:'20%',marginRight: '5%' }}>{oLocaleDes}</a>
+          <a href={this.openSetting}  onClick={this.openSetting} style={{ color:'#989A9C',  width:'20%',marginRight: '5%' }}>OPT</a>
+        </div>
         <div className={styles.container}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Tooltip title={formatMessage({ id: 'index.config_peer' })}>
-              <SettingOutlined style={{ fontSize: 19, cursor: 'pointer' }} onClick={this.openSetting} />
-            </Tooltip>
-          </div>
-          <div>
-            <a href={enLocale ? 'https://beagle.gitbook.io/beagle-dao/' : 'https://beagle.gitbook.io/beagle-dao/'} style={{ marginRight: 10 }}>{formatMessage({ id: 'index.white_paper' })}</a>
-            <a href={enLocale ? 'pages/faqEN.html' : 'pages/faq.html'} style={{ marginRight: 10 }}>{formatMessage({ id: 'index.faq' })}</a>
-            <a href={enLocale ? 'pages/downloadEN.html' : 'pages/download.html'} style={{ marginRight: 10 }}>{formatMessage({ id: 'index.download' })}</a>
-            <a href={`/?locale=${oLocale}`} style={{ marginRight: 10 }}>{oLocaleDes}</a>
-          </div>
+          {/*<div style={{ display: 'flex', justifyContent: 'flex-end' }}>*/}
+          {/*  <Tooltip title={formatMessage({ id: 'index.config_peer' })}>*/}
+          {/*    <SettingOutlined style={{ fontSize: 19, cursor: 'pointer' }} onClick={this.openSetting} />*/}
+          {/*  </Tooltip>*/}
+          {/*</div>*/}
           <div style={{ textAlign: 'center' }}>
-            <h2 style={{ marginBottom: 0, marginTop:20, fontWeight: 600 }}>BeagleDAO</h2>
-            <p style={{ marginBottom: 0 }}>Social Network for Crypto Metaverse</p>
-            <p>{formatMessage({ id: 'index.description' })}</p>
-            <img src="../image/happy_beagles.jpg" alt="" width="200" style={{ marginBottom: 30 }} />
+            <img src="../image/happy_beagles.jpg" alt="" width="200" style={{ marginBottom: 5 }} />
+            <h2 style={{ marginBottom: 0, marginTop:0, fontWeight: 900 }}>Beagle DAO</h2>
+            <p style={{ marginBottom: 30,color:'#989A9C' }}>Connect people in the metaverse</p>
+            {/*<p>{formatMessage({ id: 'index.description' })}</p>*/}
           </div>
           <Spin spinning={loginLoading || ensLoading} tip={loginTip}>
             <Form onFinish={this.handleSubmit} className="login-form" >
@@ -257,7 +258,7 @@ class LoginPage extends PureComponent {
                     onChange={(val) => this.setState({ address: val })}
                   >
                     <Input
-                      prefix={<UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
+                      prefix={<UserOutlined style={{border:'0px',borderRadius:12, color: 'rgba(0,0,0,.25)' }} />}
                       placeholder={formatMessage({ id: 'index.account_address' })}
                     />
                   </AutoComplete>
@@ -265,7 +266,7 @@ class LoginPage extends PureComponent {
 
               <FormItem>
                 <Input
-                  prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
+                  prefix={<LockOutlined style={{ border:'0px',borderRadius:12,color: 'rgba(0,0,0,.25)' }} />}
                   type="password"
                   placeholder={formatMessage({ id: 'password' })}
                   onChange={(e) => this.setState({ password: e.target.value })}
@@ -278,42 +279,37 @@ class LoginPage extends PureComponent {
               {/*    : <a onClick={this.switchToENSLogin}>{formatMessage({ id: 'index.ens_login' })}</a>}*/}
               {/*</div>*/}
               <FormItem>
-                <Button disabled={connectingMetamask} onClick={this.register} style={{ width: '45%', marginRight: '10%', backgroundColor: 'rgba(58, 141, 218, 0.2)' }}>
-                  {formatMessage({ id: 'index.get_wallet' })}
-                </Button>
-                <Button disabled={connectingMetamask} type="primary" htmlType="submit" style={{ width: '45%' }}>
+                {/*<Button disabled={connectingMetamask} onClick={this.register} style={{ width: '45%', marginRight: '10%', backgroundColor: 'rgba(58, 141, 218, 0.2)' }}>*/}
+                {/*  {formatMessage({ id: 'index.get_wallet' })}*/}
+                {/*</Button>*/}
+                <Button disabled={connectingMetamask} type="primary" htmlType="submit" style={{ width: '100%', border:'0px',borderRadius:12,background:'#352E50' }}>
                   {formatMessage({ id: 'index.login' })}
                 </Button>
               </FormItem>
               {
                 metamaskOk ?
                   <FormItem>
-                    <Button loading={connectingMetamask} onClick={this.connectMetamask} block  danger><img src={MetamaskSvg} alt="" width="20" style={{ marginRight: 8 }} />{formatMessage({ id: 'index.metamaskconnect' })}</Button>
+                    <Button loading={connectingMetamask} onClick={this.connectMetamask} block  danger style={{ width: '100%', borderRadius:12 }}><img src={MetamaskSvg} alt="" width="20" style={{ marginRight: 8}} />{formatMessage({ id: 'index.metamaskconnect' })}</Button>
                   </FormItem>
                   :
                   null
               }
               <FormItem>
-                <Button loading={connectingSubstrate} onClick={this.connectWalletConnect} block  type='primary' ghost><img src={WalletConnectSvg} alt="" width="20" style={{ marginRight: 8 }} />{formatMessage({ id: 'index.walletconnect' })}</Button>
+                <Button loading={connectingSubstrate} onClick={this.connectWalletConnect} block  type='primary' ghost style={{ width: '100%', borderRadius:12 }}><img src={WalletConnectSvg} alt="" width="20" style={{ marginRight: 8 }} />{formatMessage({ id: 'index.walletconnect' })}</Button>
+              </FormItem>
+              <FormItem>
+                <Button disabled={connectingMetamask} onClick={this.register} style={{ width: '100%',  color:'#352E50',border:0, borderRadius:12, marginRight: '10%' }}>
+                  {formatMessage({ id: 'index.get_wallet' })}
+                </Button>
+                {/*<Button loading={connectingSubstrate} onClick={this.register} block  type='primary' ghost style={{ width: '100%', borderRadius:12 }}><img src={WalletConnectSvg} alt="" width="20" style={{ marginRight: 8 }} />{formatMessage({ id: 'index.walletconnect' })}</Button>*/}
               </FormItem>
               {/*<FormItem>*/}
               {/*  <Button loading={connectingSubstrate} onClick={this.connectSubstrate} block  danger type="dashed"><img src={PolkadotSvg} alt="" width="20" style={{ marginRight: 8 }} />{formatMessage({ id: 'index.substrateconnect' })}</Button>*/}
               {/*</FormItem>*/}
+
             </Form>
           </Spin>
 
-          <div style={{ textAlign: 'center' }}>
-            {/*<p style={{ marginBottom: 0 }}>{formatMessage({ id: 'index.encrypt_coin' })}</p>*/}
-            {/*<p>{formatMessage({ id: 'index.digital_currency' })}</p>*/}
-
-            <a href="http://app.beagledao.finance:3000/" target="_blank"><FundOutlined />{formatMessage({ id: 'index.network_status' })}</a>
-            <p style={{ marginBottom: 0 }}>
-              {/*<span>{formatMessage({ id: 'index.contact' })}:</span>*/}
-              {/*<PhoneOutlined style={{ transform: 'rotate(90deg)', color: '#5190ff' }} />*/}
-              {/*<a onClick={() => this.setState({ comfirmCallModal: true })}>021-50808850</a>*/}
-            </p>
-            {/*<a href="mailto:support@callus.app">support@callus.app</a>*/}
-          </div>
 
           <Modal
             title={<div><PhoneOutlined style={{ transform: 'rotate(90deg)', color: '#5190ff', fontSize: 20 }} />{formatMessage({ id: 'index.use_callpass_to_communicate' })}</div>}
@@ -392,10 +388,23 @@ class LoginPage extends PureComponent {
             </Radio.Group>
           </Modal>
         </div>
-        <p className={styles.copyright}>Copyright © 2020-2022 <a href="https://www.beagledao.finance">{formatMessage({ id: 'allcom' })}</a></p>
+        <p className={styles.copyright}>Copyright © 2020-2022 <a href="https://www.beagledao.finance" style={{color:'#352E50'}}>{formatMessage({ id: 'allcom' })}</a></p>
           {/*<p className={styles.beian}><a href="https://beian.miit.gov.cn/" target="_blank"> 沪ICP备14021271号-4</a></p>*/}
-        {<p className={styles.beian}><a href="https://app.ens.domains/name/beagles.eth" >beagles.eth</a></p>}
-      </>
+        {<p className={styles.beian}><a href="https://app.ens.domains/name/beagles.eth" style={{color:'#352E50'}}>beagles.eth</a></p>}
+        <div className={styles.status} style={{ textAlign: 'center' }}>
+          {/*<p style={{ marginBottom: 0 }}>{formatMessage({ id: 'index.encrypt_coin' })}</p>*/}
+          {/*<p>{formatMessage({ id: 'index.digital_currency' })}</p>*/}
+
+          <a href="http://app.beagledao.finance:3000/" target="_blank" style={{color:'#352E50'}}>{formatMessage({ id: 'index.network_status' })}</a>
+          <p style={{ marginBottom: 0 }}>
+            {/*<span>{formatMessage({ id: 'index.contact' })}:</span>*/}
+            {/*<PhoneOutlined style={{ transform: 'rotate(90deg)', color: '#5190ff' }} />*/}
+            {/*<a onClick={() => this.setState({ comfirmCallModal: true })}>021-50808850</a>*/}
+          </p>
+          {/*<a href="mailto:support@callus.app">support@callus.app</a>*/}
+        </div>
+
+      </div>
     );
   }
 

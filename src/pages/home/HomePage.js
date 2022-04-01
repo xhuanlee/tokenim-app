@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { Layout, Avatar, List, Modal, Input, Alert, Tooltip, Button, message } from 'antd';
 import ReactDraggable from 'react-draggable';
 import { formatMessage } from 'umi-plugin-locale';
-import {
+import Icon, {
   LoadingOutlined,
   CloseCircleOutlined,
   CheckCircleOutlined,
@@ -63,6 +63,8 @@ import RoomList from '@/pages/home/content/RoomList';
 import MeetingRoom from '@/pages/home/content/MeetingRoom';
 //import ENS, { getEnsAddress } from '@ensdomains/ensjs';
 import Web3 from 'web3';
+import { ReactComponent as svgSETTING } from '../../../public/image/SVG/SETTING.svg';
+import { ReactComponent as svgCONTACT } from '../../../public/image/SVG/CONTACT.svg';
 const ensProvider = new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/00a80def04f248feafdc525179f89dbf');
 //const ens = new ENS({ ensProvider, ensAddress: getEnsAddress('1') });
 var ENS = require('ethereum-ens');
@@ -1095,6 +1097,11 @@ class HomePage extends Component {
       case 'defi':
         contentBody = <Defis />;
         break;
+      case 'setting':
+        break;
+      case 'contact':
+        contentBody = <MyAccountRow dispatch={dispatch} loading={loading} meetingroom={meetingroom} server={'https://t.callt.net:3001/'} />;
+        break;
       case 'kademlia':
 //        meetingroom.server='https://t.callt.net:3001/';
         contentBody = <RoomList dispatch={dispatch} loading={loading} meetingroom={meetingroom} server={'https://t.callt.net:3001/'} />;
@@ -1152,36 +1159,70 @@ class HomePage extends Component {
                 overflowY: 'auto',
               }}
             >
-              <div
-                style={{
-                  margin: '5px 0px',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  borderBottom: '1px solid #e8e8e8',
-                  borderTop: '1px solid #e8e8e8',
-                  height: 50,
-                  alignItems: 'center',
-                  backgroundColor: 'rgba(40,40,40, 0.7)',
-                  color: '#fff',
-                }}
-              >
-                <div style={{ flex: 1, textAlign: 'center', borderRight: '1px solid #e8e8e8' }}>
-                  <HomeOutlined style={{ fontSize: 22 }} onClick={this.openHomeTab} />
-                  {/* <p>个人信息页</p> */}
-                </div>
-                <div style={{ flex: 1, textAlign: 'center', borderRight: '1px solid #e8e8e8' }}>
-                  <UserAddOutlined style={{ fontSize: 22 }} onClick={this.openNewMessageModal} />
-                  {/* <p>新建对话</p> */}
-                </div>
-                <div style={{ flex: 1, textAlign: 'center' }}>
-                  <InteractionOutlined
-                    style={{ fontSize: 22 }}
-                    onClick={this.openNewTransferModal}
-                  />
-                  {/* <p>发起转账</p> */}
-                </div>
-              </div>
+              {/*<div*/}
+              {/*  style={{*/}
+              {/*    margin: '5px 0px',*/}
+              {/*    display: 'flex',*/}
+              {/*    flexDirection: 'row',*/}
+              {/*    borderBottom: '1px solid #e8e8e8',*/}
+              {/*    borderTop: '1px solid #e8e8e8',*/}
+              {/*    height: 50,*/}
+              {/*    alignItems: 'center',*/}
+              {/*    backgroundColor: 'rgba(40,40,40, 0.7)',*/}
+              {/*    color: '#fff',*/}
+              {/*  }}*/}
+              {/*>*/}
+              {/*  <div style={{ flex: 1, textAlign: 'center', borderRight: '1px solid #e8e8e8' }}>*/}
+              {/*    <HomeOutlined style={{ fontSize: 22 }} onClick={this.openHomeTab} />*/}
+              {/*    /!* <p>个人信息页</p> *!/*/}
+              {/*  </div>*/}
+              {/*  <div style={{ flex: 1, textAlign: 'center', borderRight: '1px solid #e8e8e8' }}>*/}
+              {/*    <UserAddOutlined style={{ fontSize: 22 }} onClick={this.openNewMessageModal} />*/}
+              {/*    /!* <p>新建对话</p> *!/*/}
+              {/*  </div>*/}
+              {/*  <div style={{ flex: 1, textAlign: 'center' }}>*/}
+              {/*    <InteractionOutlined*/}
+              {/*      style={{ fontSize: 22 }}*/}
+              {/*      onClick={this.openNewTransferModal}*/}
+              {/*    />*/}
+              {/*    /!* <p>发起转账</p> *!/*/}
+              {/*  </div>*/}
+              {/*</div>*/}
               <MyAccountRow onClick={() => this.setState({ nameModal: true })} />
+              <Tooltip title={'Setting'} placement="right" style={{marginBottom:10,position:'absolute'}}>
+                <div
+                  onClick={this.openHomeTab}
+                  style={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    padding: '4px 8px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {/*<Avatar src={'/image/SVG/ROOM.svg'} style={{width:24,height:24}}></Avatar>*/}
+                  <Avatar size={'large'} icon={<Icon component={svgSETTING}></Icon>} style={{ backgroundColor:'#D8D8D8;',background:'transparent'}}></Avatar>
+                  <span style={{ marginLeft: 8 }}>{'Setting'}</span>
+                </div>
+              </Tooltip>
+              <Tooltip title={'Contact'} placement="right">
+                <div
+                  onClick={this.openNewMessageModal}
+                  style={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    padding: '4px 8px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {/*<Avatar src={'/image/SVG/ROOM.svg'} style={{width:24,height:24}}></Avatar>*/}
+                  <Avatar size={'large'} icon={<Icon component={svgCONTACT}></Icon>} style={{backgroundColor:'#D8D8D8;',background:'transparent'}}></Avatar>
+                  <span style={{ marginLeft: 8 }}>{'Contact'}</span>
+                </div>
+              </Tooltip>
+
+
               <MiniProgramList />
 
               {/* public chat */}

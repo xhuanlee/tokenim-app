@@ -2,7 +2,7 @@
   .container {
     max-width: 600px;
     position: absolute;
-    top: 50%;
+    top: 35%;
     left: 50%;
     transform: translate(-50%, -50%);
   }
@@ -10,13 +10,26 @@
   .beian {
     position: absolute;
     left: 50%;
-    bottom: 8px;
+    bottom: 28px;
+    transform: translateX(-50%);
+  }
+  .status {
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
     transform: translateX(-50%);
   }
   .copyright {
     position: absolute;
     left: 50%;
-    bottom: 30px;
+    bottom: 50px;
+    transform: translateX(-50%);
+  }
+  .menu {
+    position: absolute;
+    left: 50%;
+    bottom: 90px;
+    width: 50%;
     transform: translateX(-50%);
   }
 }

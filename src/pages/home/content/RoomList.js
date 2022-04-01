@@ -14,21 +14,37 @@ import {
   DatePicker,
   PageHeader,
 } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import Icon, { UploadOutlined } from '@ant-design/icons';
 import router from 'umi/router';
 import style from '../../ClubHouse.less';
-import { DEFAULT_AVATAR } from '@/app/constant';
+//import { DEFAULT_AVATAR } from '@/app/constant';
 import NeedLogin from '@/pages/home/NeedLogin';
+import { ReactComponent as svgCONTACT } from '../../../../public/image/SVG/CONTACT.svg';
+
+function addPreZero4(num) {
+  return (`0000${num}`).slice(-4);
+}
+const DEFAULT_AVATAR='/image/beagle_beati.jpg'
+
+const names=['snoopy','lou','alan','david','will','author','luis','frank','mary','shirley'
+            ,'satoshi','baker','henry','steven','luke','bill','woody','fire','john','flower']
 
 const RoomSummary = ({ room, goToRoom , defaultRoom}) => {
   const { name, _id, id, title, description, dueTime, moderators, speakers } = room;
-  let authors = [];
+  let randomname = addPreZero4(Math.round(Math.random() * 10000));
+  let authors = [{avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${randomname}.png`,nickname:names[randomname%20]}];
+  randomname = addPreZero4(Math.round(Math.random() * 10000));
   if (moderators && moderators.length > 0) {
     authors = authors.concat(moderators);
   }
+  else
+    authors = authors.concat([{avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${randomname}.png`,nickname:names[randomname%20]}]);
+  randomname = addPreZero4(Math.round(Math.random() * 10000));
   if (speakers && speakers.length > 0) {
     authors = authors.concat(speakers);
   }
+  else
+    authors = authors.concat([{avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${randomname}.png`,nickname:names[randomname%20]}]);
   let fontSize = 14;
   let fontWeight = 'unset';
   let fontColor = 'black';
@@ -40,7 +56,7 @@ const RoomSummary = ({ room, goToRoom , defaultRoom}) => {
   return (
     <div
       className={style.roomItem}
-      style={{ marginBottom: '16px', cursor: 'pointer' }}
+      style={{ marginLeft:5,marginRight:5, marginBottom: '16px', cursor: 'pointer' ,backgroundColor:'lightgrey',borderRadius:5}}
       onClick={() => goToRoom(room)}
     >
       <h2 style={{ marginBottom: '0px' }}>
@@ -50,7 +66,7 @@ const RoomSummary = ({ room, goToRoom , defaultRoom}) => {
       <Avatar.Group>
         {authors.map(item => (
           <Avatar
-            size="large"
+            size="large" style={{border:0}}
             src={item.avatar && item.avatar !== '' ? item.avatar : DEFAULT_AVATAR}
           />
         ))}
@@ -176,6 +192,7 @@ const RoomList = props => {
     <div>
       <PageHeader
         avatar={{ src: user && user.avatar && user.avatar !== '' ? user.avatar : DEFAULT_AVATAR }}
+        //avatar={<Icon component={svgCONTACT}>}
         className="site-page-header"
         backIcon={false}
         title="Rooms"

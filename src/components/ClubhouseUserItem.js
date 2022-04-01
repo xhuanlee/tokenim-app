@@ -27,7 +27,7 @@ const ClubhouseUserItem = (props) => {
     </div>
   );
   return (
-    <Popover title={nickname} content={popContent} trigger="click">
+    <Popover title={nickname} content={popContent}  style={{margin:10}} trigger="click">
       <div className={style.userItemContainer} id={address}>
         <Avatar alt={nickname} shape="square" size={64} src={avatar && avatar !== '' ? avatar : DEFAULT_AVATAR} />
         <div className={style.nickname}>{muted?<AudioMutedOutlined style={{ fontSize: '18px',color:'red'}} />:null}<Badge status={ online ? 'success' : 'error' } text={nickname} /></div>
