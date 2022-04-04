@@ -30,7 +30,7 @@ const MiniProgramItem = props => {
         }}
       >
         {/*<Avatar src={'/image/SVG/ROOM.svg'} style={{width:24,height:24}}></Avatar>*/}
-        <Avatar size={'large'} icon={<Icon component={svgRoom}></Icon>} style={{backgroundColor:'#D8D8D8;',background:'transparent'}}></Avatar>
+        <Avatar size={'large'} icon={<Icon component={svgRoom}></Icon>} style={{fontSize:30,backgroundColor:'#D8D8D8;',background:'transparent'}}></Avatar>
         <span style={{ marginLeft: 8 }}>{synopsis}</span>
       </div>
     </Tooltip>

@@ -1089,6 +1089,8 @@ class HomePage extends Component {
         address={loginAddress}
         token={faxBalance}
         ether={etherBalance}
+        loginEns={this.props.account.loginEns}
+        avatar = {this.props.account.avatar}
         substrateBalance={substrateBalance}
       />
     );
@@ -1201,7 +1203,7 @@ class HomePage extends Component {
                   }}
                 >
                   {/*<Avatar src={'/image/SVG/ROOM.svg'} style={{width:24,height:24}}></Avatar>*/}
-                  <Avatar size={'large'} icon={<Icon component={svgSETTING}></Icon>} style={{ backgroundColor:'#D8D8D8;',background:'transparent'}}></Avatar>
+                  <Avatar size={'large'} icon={<Icon component={svgSETTING}></Icon>} style={{ fontSize:30,backgroundColor:'#D8D8D8;',background:'transparent'}}></Avatar>
                   <span style={{ marginLeft: 8 }}>{'Setting'}</span>
                 </div>
               </Tooltip>
@@ -1217,7 +1219,7 @@ class HomePage extends Component {
                   }}
                 >
                   {/*<Avatar src={'/image/SVG/ROOM.svg'} style={{width:24,height:24}}></Avatar>*/}
-                  <Avatar size={'large'} icon={<Icon component={svgCONTACT}></Icon>} style={{backgroundColor:'#D8D8D8;',background:'transparent'}}></Avatar>
+                  <Avatar size={'large'} icon={<Icon component={svgCONTACT}></Icon>} style={{fontSize:30,backgroundColor:'#D8D8D8;',background:'transparent'}}></Avatar>
                   <span style={{ marginLeft: 8 }}>{'Contact'}</span>
                 </div>
               </Tooltip>

@@ -34,14 +34,14 @@ class MyAccountInfo extends Component {
   }
 
   render() {
-    const { loginAddress, loginEns, visitorMode, isMetamask } = this.props.account;
+    const { loginAddress, loginEns, avatar,visitorMode, isMetamask } = this.props.account;
     const { balanceLoading, registerReward, loginReward, etherBalance, faxBalance, registerRewardLoading, loginRewardLoading } = this.props.user;
     const short_address = shortenAddress(loginAddress, 12);
     const display_username = visitorMode ? formatMessage({ id: 'account.visitor' }) : (loginEns || formatMessage({ id: 'account.my_account' }))
     return (
       <div style={{ display: 'flex', flexDirection: 'row' }}>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: 66 }}>
-          <Avatar size={'large'} style={{ backgroundColor: '#aea2ae' }}>{formatMessage({ id: 'account.me' })}</Avatar>
+          <Avatar size={'large'} src={`https://www.larvalabs.com/public/images/cryptopunks/punk${avatar}.png`} style={{ backgroundColor: '#aea2ae' }}>{formatMessage({ id: 'account.me' })}</Avatar>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', height: 65, width: 135 }}>
           <div style={{ display: 'flex', margin: '10px 0 0', fontSize: 13, alignItems: 'center' }}>

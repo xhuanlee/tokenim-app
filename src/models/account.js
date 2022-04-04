@@ -8,6 +8,11 @@ import { connectWallectConnect } from '@/app/walletconnect';
 import { confirmConnectSubstrate, connectSubstrate } from '@/app/substrate';
 import accountType from '@/app/accountType';
 
+function addPreZero4(num) {
+  return (`0000${num}`).slice(-4);
+}
+const randomname = addPreZero4(Math.round(Math.random() * 10000));
+
 export default {
   namespace: 'account',
 
@@ -34,6 +39,8 @@ export default {
     regsiterPkAes: '',
     registerPkMd5: '',
 
+    avatar:randomname,// default for those not set avatar
+    carrier:'',//elastos carrier id
     loginEns: '',
     loginAddress: '',
     loginKeystore: '',

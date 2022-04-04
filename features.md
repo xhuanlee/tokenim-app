@@ -4,9 +4,23 @@
   - 传统系统的账号系统一般都在中心化服务器上实现和存储，kademlia目前没有网上的账号系统。
   - kademlia准备使用Web3的基础设施（ens，swarm，evm compatible smart contract）来实现账号的存储和管理，不依赖于具体的服务器；
 - 一期目标
-  - 绑定本地钱包地址：使用以太坊地址作为通讯地址
+  - 绑定本地钱包地址：使用以太坊地址作为通讯地址，通过以太坊地址查询whisper和carrier地址
   - 使用ens域名进行通讯寻址：显示自己的名字，搜索ens名字并发起通讯
-  - Profile: ens名下记录头像、名称、whisper和carrier公开地址，Web上实现，App暂时不做
+  - Profile: 
+    - ens名下记录头像、名称、whisper和carrier公开地址，Web上实现，
+    - App上可先用shhData实现名称和carrier公开地址的保存和查询,担心ens合约太复杂
+  - Rinkeby测试网：
+    - shhData合约:   0x264332fb4A47617FB0B686A6136292d5E7878eaC
+      - 写
+        - saveShhPubKey
+        - saveShhName，建议修改对应的.sol过程，同时添加ens作为.beagles.eth的subdomain
+        - saveShhKeyPriKey is not safe because every one can decode input data by looking at the transaction details of the contract call
+      - 查询
+        - shhPubKeyMap(address)
+        - shhNameMap(address)  
+      - 最好增加
+        - sshAddressByName(name)  
+      - https://rinkeby.etherscan.io/address/0x264332fb4a47617fb0b686a6136292d5e7878eac#writeContract
 - 总目标
   - contact 通讯录
   - network 社交关系    
@@ -131,15 +145,75 @@ codec === 'ipfs-ns' // false
 ### 3.1. metamask support on Web
 - login in by sign with metamask (maybe other ethereum main or test chain, 
 but it will connnent to our own whisper blockchain and we could give him some EHT of our own private chain)
-### 3.2 walletConnect on mobile
+### 3.2 walletConnect on mobile to bind address and update blockchain data
 - Web, Check the instructions for DAPP
-- https://docs.walletconnect.com/quick-start/dapps/client
-- IOS and Android
+  - https://docs.walletconnect.com/quick-start/dapps/client
+- Web3 on IOS
+  - https://github.com/Boilertalk/Web3.swift  
+- Wallet Connect on IOS and Android
   - https://github.com/WalletConnect/WalletConnectSwift-Example/tree/main/ExampleApps
   - https://docs.walletconnect.com/quick-start/wallets/swift
+- Using Web3 and WalletConnect together to execute smart contract
+  - initial contract from web3 
+  - prepare transaction data by calling function in contract   
+  - invote walletconnect to sign and excute the transaction 
   - https://www.argent.xyz/blog/building-ethereum-dapps-on-ios-with-web3-swift/
   - https://medium.com/mercuryprotocol/introducing-web3-swift-for-ethereum-ios-development-1e02212b662b
-### 3.3 UI
+### 3.3 ENS query
+- use subgraph to query name
+  - https://medium.com/coinmonks/how-to-convert-ens-address-to-eth-address-in-js-251c6209c208
+  - https://github.com/Shmoji/ens-example
+  - https://thegraph.com/hosted-service/subgraph/ensdomains/ens
+```
+domains(first: 1, where:{name:"beagles.eth"}) {
+    id
+    name
+    labelName
+    labelhash
+    owner{id
+    domains{id}}
+  }
+```  
+  -- javascript
+```  
+import { gql } from 'graphql-request'
+
+export default function getQueryENSForETHAddress(ensAddress: string) {
+  return gql`
+    {
+      domains(first: 1, where:{name:"${ensAddress.toLowerCase()}"}) {
+        name
+        labelName
+        owner {
+          id
+          domains {
+            id
+          }
+        }
+      }
+    }`
+}
+
+const HTTP_GRAPHQL_ENDPOINT =
+  'https://api.thegraph.com/subgraphs/name/ensdomains/ens'
+
+/*
+ * @param ensAddress - the ENS address. Example: vitalik.eth
+ * @return the Ethereum address or 0 string if invalid
+ */
+export async function queryENSForETHAddress(ensAddress: string): Promise<string> {
+  if (!ensAddress || !ensAddress.toLowerCase().includes('.eth')) {
+    return '0'
+  }
+  const result = await request(HTTP_GRAPHQL_ENDPOINT, getQueryENSForETHAddress(ensAddress))
+  return result.domains && result.domains.length > 0
+    ? result.domains[0].owner.id
+    : '0'
+}
+
+```  
+  
+### 3.4 UI
 - ENS name support
 - Add a row to add or edit name, name can keep in a new smart contract which can search by address
 - this name should be treated as the name of profile

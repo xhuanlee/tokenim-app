@@ -95,7 +95,7 @@ class HomeTab extends Component {
     const { operation, exportPk, passwordOK, passwordError, privateKey } = this.state;
     const { address, token, ether, loading } = this.props;
     const { balanceLoading, substrateBalance } = this.props.user;
-    const { shhKeyAvaiable, shhKeyId, shhPubKey, accountType: at } = this.props.account;
+    const { shhKeyAvaiable, shhKeyId, shhPubKey,loginEns,avatar,carrier, accountType: at } = this.props.account;
     const freeLoading = loading.effects['user/getFreeEther'];
     let displayEther = ether <= 0 ?
       <>
@@ -144,10 +144,13 @@ class HomeTab extends Component {
               { title: '属性值', dataIndex: 'val', key: 'val', ellipsis: true },
             ]}
             dataSource={[
+              { key:'name',row:'ENS',val:loginEns},
+              {key:'avatar',row:'Avatar',val:avatar},
               { key: 'address', row: formatMessage({ id: 'home.table_account_address' }), val: address || formatMessage({ id: 'home.no_usable_wallet' }) },
               { key: 'token', row: 'App Token', val: token },
               { key: 'ether', row: 'Balance', val: displayEther },
               { key: 'shh', row: 'Whisper', val: shhStatus },
+              { key: 'carrier', row: 'Carrier', val: carrier },
             ]}
           />
         </div>
