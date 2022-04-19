@@ -1,9 +1,13 @@
-require('babel-register')
+require('babel-register');
 const config = require('./config');
 const { ethereum_host, ethereum_port, admin } = config;
 
 module.exports = {
   networks: {
+    rinkeby:{
+      url: 'https://beagle.chat/beagle',
+      network_id: '4',
+    },
     development: {
       host: ethereum_host,
       port: ethereum_port,

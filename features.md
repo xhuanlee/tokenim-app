@@ -267,3 +267,24 @@ const registrar = await FIFSRegistrar.deploy(ens.address, namehash.hash("test"))
 - should be able to call other beagle user or metamask 
 #  5.4 Profile
 - create/update
+
+## 6. 术语
+###唯一标识
+ens名字和以太坊地址都可以作为唯一地址
+- address: ethereum address, 以太坊钱包地址
+- ens: 以太坊域名，连续的字符串，xxx.eth
+  - ens subdomain: xxx.beagles.eth，没有ens名字的可以免费获取beagles.eth二级域名
+### 有关ens域名的概念和术语
+- tld：top level domain name, 顶级域名，除了.eth, 我们还将在bnb和esc上提供.bnb和.ela等tld名称的集成  
+- subdomain: 子域名
+### Profile 的链上保存
+属性保存在ens名字的ens合约，没有ens名字保存在shhData合约中，将来可以免费申请并保存在beales.eth子域名中，现阶段先放在shhData合约下
+- nick name: 中间可以有空格，如alan chung
+- 与消息通信相关的，可视为内部属性，App重装后需要重新发布到链上：
+  - carrier address: carrier id, 可以以此添加好友
+  - whisper public key: 
+- avatar: 头像的content hash值
+- 用户可以一次或者多次用更新profile
+### App本地好友数据 
+- 好友的ens名字或者address
+- 好友的Profile，可以重新获取好友的profile 

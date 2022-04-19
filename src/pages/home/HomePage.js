@@ -942,6 +942,17 @@ class HomePage extends Component {
     }
 
     // should call registerENS
+    if (window.ethereum.chainId==4){
+      this.setState({ confirmLoading: true });
+      saveShhName(nameValue)
+        .then(() => {
+          this.setState({ nameModal: false, confirmLoading: false });
+        })
+        .catch(e => {
+          console.error('save shh name error: ', e);
+        });
+    }
+    else
     sendRequest(
       `${IMApp.API_URL}${ETHEREUM_API.REGISTER_ENS}${this.props.account.address}/${nameValue}`,
       (err, res) => {

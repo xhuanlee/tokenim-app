@@ -14,10 +14,41 @@ import UserData from '../../abi/UserData.json';
 import ShhData from '../../truffle/shh-data/build/contracts/ShhData.json';
 import TRONex from '../../truffle/tronex/build/contracts/TRONex.json';
 
+import EnsSubdomainFactory from '../../ens/EnsSubdomainFactory';
+/*
+const registryJSON = loadContract('registry', 'ENSRegistry')
+const resolverJSON = loadContract('resolvers', 'PublicResolver')
+const reverseRegistrarJSON = loadContract('registry', 'ReverseRegistrar');
+*/
+import registryJSON from '../../abi/ens/ENSRegistry';
+import resolverJSON from '../../abi/resolver/PublicResolver';
+import reverseRegistrarJSON from '../../abi/ens/ReverseRegistrar';
+
 import { network_id } from '../../config'
+import detectEthereumProvider from '@metamask/detect-provider';
+
+function loadContract(modName, contractPath) {
+  let loadpath
+  const contractName = contractPath.split('/').reverse()[0]
+  console.log(process.cwd());
+  if (['ens-022', 'ethregistrar-202', 'subdomain-registrar'].includes(modName)) {
+    loadpath = `${process.cwd()}/node_modules/@ensdomains/ens-archived-contracts/abis/${modName}/${contractName}.json`
+  } else {
+    loadpath = `${process.cwd()}/node_modules/@ensdomains/ens-contracts/artifacts/contracts/${modName}/${contractPath}.sol/${contractName}.json`
+  }
+  return require(loadpath)
+}
+const EnsContracts={
+  4: {ens:'0x98325eDBE53119bB4A5ab7Aa35AA4621f49641E6',
+      resolver:'0xAe41CFDE7ABfaaA2549C07b2363458154355bAbD',
+      reverseRegistrar: '0xFdb1b60AdFCba28f28579D709a096339F5bEb651',
+      subdomainRegistrar: ''
+    }
+};
 
 export const FaxTokenImAPI = {
   web3: new Web3(),
+  web3wallet: null,
   web3TokenContract: null,
   web3ImContract: null,
   web3SaleContract: null,
@@ -26,6 +57,10 @@ export const FaxTokenImAPI = {
   web3ResolverContract: null,
   web3DataContract: null,
   web3InvestContract: null,
+  web3Ens: null,
+  web3EnsSubdomainFactory: null,
+  web3EnsReverseRegistrar: null,
+  web3EnsResolver: null,
 
   tokenContract: null,
   imContract: null,
@@ -58,6 +93,8 @@ export const FaxTokenImAPI = {
 
   // new transaction listener for current address
   setupNewTransactionListener: (address, setFilter, callback) => {
+    if (network_id!=1515)
+      return;
     const contractAddress = []
     contractAddress.push(FaxToken.networks[network_id].address);
     contractAddress.push(FaxTokenSale.networks[network_id].address);
@@ -169,9 +206,35 @@ export const FaxTokenImAPI = {
 
   initENSContract: () => {
     // web3 contract instance
-    const c = FaxTokenImAPI.web3.eth.contract(ENSRegistry.abi)
-    FaxTokenImAPI.web3EnsContract = c.at(ENSRegistry.networks[network_id].address);
+    if (network_id==1515) {
+      const c = FaxTokenImAPI.web3.eth.contract(ENSRegistry.abi)
+      FaxTokenImAPI.web3EnsContract = c.at(ENSRegistry.networks[network_id].address);
+    }
+    // else
+    //   if (network_id==4)
+     async function initialWalletConnect() {
+       const provider = await detectEthereumProvider();
 
+       if (provider) {
+         // From now on, this should always be true:
+         // provider === window.ethereum
+//        startApp(provider); // initialize your app
+         FaxTokenImAPI.web3wallet = new Web3(provider);
+//         FaxTokenImAPI.web3.setProvider(provider);
+       } else {
+         console.log('Please install MetaMask!');
+       }
+       FaxTokenImAPI.web3EnsSubdomainFactory = FaxTokenImAPI.web3wallet.eth.contract(EnsSubdomainFactory.abi).at(EnsSubdomainFactory.networks[4].address);
+       //console.log(registryJSON);
+       FaxTokenImAPI.web3Ens = FaxTokenImAPI.web3wallet.eth.contract(registryJSON.abi).at(EnsContracts[4].ens);
+//       await FaxTokenImAPI.web3Ens.deployed();
+       //console.log(resolverJSON);
+       FaxTokenImAPI.web3EnsResolver= FaxTokenImAPI.web3wallet.eth.contract(resolverJSON.abi).at(EnsContracts[4].resolver);
+//       await FaxTokenImAPI.web3EnsResolver.deployed();
+       FaxTokenImAPI.web3EnsReverseRegistrar = FaxTokenImAPI.web3wallet.eth.contract(reverseRegistrarJSON.abi).at(EnsContracts[4].reverseRegistrar);
+//       await FaxTokenImAPI.web3EnsReverseRegistrar.deployed();
+     };
+      initialWalletConnect();
     // truffle contract instance
     const ensRegistryContract = contract(ENSRegistry);
     ensRegistryContract.setProvider(FaxTokenImAPI.web3.currentProvider);
@@ -285,6 +348,18 @@ export const FaxTokenImAPI = {
   getTransactionCount: (address) => {
     return new Promise((resolve, reject) => {
       FaxTokenImAPI.web3.eth.getTransactionCount(address, (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      })
+    })
+  },
+  // to produce transaction nonce
+  getWalletTransactionCount: (address) => {
+    return new Promise((resolve, reject) => {
+      FaxTokenImAPI.web3wallet.eth.getTransactionCount(address, (err, result) => {
         if (err) {
           reject(err);
         } else {
@@ -484,7 +559,10 @@ export const FaxTokenImAPI = {
   },
 
   getSymKeyFromContract: () => {
-    return FaxTokenImAPI.dataContract.shhSymKey.call();
+    if (FaxTokenImAPI.dataContract)
+        return FaxTokenImAPI.dataContract.shhSymKey.call();
+    else
+      return null;
   },
 
   checkSymKeyExist: (localSymKeyId) => {
@@ -512,6 +590,7 @@ export const FaxTokenImAPI = {
   },
 
   setupShhSymKeyListener: (symKeyID, callback) => {
+    if (network_id==1515)
     return FaxTokenImAPI.web3.shh.newMessageFilter({ symKeyID }, callback)
   },
 
@@ -537,6 +616,7 @@ export const FaxTokenImAPI = {
 
   setupShhMessageListener: (shhKeyId, callback) => {
     console.log(`new message filter: ${shhKeyId}`);
+    if (network_id==1515)
     return FaxTokenImAPI.web3.shh.newMessageFilter({ privateKeyID: shhKeyId }, callback)
   },
 
@@ -619,8 +699,31 @@ export const FaxTokenImAPI = {
     return fetch()
   },
 
-  getShhNameByAddress: (address) => {
-    return FaxTokenImAPI.shhDataContract.shhNameMap.call(address);
+  getShhNameByAddress: async (address) => {
+      async function getEnsName(address) {
+        return new Promise((resolve,reject)=>{
+          FaxTokenImAPI.web3EnsReverseRegistrar.node.call(address,function(error,mynode) {
+            console.log(address+' node:',mynode);
+            FaxTokenImAPI.web3EnsResolver.name.call(mynode,function(error,name) {
+            console.log(address+' name:',name);
+            return resolve(name);
+          });
+        });});
+        // let reverseResolverAddress=FaxTokenImAPI.web3Ens.resolver.call(mynode);
+        // if (reverseResolverAddress == '0x0000000000000000000000000000000000000000')
+        //   return null;
+        // console.log(address+" resolver:",reverseResolverAddress);
+        // let reverseResolver = FaxTokenImAPI.web3EnsResolver.attach(reverseResolverAddress);
+        // let name =  reverseResolver.name.call(mynode);
+        // console.log(address+' name:',name);
+        // return name;
+      };
+      let name = await getEnsName(address);
+      if (name && name.length>0)
+        return name;
+      else
+      if (network_id==1515 && FaxTokenImAPI.shhDataContract)
+        return FaxTokenImAPI.shhDataContract.shhNameMap.call(address);
   },
 
   saveShhName: (name) => {
