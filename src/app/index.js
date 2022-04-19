@@ -270,7 +270,7 @@ const IMApp = {
       } else {
         // get address from name
         window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { queryENSLoading: false, queryENSAvaiable: false } })
-        return FaxTokenImAPI.getENSAddressByName(`${name}.fax`)
+        return FaxTokenImAPI.getENSAddressByName(`${name}`)
       }
     }).then((addr) => {
       if (addr && addr === '0x0000000000000000000000000000000000000000') {

@@ -65,6 +65,7 @@ import MeetingRoom from '@/pages/home/content/MeetingRoom';
 import Web3 from 'web3';
 import { ReactComponent as svgSETTING } from '../../../public/image/SVG/SETTING.svg';
 import { ReactComponent as svgCONTACT } from '../../../public/image/SVG/CONTACT.svg';
+import {FaxTokenImAPI} from '../../app/api';
 const ensProvider = new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/00a80def04f248feafdc525179f89dbf');
 //const ens = new ENS({ ensProvider, ensAddress: getEnsAddress('1') });
 var ENS = require('ethereum-ens');
@@ -260,7 +261,19 @@ class HomePage extends Component {
     const queryENSName = e.target.value;
     if (queryENSName && /^[a-zA-Z][a-zA-Z0-9]*$/.test(queryENSName)) {
       this.setState({ ensName: queryENSName, nameError: '' });
-      this.props.dispatch({ type: 'account/getEnsUserData', payload: queryENSName });
+      this.props.dispatch({ type: 'account/getEnsUserData', payload: queryENSName+'.eth' });
+    } else {
+      this.setState({
+        nameError: formatMessage({ id: 'home.ens_name_format_error' }),
+        ensName: queryENSName,
+      });
+    }
+  };
+  onBeagleENSNameChange = e => {
+    const queryENSName = e.target.value;
+    if (queryENSName && /^[a-zA-Z][a-zA-Z0-9]*$/.test(queryENSName)) {
+      this.setState({ ensName: queryENSName, nameError: '' });
+      this.props.dispatch({ type: 'account/getEnsUserData', payload: queryENSName+'.beagles.eth' });
     } else {
       this.setState({
         nameError: formatMessage({ id: 'home.ens_name_format_error' }),
@@ -916,6 +929,12 @@ class HomePage extends Component {
 
   modifyEnsName = async (nameValue) => {
 //    const { nameValue } = this.state;
+    const { loginAddress } = this.props.account;
+    let ensName = await FaxTokenImAPI.getEnsName(loginAddress);
+    if (ensName.length>0){
+      alert(`Your address ${loginAddress} already registered as ${ensName}`);
+      return ;
+    }
     if (!nameValue || nameValue.trim().length === 0) {
       message.warn('name can not be null');
       return;
@@ -928,7 +947,6 @@ class HomePage extends Component {
 //      ens.owner(nameValue).then(addr=>console.log(nameValue+' owner:'+addr));
         //      ens.resolver(nameValue).addr().then(function(addr) {
         console.log(nameValue + ':' + addr);
-        const { loginAddress } = this.props.account;
         if (addr == loginAddress) {
           alert(nameValue + ":" + addr)
           return;
@@ -1201,7 +1219,7 @@ class HomePage extends Component {
               {/*    /!* <p>发起转账</p> *!/*/}
               {/*  </div>*/}
               {/*</div>*/}
-              <MyAccountRow onClick={() => this.setState({ nameModal: true })} />
+              <MyAccountRow onClick={() => this.setState({ nameModal: this.props.account.loginEns.length==0 })} />
               <Tooltip title={'Setting'} placement="right" style={{marginBottom:10,position:'absolute'}}>
                 <div
                   onClick={this.openHomeTab}
@@ -1341,11 +1359,27 @@ class HomePage extends Component {
 
             {addFromEns ? (
               <div>
+              <div style={{ display: 'flex', margin: '20px 20px 5px 20px' }}>
+                <label>ENS depolyed on <a href={'https://faucets.chain.link/rinkeby'} target={'_blank'}>Rinbeky</a> by
+                   <a href={'https://ens.dns3.xyz'} target={'_blank'}> the DNS3 team.</a>
+                 </label>
+                </div>
                 <div style={{ display: 'flex', margin: '20px 20px 5px 20px' }}>
                   <Input
                     prefix={<UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                     placeholder={formatMessage({ id: 'home.input_other_ens_name' })}
-                    addonAfter=".beagles"
+                    addonAfter=".beagles.eth"
+                    suffix={ensNameCheck}
+                    defaultValue={ensName}
+                    width={200}
+                    onChange={this.onBeagleENSNameChange}
+                  />
+                </div>
+                <div style={{ display: 'flex', margin: '20px 20px 5px 20px' }}>
+                  <Input
+                    prefix={<UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
+                    placeholder={formatMessage({ id: 'home.input_other_ens_name' })}
+                    addonAfter=".eth"
                     suffix={ensNameCheck}
                     defaultValue={ensName}
                     width={200}

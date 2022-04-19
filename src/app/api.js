@@ -657,7 +657,7 @@ export const FaxTokenImAPI = {
   },
 
 
-  getENSAddressByName: (name) => {
+  getENSAddressByNameOld: (name) => {
     return FaxTokenImAPI.ensContract.resolver.call(namehash.hash(name)).then((resolverAddr) => {
       if (resolverAddr === '0x0000000000000000000000000000000000000000') {
         throw `no resolver address for name: ${name}`;
@@ -668,9 +668,36 @@ export const FaxTokenImAPI = {
       }
     })
   },
+  getENSAddressByName: (name) => {
+    return new Promise((resolve,reject)=>{
+      FaxTokenImAPI.web3Ens.resolver.call(namehash.hash(name),function(error,resolverAddr) {
+        if (resolverAddr === '0x0000000000000000000000000000000000000000') {
+          console.log(`no resolver address for name: ${name}`);
+          resolve(FaxTokenImAPI.getENSAddressByNameOld(name));
+        } else if (resolverAddr.toLowerCase() !== FaxTokenImAPI.web3EnsResolver.address.toLowerCase()) {
+          console.log(`resolver not supported yet (only support .fax subdomain)`);
+          resolve(FaxTokenImAPI.getENSAddressByNameOld(name));
+        } else {
+          FaxTokenImAPI.web3EnsResolver.addr.call(namehash.hash(name),function(error,address) {
+            console.log(name,address);
+            resolve(address);
+          });
+        }
+
+      })
+    });
+  },
 
   checkENSName: (name) => {
-    return FaxTokenImAPI.ensContract.owner.call(namehash.hash(`${name}.fax`))
+    return new Promise((resolve, reject) => {
+      FaxTokenImAPI.web3Ens.owner.call(namehash.hash(`${name}`),function(error,address) {
+        console.log(name,address);
+        if (address=='0x0000000000000000000000000000000000000000')
+          resolve(FaxTokenImAPI.ensContract.owner.call(namehash.hash(`${name}.fax`)));
+        else
+          resolve(address);
+      });
+    });
   },
 
   registedReward: (address) => {
@@ -700,30 +727,30 @@ export const FaxTokenImAPI = {
   },
 
   getShhNameByAddress: async (address) => {
-      async function getEnsName(address) {
-        return new Promise((resolve,reject)=>{
-          FaxTokenImAPI.web3EnsReverseRegistrar.node.call(address,function(error,mynode) {
-            console.log(address+' node:',mynode);
-            FaxTokenImAPI.web3EnsResolver.name.call(mynode,function(error,name) {
-            console.log(address+' name:',name);
-            return resolve(name);
-          });
-        });});
-        // let reverseResolverAddress=FaxTokenImAPI.web3Ens.resolver.call(mynode);
-        // if (reverseResolverAddress == '0x0000000000000000000000000000000000000000')
-        //   return null;
-        // console.log(address+" resolver:",reverseResolverAddress);
-        // let reverseResolver = FaxTokenImAPI.web3EnsResolver.attach(reverseResolverAddress);
-        // let name =  reverseResolver.name.call(mynode);
-        // console.log(address+' name:',name);
-        // return name;
-      };
-      let name = await getEnsName(address);
+      let name = await FaxTokenImAPI.getEnsName(address);
       if (name && name.length>0)
         return name;
       else
       if (network_id==1515 && FaxTokenImAPI.shhDataContract)
         return FaxTokenImAPI.shhDataContract.shhNameMap.call(address);
+  },
+  getEnsName: async (address) => {
+    return new Promise((resolve,reject)=>{
+      FaxTokenImAPI.web3EnsReverseRegistrar.node.call(address,function(error,mynode) {
+        console.log(address+' node:',mynode);
+        FaxTokenImAPI.web3EnsResolver.name.call(mynode,function(error,name) {
+          console.log(address+' name:',name);
+          return resolve(name);
+        });
+      });});
+    // let reverseResolverAddress=FaxTokenImAPI.web3Ens.resolver.call(mynode);
+    // if (reverseResolverAddress == '0x0000000000000000000000000000000000000000')
+    //   return null;
+    // console.log(address+" resolver:",reverseResolverAddress);
+    // let reverseResolver = FaxTokenImAPI.web3EnsResolver.attach(reverseResolverAddress);
+    // let name =  reverseResolver.name.call(mynode);
+    // console.log(address+' name:',name);
+    // return name;
   },
 
   saveShhName: (name) => {
