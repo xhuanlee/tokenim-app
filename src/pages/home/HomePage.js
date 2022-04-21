@@ -932,8 +932,8 @@ class HomePage extends Component {
     const { loginAddress } = this.props.account;
     let ensName = await FaxTokenImAPI.getEnsName(loginAddress);
     if (ensName.length>0){
-      alert(`Your address ${loginAddress} already registered as ${ensName}`);
-      return ;
+      alert(`Your address ${loginAddress} already registered as ${ensName}. Do you want to pay to get a new name?`);
+      //return ;
     }
     if (!nameValue || nameValue.trim().length === 0) {
       message.warn('name can not be null');
@@ -1123,7 +1123,7 @@ class HomePage extends Component {
         substrateBalance={substrateBalance}
       />
     );
-    console.log(s,JSON.stringify(this.state));
+//    console.log(s,JSON.stringify(this.state));
     switch (s) {
       case 'defi':
         contentBody = <Defis />;
@@ -1219,7 +1219,7 @@ class HomePage extends Component {
               {/*    /!* <p>发起转账</p> *!/*/}
               {/*  </div>*/}
               {/*</div>*/}
-              <MyAccountRow onClick={() => this.setState({ nameModal: this.props.account.loginEns.length==0 })} />
+              <MyAccountRow onClick={() => this.setState({ nameModal: this.props.account.loginEns.length>=0 })} />
               <Tooltip title={'Setting'} placement="right" style={{marginBottom:10,position:'absolute'}}>
                 <div
                   onClick={this.openHomeTab}

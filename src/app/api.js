@@ -206,11 +206,27 @@ export const FaxTokenImAPI = {
   },
   initialWalletConnect:async (connector)=>{
     window.App.connector=connector;
+    // if (window.ethereum.chainId==4)
+    //   return;
     //let provider = new WalletConnectProvider({ infuraId: '27e484dcd9e3efcfd25a83a78777cdf1' });
-    let provider = new WalletConnectProvider({ infuraId: '84ae00fec54f4d65bd1c0505b0e96383' });
-
+//    let provider = new WalletConnectProvider({ infuraId: '84ae00fec54f4d65bd1c0505b0e96383' });
+    const provider = new WalletConnectProvider({
+      infuraId: "84ae00fec54f4d65bd1c0505b0e96383",
+      qrcodeModalOptions: {
+        mobileLinks: [
+          "rainbow",
+          "metamask",
+          "argent",
+          "trust",
+          "imtoken",
+          "pillar",
+        ],
+      },
+    });
     await provider.enable();
+
     FaxTokenImAPI.web3wallet = new Web3(provider);
+//    console.log('web3wallet provider:',JSON.stringify(provider));
     FaxTokenImAPI.web3EnsSubdomainFactory = FaxTokenImAPI.web3wallet.eth.contract(EnsSubdomainFactory.abi).at(EnsSubdomainFactory.networks[4].address);
     //console.log(registryJSON);
     FaxTokenImAPI.web3Ens = FaxTokenImAPI.web3wallet.eth.contract(registryJSON.abi).at(EnsContracts[4].ens);
@@ -243,6 +259,7 @@ export const FaxTokenImAPI = {
          // provider === window.ethereum
 //        startApp(provider); // initialize your app
          FaxTokenImAPI.web3wallet = new Web3(provider);
+//         console.log('web3wallet provider:',JSON.stringify(provider));
 //         FaxTokenImAPI.web3.setProvider(provider);
        } else {
          console.log('Please install MetaMask!');

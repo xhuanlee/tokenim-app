@@ -151,6 +151,7 @@ export async function transferEther(from ,to, value) {
 }
 
 export async function newSubdomain(name,domain,tld) {
+  FaxTokenImAPI.initialWalletConnect(window.App.connector);
   const nonce = await FaxTokenImAPI.getWalletTransactionCount(window.ethereum.selectedAddress);
   const data = FaxTokenImAPI.web3EnsSubdomainFactory.newSubdomain.getData(name,domain,tld,window.ethereum.selectedAddress,window.ethereum.selectedAddress);
   let selectedAddress,chainId;
@@ -158,8 +159,10 @@ export async function newSubdomain(name,domain,tld) {
     selectedAddress = window.App.connector.accounts[0];
     chainId = window.App.connector.chainId;
   }
-  else
+  else{
     selectedAddress = window.ethereum.selectedAddress;
+    chainId=window.ethereum.chainId;
+  }
   console.log(`${nonce} addr:${selectedAddress},chainId:${chainId}`);
   const param = {
     nonce: FaxTokenImAPI.web3.toHex(nonce+1),
@@ -172,20 +175,22 @@ export async function newSubdomain(name,domain,tld) {
     data,
     chainId: chainId,
   };
+  console.log(JSON.stringify(param));
   let txHash;
   if (window.App.connector){
-    // Draft Custom Request
-    // const customRequest = {
-    //   id: 1337,
-    //   jsonrpc: "2.0",
-    //   method: "eth_signTransaction",
-    //   params: [
-    //     param,
-    //   ],
-    // };
-//    txHash = await window.App.connector.sendCustomRequest(customRequest);
-    console.log(JSON.stringify(param));
-    txHash = await window.App.connector.signTransaction(param);
+    //Draft Custom Request
+    const customRequest = {
+      id: 1337,
+      jsonrpc: "2.0",
+//      method: "eth_signTransaction",
+      method: "eth_sendTransaction",
+      params: [
+        param,
+      ],
+    };
+//   txHash = await window.App.connector.sendCustomRequest(customRequest);
+    txHash = await window.App.connector.sendTransaction(param);
+//    txHash = await window.App.connector.signTransaction(param);
   }
   else
    txHash = await window.ethereum.request({
@@ -235,8 +240,10 @@ export async function reverseRegister(name) {
     selectedAddress = window.App.connector.accounts[0];
     chainId = window.App.connector.chainId;
   }
-  else
+  else{
     selectedAddress = window.ethereum.selectedAddress;
+    chainId=window.ethereum.chainId;
+  }
   console.log(`${nonce} addr:${selectedAddress},chainId:${chainId}`);
   const param = {
     nonce: FaxTokenImAPI.web3.toHex(nonce+1),
@@ -250,6 +257,7 @@ export async function reverseRegister(name) {
     chainId: chainId,
   };
   let txHash;
+  console.log(JSON.stringify(param));
   if (window.App.connector){
     // Draft Custom Request
     // const customRequest = {
@@ -261,8 +269,8 @@ export async function reverseRegister(name) {
     //   ],
     // };
 //    txHash = await window.App.connector.sendCustomRequest(customRequest);
-    console.log(JSON.stringify(param));
-    txHash = await window.App.connector.signTransaction(param);
+    txHash = await window.App.connector.sendTransaction(param);
+//    txHash = await window.App.connector.signTransaction(param);
 
   }
   else
