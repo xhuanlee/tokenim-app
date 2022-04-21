@@ -2,8 +2,10 @@ import { getLocalShhKeyPair, showNotification } from '@/app/util';
 import { FaxTokenImAPI } from '@/app/api';
 import { message } from 'antd';
 import accountType from '@/app/accountType';
+import WalletConnectProvider from '@walletconnect/web3-provider';
 // This function detects most providers injected at window.ethereum
 import detectEthereumProvider from '@metamask/detect-provider';
+import IMApp from './index';
 
 
 function isMetamask() {
@@ -151,32 +153,56 @@ export async function transferEther(from ,to, value) {
 export async function newSubdomain(name,domain,tld) {
   const nonce = await FaxTokenImAPI.getWalletTransactionCount(window.ethereum.selectedAddress);
   const data = FaxTokenImAPI.web3EnsSubdomainFactory.newSubdomain.getData(name,domain,tld,window.ethereum.selectedAddress,window.ethereum.selectedAddress);
+  let selectedAddress,chainId;
+  if (window.App.connector) {
+    selectedAddress = window.App.connector.accounts[0];
+    chainId = window.App.connector.chainId;
+  }
+  else
+    selectedAddress = window.ethereum.selectedAddress;
+  console.log(`${nonce} addr:${selectedAddress},chainId:${chainId}`);
   const param = {
     nonce: FaxTokenImAPI.web3.toHex(nonce+1),
     gas: '0x33450', // 210000
       gasPrice: '0x77359400', //2,000,000,000
     //gasPrice:'0x59682f00',//1,500,000,000
-    from: window.ethereum.selectedAddress,
+    from: selectedAddress,
     to: FaxTokenImAPI.web3EnsSubdomainFactory.address,
     value: '0x0',
     data,
-    chainId: window.ethereum.chainId,
+    chainId: chainId,
   };
-  const txHash = await window.ethereum.request({
+  let txHash;
+  if (window.App.connector){
+    // Draft Custom Request
+    // const customRequest = {
+    //   id: 1337,
+    //   jsonrpc: "2.0",
+    //   method: "eth_signTransaction",
+    //   params: [
+    //     param,
+    //   ],
+    // };
+//    txHash = await window.App.connector.sendCustomRequest(customRequest);
+    console.log(JSON.stringify(param));
+    txHash = await window.App.connector.signTransaction(param);
+  }
+  else
+   txHash = await window.ethereum.request({
     method: 'eth_sendTransaction',
     params: [param],
   });
   console.log(`newSubdomain hash: ${txHash} nonce:${nonce}`);
-  const provider = await detectEthereumProvider();
-
-  if (provider) {
-    // From now on, this should always be true:
-    // provider === window.ethereum
-//        startApp(provider); // initialize your app
-    FaxTokenImAPI.web3wallet.setProvider(provider);
-  } else {
-    console.log('Please install MetaMask!');
-  }
+//   const provider = await detectEthereumProvider();
+//
+//   if (provider) {
+//     // From now on, this should always be true:
+//     // provider === window.ethereum
+// //        startApp(provider); // initialize your app
+//     FaxTokenImAPI.web3wallet.setProvider(provider);
+//   } else {
+//     console.log('Please install MetaMask!');
+//   }
   if (txHash && txHash.length>0)
     FaxTokenImAPI.web3wallet.eth.getTransactionReceipt(txHash, async function  (e, data) {
       if (e !== null) {
@@ -204,32 +230,57 @@ export async function newSubdomain(name,domain,tld) {
 export async function reverseRegister(name) {
   const nonce = await FaxTokenImAPI.getWalletTransactionCount(window.ethereum.selectedAddress);
   const data = FaxTokenImAPI.web3EnsReverseRegistrar.setName.getData(name);
+  let selectedAddress,chainId;
+  if (window.App.connector) {
+    selectedAddress = window.App.connector.accounts[0];
+    chainId = window.App.connector.chainId;
+  }
+  else
+    selectedAddress = window.ethereum.selectedAddress;
+  console.log(`${nonce} addr:${selectedAddress},chainId:${chainId}`);
   const param = {
     nonce: FaxTokenImAPI.web3.toHex(nonce+1),
     gas: '0x33450', // 210000
       gasPrice: '0x77359400', //2,000,000,000
     //gasPrice:'0x59682f00',//1,500,000,000
-    from: window.ethereum.selectedAddress,
+    from: selectedAddress,
     to: FaxTokenImAPI.web3EnsReverseRegistrar.address,
     value: '0x0',
     data,
-    chainId: window.ethereum.chainId,
+    chainId: chainId,
   };
-  const txHash = await window.ethereum.request({
+  let txHash;
+  if (window.App.connector){
+    // Draft Custom Request
+    // const customRequest = {
+    //   id: 1337,
+    //   jsonrpc: "2.0",
+    //   method: "eth_signTransaction",
+    //   params: [
+    //     param,
+    //   ],
+    // };
+//    txHash = await window.App.connector.sendCustomRequest(customRequest);
+    console.log(JSON.stringify(param));
+    txHash = await window.App.connector.signTransaction(param);
+
+  }
+  else
+    txHash = await window.ethereum.request({
     method: 'eth_sendTransaction',
     params: [param],
   });
   console.log(`setName hash: ${txHash} nonce:${nonce}`);
- const provider = await detectEthereumProvider();
-
-  if (provider) {
-    // From now on, this should always be true:
-    // provider === window.ethereum
-//        startApp(provider); // initialize your app
-    FaxTokenImAPI.web3wallet.setProvider(provider);
-  } else {
-    console.log('Please install MetaMask!');
-  }
+//  const provider = await detectEthereumProvider();
+//
+//   if (provider) {
+//     // From now on, this should always be true:
+//     // provider === window.ethereum
+// //        startApp(provider); // initialize your app
+//     FaxTokenImAPI.web3wallet.setProvider(provider);
+//   } else {
+//     console.log('Please install MetaMask!');
+//   }
   if (txHash && txHash.length>0)
     FaxTokenImAPI.web3wallet.eth.getTransactionReceipt(txHash, function (e, data) {
       if (e !== null) {
@@ -256,7 +307,7 @@ export async function reverseRegister(name) {
 
 export async function saveShhName(name) {
   try {
-    if (window.ethereum.chainId==4){
+    if (window.ethereum.chainId==4 || window.App.connector){
         return newSubdomain(name,'beagles','eth');
     }
     const nonce = await FaxTokenImAPI.getTransactionCount(window.ethereum.selectedAddress);

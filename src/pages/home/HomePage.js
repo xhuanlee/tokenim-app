@@ -960,7 +960,7 @@ class HomePage extends Component {
     }
 
     // should call registerENS
-    if (window.ethereum.chainId==4){
+    if (window.ethereum.chainId==4 || window.App.connector){
       this.setState({ confirmLoading: true });
       saveShhName(nameValue)
         .then(() => {

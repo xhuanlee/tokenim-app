@@ -31,6 +31,7 @@ const IMApp = {
   groupMessageFilter: null,
   transactionFilter: null,
   signalCallback: null,
+  connector: null, //wallet connector
 
   init: () => {
     window.App = IMApp;
@@ -872,6 +873,8 @@ const IMApp = {
     IMApp.messageFilter = null;
     IMApp.groupMessageFilter = null;
     IMApp.transactionFilter = null;
+    if (IMApp.connector)
+      IMApp.connector.killSession();
   },
 
   balanceOf: (address) => {

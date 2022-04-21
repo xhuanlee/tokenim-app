@@ -13,7 +13,7 @@ import PublicResolver from '../../ens/PublicResolver.json';
 import UserData from '../../abi/UserData.json';
 import ShhData from '../../truffle/shh-data/build/contracts/ShhData.json';
 import TRONex from '../../truffle/tronex/build/contracts/TRONex.json';
-
+import WalletConnectProvider from '@walletconnect/web3-provider';
 import EnsSubdomainFactory from '../../ens/EnsSubdomainFactory';
 /*
 const registryJSON = loadContract('registry', 'ENSRegistry')
@@ -26,6 +26,7 @@ import reverseRegistrarJSON from '../../abi/ens/ReverseRegistrar';
 
 import { network_id } from '../../config'
 import detectEthereumProvider from '@metamask/detect-provider';
+import IMApp from './index';
 
 function loadContract(modName, contractPath) {
   let loadpath
@@ -203,7 +204,23 @@ export const FaxTokenImAPI = {
   testENSContract: () => {
     return FaxTokenImAPI.ensContract.owner.call('0x0');
   },
+  initialWalletConnect:async (connector)=>{
+    window.App.connector=connector;
+    //let provider = new WalletConnectProvider({ infuraId: '27e484dcd9e3efcfd25a83a78777cdf1' });
+    let provider = new WalletConnectProvider({ infuraId: '84ae00fec54f4d65bd1c0505b0e96383' });
 
+    await provider.enable();
+    FaxTokenImAPI.web3wallet = new Web3(provider);
+    FaxTokenImAPI.web3EnsSubdomainFactory = FaxTokenImAPI.web3wallet.eth.contract(EnsSubdomainFactory.abi).at(EnsSubdomainFactory.networks[4].address);
+    //console.log(registryJSON);
+    FaxTokenImAPI.web3Ens = FaxTokenImAPI.web3wallet.eth.contract(registryJSON.abi).at(EnsContracts[4].ens);
+//       await FaxTokenImAPI.web3Ens.deployed();
+    //console.log(resolverJSON);
+    FaxTokenImAPI.web3EnsResolver= FaxTokenImAPI.web3wallet.eth.contract(resolverJSON.abi).at(EnsContracts[4].resolver);
+//       await FaxTokenImAPI.web3EnsResolver.deployed();
+    FaxTokenImAPI.web3EnsReverseRegistrar = FaxTokenImAPI.web3wallet.eth.contract(reverseRegistrarJSON.abi).at(EnsContracts[4].reverseRegistrar);
+//       await FaxTokenImAPI.web3EnsReverseRegistrar.deployed();
+  },
   initENSContract: () => {
     // web3 contract instance
     if (network_id==1515) {
@@ -213,7 +230,13 @@ export const FaxTokenImAPI = {
     // else
     //   if (network_id==4)
      async function initialWalletConnect() {
-       const provider = await detectEthereumProvider();
+     let provider ;
+     if (window.App.connector) {
+       provider = new WalletConnectProvider({ infuraId: '27e484dcd9e3efcfd25a83a78777cdf1' });
+       await provider.enable();
+     }
+     else
+       provider = await detectEthereumProvider();
 
        if (provider) {
          // From now on, this should always be true:
@@ -673,13 +696,15 @@ export const FaxTokenImAPI = {
       FaxTokenImAPI.web3Ens.resolver.call(namehash.hash(name),function(error,resolverAddr) {
         if (resolverAddr === '0x0000000000000000000000000000000000000000') {
           console.log(`no resolver address for name: ${name}`);
-          resolve(FaxTokenImAPI.getENSAddressByNameOld(name));
+//          resolve(FaxTokenImAPI.getENSAddressByNameOld(name));
+          resolve(null);
         } else if (resolverAddr.toLowerCase() !== FaxTokenImAPI.web3EnsResolver.address.toLowerCase()) {
           console.log(`resolver not supported yet (only support .fax subdomain)`);
-          resolve(FaxTokenImAPI.getENSAddressByNameOld(name));
+//          resolve(FaxTokenImAPI.getENSAddressByNameOld(name));
         } else {
           FaxTokenImAPI.web3EnsResolver.addr.call(namehash.hash(name),function(error,address) {
-            console.log(name,address);
+            resolve(null);
+//            console.log(name,address);
             resolve(address);
           });
         }

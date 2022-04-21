@@ -2,13 +2,16 @@ import WalletConnect from "@walletconnect/client";
 import QRCodeModal from "@walletconnect/qrcode-modal";
 import { getLocalShhKeyPair, showNotification } from '@/app/util';
 import { FaxTokenImAPI } from '@/app/api';
+import {IMApp} from '@/app/index';
 import accountType from '@/app/accountType';
 import { selectedAddress } from '@/app/metamask';
 
-async function login(address) {
+async function login(connector,address) {
   try {
 //      const address = selectedAddress();
     window.App.loginAddress = address;
+    window.App.connector = connector;
+    FaxTokenImAPI.initialWalletConnect(connector);
     let keypair = getLocalShhKeyPair(address);
     console.log(`local shh: ${JSON.stringify(keypair)}`);
     if (!keypair || !keypair.id) {
@@ -83,19 +86,27 @@ export async function connectWallectConnect() {
     connector.createSession();
   }
   else
+    // if (connector.chainId!=4){
+    //     alert(`Not Support ${connector.chainId}`)
+    //     connector.killSession();
+    // }
+    // else
     if (connector.accounts.length>0)
-      return login(connector.accounts[0]);
+      return login(connector,connector.accounts[0]);
 
 // Subscribe to connection events
   connector.on("connect", async (error, payload) => {
     if (error) {
       throw error;
     }
-
+    if (connector.chainId!=4){
+      alert(`Not Support ${connector.chainId}, you need switch to supported chain to do transaction`)
+//      connector.killSession();
+    }
     // Get provided accounts and chainId
     const { accounts, chainId } = payload.params[0];
     console.log(JSON.stringify(accounts),chainId);
-    return login(accounts[0]);
+    return login(connector,accounts[0]);
   });
 
   connector.on("session_update", (error, payload) => {
