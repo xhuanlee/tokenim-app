@@ -151,26 +151,33 @@ export async function transferEther(from ,to, value) {
 }
 
 export async function newSubdomain(name,domain,tld) {
-  FaxTokenImAPI.initialWalletConnect(window.App.connector);
+//  FaxTokenImAPI.initialWalletConnect(window.App.connector);
   const nonce = await FaxTokenImAPI.getWalletTransactionCount(window.ethereum.selectedAddress);
-  const data = FaxTokenImAPI.web3EnsSubdomainFactory.newSubdomain.getData(name,domain,tld,window.ethereum.selectedAddress,window.ethereum.selectedAddress);
-  let selectedAddress,chainId;
+  let selectedAddress,chainId,data,gas;
   if (window.App.connector) {
     selectedAddress = window.App.connector.accounts[0];
     chainId = window.App.connector.chainId;
+    data = await FaxTokenImAPI.web3EnsSubdomainFactory.newSubdomain.getData(name,domain,tld,selectedAddress,selectedAddress);
+//    gas = await FaxTokenImAPI.web3EnsSubdomainFactory.methods.newSubdomain(name,domain,tld,selectedAddress,selectedAddress).estimateGas();
+    //                var textNickname = resolver.contract.methods.setText(mynode, "nickname", names[i]+' is me').encodeABI();
+//    data = FaxTokenImAPI.web3EnsSubdomainFactory.contract.methods.newSubdomain(name,domain,tld,selectedAddress,selectedAddress).encodeABI();
+//    gas = FaxTokenImAPI.web3EnsSubdomainFactory.contract.methods.newSubdomain(name,domain,tld,selectedAddress,selectedAddress).estimateGas();
   }
   else{
     selectedAddress = window.ethereum.selectedAddress;
     chainId=window.ethereum.chainId;
+    data = FaxTokenImAPI.web3EnsSubdomainFactory.newSubdomain.getData(name,domain,tld,selectedAddress,selectedAddress);
   }
-  console.log(`${nonce} addr:${selectedAddress},chainId:${chainId}`);
+  console.log(`${nonce} addr:${selectedAddress},chainId:${chainId},data:${data},gas:${gas}`);
   const param = {
-    nonce: FaxTokenImAPI.web3.toHex(nonce+1),
-    gas: '0x33450', // 210000
-      gasPrice: '0x77359400', //2,000,000,000
-    //gasPrice:'0x59682f00',//1,500,000,000
     from: selectedAddress,
     to: FaxTokenImAPI.web3EnsSubdomainFactory.address,
+    nonce: FaxTokenImAPI.web3.toHex(nonce+1),
+//    gas: '0x33450', // 210000
+    gas: '0x64190', // 410000
+//    gas: '0x94ed0', //6100
+      gasPrice: '0x77359400', //2,000,000,000
+    //gasPrice:'0x59682f00',//1,500,000,000
     value: '0x0',
     data,
     chainId: chainId,
@@ -188,8 +195,19 @@ export async function newSubdomain(name,domain,tld) {
         param,
       ],
     };
+//    txHash = await window.App.provider.request(customRequest);
 //   txHash = await window.App.connector.sendCustomRequest(customRequest);
-    txHash = await window.App.connector.sendTransaction(param);
+    // Send Transaction
+    function sendTransaction(_tx) {
+      return new Promise((resolve, reject) => {
+        FaxTokenImAPI.web3wallet.eth
+          .sendTransaction(_tx)
+          .once("transactionHash", (txHash) => resolve(txHash))
+          .catch((err) => reject(err));
+      });
+    }
+    txHash = await sendTransaction(param);
+//    txHash = await window.App.connector.sendTransaction(param);
 //    txHash = await window.App.connector.signTransaction(param);
   }
   else
@@ -247,7 +265,9 @@ export async function reverseRegister(name) {
   console.log(`${nonce} addr:${selectedAddress},chainId:${chainId}`);
   const param = {
     nonce: FaxTokenImAPI.web3.toHex(nonce+1),
-    gas: '0x33450', // 210000
+//    gas: '0x33450', // 210000
+//    gas: '0x64190', // 410000
+    gas: '0x94ed0', //6100
       gasPrice: '0x77359400', //2,000,000,000
     //gasPrice:'0x59682f00',//1,500,000,000
     from: selectedAddress,
@@ -269,7 +289,8 @@ export async function reverseRegister(name) {
     //   ],
     // };
 //    txHash = await window.App.connector.sendCustomRequest(customRequest);
-    txHash = await window.App.connector.sendTransaction(param);
+    txHash = await FaxTokenImAPI.web3wallet.eth.sendTransaction(param);
+//    txHash = await window.App.connector.sendTransaction(param);
 //    txHash = await window.App.connector.signTransaction(param);
 
   }

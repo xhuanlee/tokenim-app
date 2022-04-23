@@ -390,7 +390,9 @@ class LoginPage extends PureComponent {
         </div>
         <p className={styles.copyright}>Copyright © 2020-2022 <a href="https://www.beagledao.finance" style={{color:'#352E50'}}>{formatMessage({ id: 'allcom' })}</a></p>
           {/*<p className={styles.beian}><a href="https://beian.miit.gov.cn/" target="_blank"> 沪ICP备14021271号-4</a></p>*/}
-        {<p className={styles.beian}><a href="https://app.ens.domains/name/beagles.eth" style={{color:'#352E50'}}>beagles.eth</a></p>}
+        <p className={styles.beian }> beagles.eth on
+          <a href="https://app.ens.domains/name/beagles.eth" target={'_blank'} style={{fontWeight:'bold'}} > ENS </a>
+          and <a href="https://ens.dns3.xyz/name/beagles.eth"  target={'_blank'} style={{fontWeight:'bold'} }> L2</a> </p>
         <div className={styles.status} style={{ textAlign: 'center' }}>
           {/*<p style={{ marginBottom: 0 }}>{formatMessage({ id: 'index.encrypt_coin' })}</p>*/}
           {/*<p>{formatMessage({ id: 'index.digital_currency' })}</p>*/}

@@ -205,11 +205,11 @@ export const FaxTokenImAPI = {
     return FaxTokenImAPI.ensContract.owner.call('0x0');
   },
   initialWalletConnect:async (connector)=>{
-    window.App.connector=connector;
+//    window.App.connector=connector;
     // if (window.ethereum.chainId==4)
     //   return;
     //let provider = new WalletConnectProvider({ infuraId: '27e484dcd9e3efcfd25a83a78777cdf1' });
-//    let provider = new WalletConnectProvider({ infuraId: '84ae00fec54f4d65bd1c0505b0e96383' });
+//   let provider = new WalletConnectProvider({ infuraId: '84ae00fec54f4d65bd1c0505b0e96383' });
     const provider = new WalletConnectProvider({
       infuraId: "84ae00fec54f4d65bd1c0505b0e96383",
       qrcodeModalOptions: {
@@ -224,17 +224,52 @@ export const FaxTokenImAPI = {
       },
     });
     await provider.enable();
+    function process(){
+      return new Promise(resolve => {
+// Subscribe to accounts change
+        provider.on("accountsChanged", (accounts) => {
+          console.log(accounts);
+          resolve(accounts);
+        });
 
+// Subscribe to chainId change
+        provider.on("chainChanged", (chainId) => {
+          console.log(chainId);
+          resolve(accounts);
+        });
+
+// Subscribe to session disconnection
+        provider.on("disconnect", (code, reason) => {
+          console.log(code, reason);
+          resolve(code);
+        });
+      });
+    }
     FaxTokenImAPI.web3wallet = new Web3(provider);
+    window.App.connector = provider;
+    window.App.provider = provider;
+
+     process();
+
+    //  Get Accounts
+
+//  Get Chain Id
+//    const chainId = await FaxTokenImAPI.web3wallet.eth.getChainId();
+
+    let accounts;
+    accounts = await FaxTokenImAPI.web3wallet.eth.getAccounts();
+    if (accounts==null)
+     accounts = provider.accounts;
+    window.App.loginAddress = accounts[0];
 //    console.log('web3wallet provider:',JSON.stringify(provider));
-    FaxTokenImAPI.web3EnsSubdomainFactory = FaxTokenImAPI.web3wallet.eth.contract(EnsSubdomainFactory.abi).at(EnsSubdomainFactory.networks[4].address);
+    FaxTokenImAPI.web3EnsSubdomainFactory = new FaxTokenImAPI.web3wallet.eth.Contract(EnsSubdomainFactory.abi,EnsSubdomainFactory.networks[4].address);
     //console.log(registryJSON);
-    FaxTokenImAPI.web3Ens = FaxTokenImAPI.web3wallet.eth.contract(registryJSON.abi).at(EnsContracts[4].ens);
+    FaxTokenImAPI.web3Ens = new FaxTokenImAPI.web3wallet.eth.Contract(registryJSON.abi, EnsContracts[4].ens);
 //       await FaxTokenImAPI.web3Ens.deployed();
     //console.log(resolverJSON);
-    FaxTokenImAPI.web3EnsResolver= FaxTokenImAPI.web3wallet.eth.contract(resolverJSON.abi).at(EnsContracts[4].resolver);
+    FaxTokenImAPI.web3EnsResolver= new FaxTokenImAPI.web3wallet.eth.Contract(resolverJSON.abi,EnsContracts[4].resolver);
 //       await FaxTokenImAPI.web3EnsResolver.deployed();
-    FaxTokenImAPI.web3EnsReverseRegistrar = FaxTokenImAPI.web3wallet.eth.contract(reverseRegistrarJSON.abi).at(EnsContracts[4].reverseRegistrar);
+    FaxTokenImAPI.web3EnsReverseRegistrar = new FaxTokenImAPI.web3wallet.eth.Contract(reverseRegistrarJSON.abi, EnsContracts[4].reverseRegistrar);
 //       await FaxTokenImAPI.web3EnsReverseRegistrar.deployed();
   },
   initENSContract: () => {

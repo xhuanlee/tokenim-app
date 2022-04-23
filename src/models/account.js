@@ -4,7 +4,7 @@ import { showNotification } from '../app/util'
 import Wallet from 'ethereumjs-wallet'
 import CryptoJS from 'crypto-js'
 import { connectMetamask } from '@/app/metamask';
-import { connectWallectConnect } from '@/app/walletconnect';
+import { connectWallectConnect, loginWalletConnect } from '@/app/walletconnect';
 import { confirmConnectSubstrate, connectSubstrate } from '@/app/substrate';
 import accountType from '@/app/accountType';
 
@@ -305,9 +305,20 @@ export default {
           delete q['redirect_uri'];
         }
         yield put(routerRedux.push({ pathname: '/home', query: q }));
-        window.ethereum.on('accountsChanged', function () {
-          connectMetamask();
+        // window.ethereum.on('accountsChanged', function () {
+        //   connectMetamask();
+        // });
+        window.App.connector.on("session_update", (error, payload) => {
+          if (error) {
+            throw error;
+          }
+
+          // Get updated accounts and chainId
+          const { accounts, chainId } = payload.params[0];
+          console.log(JSON.stringify(accounts),chainId);
+          loginWalletConnect(this,accounts[0]);
         });
+
       }
     },
     *loginWithSubstrate(_, { call, put }) {
