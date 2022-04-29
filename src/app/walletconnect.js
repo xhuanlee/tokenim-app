@@ -13,7 +13,6 @@ export async function loginWalletConnect(connector,address) {
     window.App.connector = connector;
     await FaxTokenImAPI.initialWalletConnect(connector);
     address = window.App.provider.accounts[0];
-    /* liwei
     let keypair = getLocalShhKeyPair(address);
     console.log(`local shh: ${JSON.stringify(keypair)}`);
     if (!keypair || !keypair.id) {
@@ -50,7 +49,7 @@ export async function loginWalletConnect(connector,address) {
 
     window.App.getShhSymKey();
     FaxTokenImAPI.setupNewTransactionListener(address, (filter) => { window.App.transactionFilter = filter }, window.App.newTransactionArrive);
-    */
+
     let loginEns = await FaxTokenImAPI.getShhNameByAddress(address);
     if (!loginEns) {
       loginEns = `${address.substring(0,5)}...${address.substring(address.length - 5)}`;

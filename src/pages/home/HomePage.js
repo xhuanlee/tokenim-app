@@ -259,7 +259,7 @@ class HomePage extends Component {
 
   onENSNameChange = e => {
     const queryENSName = e.target.value;
-    if (queryENSName && /^[a-zA-Z][a-zA-Z0-9]*$/.test(queryENSName)) {
+    if (queryENSName && /^[a-zA-Z0-9][a-zA-Z0-9]*$/.test(queryENSName)) {
       this.setState({ ensName: queryENSName, nameError: '' });
       this.props.dispatch({ type: 'account/getEnsUserData', payload: queryENSName+'.eth' });
     } else {
@@ -271,7 +271,7 @@ class HomePage extends Component {
   };
   onBeagleENSNameChange = e => {
     const queryENSName = e.target.value;
-    if (queryENSName && /^[a-zA-Z][a-zA-Z0-9]*$/.test(queryENSName)) {
+    if (queryENSName && /^[a-zA-Z0-9][a-zA-Z0-9]*$/.test(queryENSName)) {
       this.setState({ ensName: queryENSName, nameError: '' });
       this.props.dispatch({ type: 'account/getEnsUserData', payload: queryENSName+'.beagles.eth' });
     } else {

@@ -67,13 +67,13 @@ const IMApp = {
       window.g_app._store.dispatch({ type: 'init/saveMetamaskOk', payload: { metamaskOk: true } });
     }
     window.g_app._store.dispatch({ type: 'init/resetTestState' });
-    FaxTokenImAPI.setProvider(PROVIDER_URL).then(providerURL => {
+    FaxTokenImAPI.setProvider(PROVIDER_URL).then(async providerURL => {
       console.log(`provider OK!`)
       IMApp.currentProvider = providerURL;
       window.g_app._store.dispatch({ type: 'init/saveInitState', payload: { providerOK: true, providerURL } });
 
-      IMApp.initTokenContract();
-      IMApp.initIMContract();
+      await IMApp.initTokenContract();
+      await IMApp.initIMContract();
       IMApp.initSaleContract();
       IMApp.initENSContract();
       IMApp.initFaxDomainContract();
@@ -117,11 +117,11 @@ const IMApp = {
 
   initTokenContract: () => {
     // init
-    FaxTokenImAPI.initTokenContract().then((tokenContractAddress) => {
+    FaxTokenImAPI.initTokenContract().then(async (tokenContractAddress) => {
       console.log('FaxToken Contract is OK!')
       window.g_app._store.dispatch({ type: 'init/saveInitState', payload: { tokenContractOK: true, tokenContractAddress } });
       // test
-      return FaxTokenImAPI.testTokenContract();
+      return await FaxTokenImAPI.testTokenContract();
     }).then(symbol => {
       console.log(`FaxToken Contract Call OK! Fax Token Symbol: ${symbol}`);
       window.g_app._store.dispatch({ type: 'init/saveInitState', payload: { tokenContractAvaiable: true } });
@@ -264,14 +264,14 @@ const IMApp = {
 
   getEnsUserData: (name) => {
     // check name is registed
-    FaxTokenImAPI.checkENSName(name).then((owner) => {
+    FaxTokenImAPI.checkENSName(name).then(async (owner) =>  {
       console.log(owner)
       if (owner === '0x0000000000000000000000000000000000000000') {
         window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { queryENSLoading: false, queryENSAvaiable: true } })
       } else {
         // get address from name
         window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { queryENSLoading: false, queryENSAvaiable: false } })
-        return FaxTokenImAPI.getENSAddressByName(`${name}`)
+        return await FaxTokenImAPI.getENSAddressByName(`${name}`)
       }
     }).then((addr) => {
       if (addr && addr === '0x0000000000000000000000000000000000000000') {
@@ -547,24 +547,27 @@ const IMApp = {
     }
   },
 
-  newTransactionArrive: (err, { address, from, to, value }) => {
+  newTransactionArrive: (err, msg) => {
     if (err) {
       console.log(`transaction error`);
       console.log(err);
-    } else if (address === from) {
-      const toAddress = shortenAddress(to, 18);
-      const etherValue = converEther(value).value;
-      const etherUnit = converEther(value).unit;
-      showNotification('transactionDone', 'success', `${formatMessage({ id: 'success_transfer' })} ${etherValue} \n ${formatMessage({ id: 'to' })}${etherUnit} ${toAddress}`)
-      window.g_app._store.dispatch({ type: 'user/getBalance' })
-    } else if (address === to) {
-      const fromAddress = shortenAddress(from, 18);
-      const etherValue = converEther(value).value;
-      const etherUnit = converEther(value).unit;
-      showNotification('receiveTransaction', 'info', `${formatMessage({ id: 'receive_from' })} ${fromAddress}， ${formatMessage({ id: 'eth_account' })} ${etherValue}：${etherValue} ${etherUnit}`)
-      window.g_app._store.dispatch({ type: 'user/getBalance' })
     } else {
-      console.log(`unknow transaction`)
+      const {address, from, to , value } = msg;
+      if (address === from) {
+        const toAddress = shortenAddress(to, 18);
+        const etherValue = converEther(value).value;
+        const etherUnit = converEther(value).unit;
+        showNotification('transactionDone', 'success', `${formatMessage({ id: 'success_transfer' })} ${etherValue} \n ${formatMessage({ id: 'to' })}${etherUnit} ${toAddress}`)
+        window.g_app._store.dispatch({ type: 'user/getBalance' })
+      } else if (address === to) {
+        const fromAddress = shortenAddress(from, 18);
+        const etherValue = converEther(value).value;
+        const etherUnit = converEther(value).unit;
+        showNotification('receiveTransaction', 'info', `${formatMessage({ id: 'receive_from' })} ${fromAddress}， ${formatMessage({ id: 'eth_account' })} ${etherValue}：${etherValue} ${etherUnit}`)
+        window.g_app._store.dispatch({ type: 'user/getBalance' })
+      } else {
+        console.log(`unknow transaction`)
+      }
     }
   },
 
