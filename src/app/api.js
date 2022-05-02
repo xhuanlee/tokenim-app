@@ -7,7 +7,7 @@ import { Transaction } from 'ethereumjs-tx';
 import Common from 'ethereumjs-common';
 
 //import {default as FaxToken} from '../../abi/FaxToken.json';
-import FaxTokenIM from '../../abi/FaxTokenIM.json';
+//import {default as FaxTokenIM} from '../../abi/FaxTokenIM.json';
 import FaxTokenSale from '../../abi/FaxTokenSale.json';
 import ENSRegistry from '../../ens/ENSRegistry.json';
 import FIFSRegistrar from '../../ens/FIFSRegistrar.json'
@@ -16,20 +16,26 @@ import UserData from '../../abi/UserData.json';
 import ShhData from '../../truffle/shh-data/build/contracts/ShhData.json';
 import TRONex from '../../truffle/tronex/build/contracts/TRONex.json';
 import WalletConnectProvider from '@walletconnect/web3-provider';
-import EnsSubdomainFactory from '../../ens/EnsSubdomainFactory';
 /*
 const registryJSON = loadContract('registry', 'ENSRegistry')
 const resolverJSON = loadContract('resolvers', 'PublicResolver')
 const reverseRegistrarJSON = loadContract('registry', 'ReverseRegistrar');
 */
-import registryJSON from '../../abi/ens/ENSRegistry';
-import resolverJSON from '../../abi/resolver/PublicResolver';
-import reverseRegistrarJSON from '../../abi/ens/ReverseRegistrar';
 
-import { network_id } from '../../config'
+//import { network_id } from '../../config'
 import detectEthereumProvider from '@metamask/detect-provider';
-import IMApp from './index';
+// import IMApp from './index';
+// import registryJSON from '../../abi/ens/ENSRegistry';
+// import resolverJSON from '../../abi/resolver/PublicResolver';
+// import reverseRegistrarJSON from '../../abi/ens/ReverseRegistrar';
+// import EnsSubdomainFactory from '../../ens/EnsSubdomainFactory';
+const registryJSON = require('../../abi/ens/ENSRegistry');
+const resolverJSON = require('../../abi/resolver/PublicResolver');
+const reverseRegistrarJSON = require('../../abi/ens/ReverseRegistrar');
+const EnsSubdomainFactory = require('../../ens/EnsSubdomainFactory');
 const FaxToken = require('../../abi/FaxToken');
+const FaxTokenIM = require('../../abi/FaxTokenIM.json');
+const {network_id} = require('../../config');
 
 var chain_id;
 function loadContract(modName, contractPath) {
@@ -92,7 +98,9 @@ export const FaxTokenImAPI = {
   },
 
   setProvider: (providerURL) => {
-    FaxTokenImAPI.web3.setProvider(new Web3HttpProvider(providerURL));
+//    FaxTokenImAPI.web3.setProvider(new Web3HttpProvider(providerURL));
+    FaxTokenImAPI.web3.setProvider(new Web3.providers.WebsocketProvider('wss://geth.beagle.chat'));
+    Contract.setProvider(FaxTokenImAPI.web3.currentProvider);
     return new Promise((resolve, reject) => {
       if (FaxTokenImAPI.web3.currentProvider.connected) {
         resolve(providerURL);
@@ -136,7 +144,7 @@ export const FaxTokenImAPI = {
         const transactions = block.transactions;
         transactions.map(t => {
           const { from, to, value } = t;
-          const valueDecimal = FaxTokenImAPI.web3.toDecimal(value);
+          const valueDecimal = FaxTokenImAPI.web3.utils.toDecimal(value);
           if (from === address || to === address) {
             console.log(`new tranasction arrive: from ${from}, to ${to}, value ${valueDecimal}`);
             if (contractAddress.includes(from) || contractAddress.includes(to)) {
@@ -205,13 +213,14 @@ export const FaxTokenImAPI = {
     // FaxTokenImAPI.web3ImContract = c.at(FaxTokenIM.networks[network_id].address);
 
     // truffle contract instance
-    const faxTokenIMContract = new Contract(FaxTokenIM.abi,FaxTokenIM.abi[network_id].address);
+    const faxTokenIMContract = new Contract(FaxTokenIM.abi,FaxTokenIM.networks[network_id].address);
     faxTokenIMContract.setProvider(FaxTokenImAPI.web3.currentProvider);
     FaxTokenImAPI.web3ImContract = faxTokenIMContract;
 
     return new Promise((resolve, reject) => {
       FaxTokenImAPI.imContract = faxTokenIMContract;
         resolve(faxTokenIMContract._address);
+        console.log('faxTokenIMContract._address:',faxTokenIMContract._address);
       // faxTokenIMContract.deployed().then(instance => {
       //   FaxTokenImAPI.imContract = instance;
       //   resolve(instance.address);
@@ -253,16 +262,34 @@ export const FaxTokenImAPI = {
     }))
   },
 
-  testIMcontract: async () => {
-    return await FaxTokenImAPI.imContract.methods.admin().call();
+  testIMcontract: () => {
+//    return await FaxTokenImAPI.imContract.methods.admin().call();
+    new Promise((resolve => {
+      FaxTokenImAPI.imContract.methods.admin().call().then(result=>{
+        console.log('testIMcontract',result);
+        resolve(result);
+      });
+    }))
   },
 
   testSaleContract: () => {
-    return FaxTokenImAPI.saleContract.methods.admin().call();
+//    return FaxTokenImAPI.saleContract.methods.admin().call();
+    new Promise((resolve => {
+      FaxTokenImAPI.saleContract.methods.admin().call().then(result=>{
+        console.log('saleContract',result);
+        resolve(result);
+      });
+    }))
   },
 
   testENSContract: () => {
-    return FaxTokenImAPI.ensContract.methods.owner().call('0x0');
+    new Promise((resolve => {
+      FaxTokenImAPI.ensContract.methods.owner('0x0').call().then(result=>{
+        console.log('ensContract',result);
+        resolve(result);
+      });
+    }))
+//    return FaxTokenImAPI.ensContract.methods.owner().call('0x0');
   },
   initialWalletConnect:async (connector)=>{
 //    window.App.connector=connector;
@@ -349,11 +376,27 @@ export const FaxTokenImAPI = {
      else
        provider = await detectEthereumProvider();
 
+       let chainId= provider.chainId;
        if (provider) {
          // From now on, this should always be true:
          // provider === window.ethereum
 //        startApp(provider); // initialize your app
-         FaxTokenImAPI.web3wallet = new Web3(provider);
+         if (provider.chainId==1515){
+           FaxTokenImAPI.web3wallet = new Web3(new Web3.providers.HttpProvider('https://rinkeby.infura.io/v3/84ae00fec54f4d65bd1c0505b0e96383'));
+           chainId = 4;
+           FaxTokenImAPI.web3wallet.eth.getChainId((err,info)=>{
+             console.log(err,info);
+             if (err==null && FaxTokenImAPI.web3.currentProvider.connected){
+               // console.log('network_id:',network_id);
+//               chain_id = info;
+               console.log('connect to chain_id:',info);
+             }
+           }).catch(err =>{
+             console.log(err);
+           });
+         }
+         else
+           FaxTokenImAPI.web3wallet = new Web3(provider);
 //         console.log('web3wallet provider:',JSON.stringify(provider));
 //         FaxTokenImAPI.web3.setProvider(provider);
        } else {
@@ -361,18 +404,26 @@ export const FaxTokenImAPI = {
        }
        if (provider.chainId!=1515 && provider.chainId!=4)
          return;
-       const chainId= provider.chainId;
-       FaxTokenImAPI.web3EnsSubdomainFactory = FaxTokenImAPI.web3wallet.eth.contract(EnsSubdomainFactory.abi).at(EnsSubdomainFactory.networks[4].address);
+       chainId = Math.round(chainId);
+//       Contract.setProvider(provider);
+       FaxTokenImAPI.web3EnsSubdomainFactory = new Contract(EnsSubdomainFactory.abi, EnsSubdomainFactory.networks[4].address);
+
        //console.log(registryJSON);
-       FaxTokenImAPI.web3Ens = FaxTokenImAPI.web3wallet.eth.contract(registryJSON.abi).at(EnsContracts[chainId].ens);
+       FaxTokenImAPI.web3Ens = new Contract(registryJSON.abi,EnsContracts[chainId].ens);
 //       await FaxTokenImAPI.web3Ens.deployed();
        //console.log(resolverJSON);
-       FaxTokenImAPI.web3EnsResolver= FaxTokenImAPI.web3wallet.eth.contract(resolverJSON.abi).at(EnsContracts[chainId].resolver);
+       FaxTokenImAPI.web3EnsResolver= new Contract(resolverJSON.abi,EnsContracts[chainId].resolver);
 //       await FaxTokenImAPI.web3EnsResolver.deployed();
-       FaxTokenImAPI.web3EnsReverseRegistrar = FaxTokenImAPI.web3wallet.eth.contract(reverseRegistrarJSON.abi).at(EnsContracts[chainId].reverseRegistrar);
+       FaxTokenImAPI.web3EnsReverseRegistrar = new Contract(reverseRegistrarJSON.abi, EnsContracts[chainId].reverseRegistrar);
+       if (provider.chainId==1515) {
+         FaxTokenImAPI.web3EnsSubdomainFactory.setProvider(FaxTokenImAPI.web3wallet.currentProvider);
+         FaxTokenImAPI.web3Ens.setProvider(FaxTokenImAPI.web3wallet.currentProvider);
+         FaxTokenImAPI.web3EnsResolver.setProvider(FaxTokenImAPI.web3wallet.currentProvider);
+         FaxTokenImAPI.web3EnsReverseRegistrar.setProvider(FaxTokenImAPI.web3wallet.currentProvider);
+       }
 //       await FaxTokenImAPI.web3EnsReverseRegistrar.deployed();
      };
-//      initialWalletConnect();
+      initialWalletConnect();
     // truffle contract instance
     const ensRegistryContract = FaxTokenImAPI.web3EnsContract;//contract(ENSRegistry);
     ensRegistryContract.setProvider(FaxTokenImAPI.web3.currentProvider);
@@ -399,12 +450,14 @@ export const FaxTokenImAPI = {
     faxDomainRegistrarContract.setProvider(FaxTokenImAPI.web3.currentProvider);
 
     return new Promise((resolve, reject) => {
-      faxDomainRegistrarContract.deployed().then(instance => {
-        FaxTokenImAPI.faxDomainContract = instance;
-        resolve(instance._address);
-      }).catch(err => {
-        reject(err);
-      })
+         FaxTokenImAPI.faxDomainContract = faxDomainRegistrarContract;
+         resolve(faxDomainRegistrarContract);
+      // faxDomainRegistrarContract.deployed().then(instance => {
+      //   FaxTokenImAPI.faxDomainContract = instance;
+      //   resolve(instance._address);
+      // }).catch(err => {
+      //   reject(err);
+      // })
     })
   },
 
@@ -418,12 +471,14 @@ export const FaxTokenImAPI = {
     publicResolverContract.setProvider(FaxTokenImAPI.web3.currentProvider);
 
     return new Promise((resolve, reject) => {
-      publicResolverContract.deployed().then(instance => {
-        FaxTokenImAPI.resolverContract = instance;
-        resolve(instance._address);
-      }).catch(err => {
-        reject(err);
-      })
+      FaxTokenImAPI.resolverContract = publicResolverContract;
+      resolve(publicResolverContract);
+      // publicResolverContract.deployed().then(instance => {
+      //   FaxTokenImAPI.resolverContract = instance;
+      //   resolve(instance._address);
+      // }).catch(err => {
+      //   reject(err);
+      // })
     })
   },
 
@@ -437,12 +492,14 @@ export const FaxTokenImAPI = {
     userDataContract.setProvider(FaxTokenImAPI.web3.currentProvider);
 
     return new Promise((resolve, reject) => {
-      userDataContract.deployed().then(instance => {
-        FaxTokenImAPI.dataContract = instance;
-        resolve(instance._address);
-      }).catch(err => {
-        reject(err);
-      })
+        FaxTokenImAPI.dataContract = userDataContract;
+        resolve(userDataContract);
+      // userDataContract.deployed().then(instance => {
+      //   FaxTokenImAPI.dataContract = instance;
+      //   resolve(instance._address);
+      // }).catch(err => {
+      //   reject(err);
+      // })
     })
   },
 
@@ -456,12 +513,14 @@ export const FaxTokenImAPI = {
     shhDataContract.setProvider(FaxTokenImAPI.web3.currentProvider);
 
     return new Promise((resolve, reject) => {
-      shhDataContract.deployed().then(instance => {
-        FaxTokenImAPI.shhDataContract = instance;
-        resolve(instance._address);
-      }).catch(err => {
-        reject(err);
-      })
+            FaxTokenImAPI.shhDataContract = shhDataContract;
+            resolve(shhDataContract);
+    //   shhDataContract.deployed().then(instance => {
+    //     FaxTokenImAPI.shhDataContract = instance;
+    //     resolve(instance._address);
+    //   }).catch(err => {
+    //     reject(err);
+    //   })
     })
   },
 
@@ -563,7 +622,7 @@ export const FaxTokenImAPI = {
 
   // get FAX token balance of an address
   balanceOf: (address) => {
-    return FaxTokenImAPI.tokenContract.methods.balanceOf.call(address);
+    return FaxTokenImAPI.tokenContract.methods.balanceOf(address).call();
   },
 
   allowance: (approver, spender) => {
@@ -571,14 +630,14 @@ export const FaxTokenImAPI = {
   },
 
   queryAccountBalance: (address) => {
-    return FaxTokenImAPI.tokenContract.methods.balanceOf.call(address).then((token) => {
-      const tokenDecimal = FaxTokenImAPI.web3.toDecimal(token);
+    return FaxTokenImAPI.tokenContract.methods.balanceOf(address).call().then((balance) => {
+      const tokenDecimal = FaxTokenImAPI.web3.utils.toNumber(balance);
       return new Promise((resolve, reject) => {
         FaxTokenImAPI.web3.eth.getBalance(address, (err, ether) => {
           if (err) {
             reject(err);
           } else {
-            const etherDecimal = FaxTokenImAPI.web3.toDecimal(ether);
+            const etherDecimal = FaxTokenImAPI.web3.utils.toBN(ether);
             resolve({ tokenDecimal, etherDecimal })
           }
         })
@@ -657,11 +716,11 @@ export const FaxTokenImAPI = {
   },
 
   getShhPublicKeyByAddress: (address) => {
-    return FaxTokenImAPI.dataContract.methods.shhPubKey.call(address)
+    return FaxTokenImAPI.dataContract.methods.shhPubKey(address).call()
   },
 
   getShhPrivateKeyByAddress: (address) => {
-    return FaxTokenImAPI.dataContract.methods.getShhPriKey.call({ from: address });
+    return FaxTokenImAPI.dataContract.methods.getShhPriKey().call({ from: address });
   },
 
   checkShhKeyExist: (shhKeyId) => {
@@ -700,7 +759,7 @@ export const FaxTokenImAPI = {
 
   getSymKeyFromContract: () => {
     if (FaxTokenImAPI.dataContract)
-        return FaxTokenImAPI.dataContract.methods.shhSymKey.call();
+        return FaxTokenImAPI.dataContract.methods.shhSymKey().call();
     else
       return null;
   },
@@ -730,16 +789,19 @@ export const FaxTokenImAPI = {
   },
 
   setupShhSymKeyListener: (symKeyID, callback) => {
-    if (network_id==1515)
-    return FaxTokenImAPI.web3.shh.newMessageFilter({ symKeyID }, callback)
+    if (network_id==1515){
+      FaxTokenImAPI.web3.shh.setProvider(new Web3.providers.WebsocketProvider('wss://geth.beagle.chat'));
+      FaxTokenImAPI.web3.shh.subscribe('messages',{ symKeyID :symKeyID},callback);
+//      return FaxTokenImAPI.web3.shh.newMessageFilter({ symKeyID }, callback);
+    }
   },
 
   sendSymMessage: ({ symKeyID, message, ttl = 7, topic = '0xffffffff', powTime = 2, powTarget = 2.01 }) => {
-    console.log(message, FaxTokenImAPI.web3.fromUtf8(message))
+    console.log(message, FaxTokenImAPI.web3.utils.fromUtf8(message))
     return new Promise((resolve, reject) => {
       FaxTokenImAPI.web3.shh.post({
         symKeyID,
-        payload: FaxTokenImAPI.web3.fromUtf8(message),
+        payload: FaxTokenImAPI.web3.utils.fromUtf8(message),
         ttl,
         topic,
         powTime,
@@ -756,16 +818,20 @@ export const FaxTokenImAPI = {
 
   setupShhMessageListener: (shhKeyId, callback) => {
     console.log(`new message filter: ${shhKeyId}`);
-    if (network_id==1515)
-    return FaxTokenImAPI.web3.shh.newMessageFilter({ privateKeyID: shhKeyId }, callback)
+    if (network_id==1515){
+//      FaxTokenImAPI.web3.shh.setProvider(FaxTokenImAPI.web3.currentProvider);
+      FaxTokenImAPI.web3.shh.setProvider(new Web3.providers.WebsocketProvider('wss://geth.beagle.chat'));
+      FaxTokenImAPI.web3.shh.subscribe('messages',{ privateKeyID: shhKeyId},callback);
+//      return FaxTokenImAPI.web3.shh.newMessageFilter({ privateKeyID: shhKeyId }, callback);
+    }
   },
 
   sendShhMessageToPubKey: ({ pubKey, message, ttl = 7, topic = '0x12345678', powTime = 2, powTarget = 2.01 }) => {
-    console.log(message, FaxTokenImAPI.web3.fromUtf8(message))
+    console.log(message, FaxTokenImAPI.web3.utils.fromUtf8(message))
     return new Promise((resolve, reject) => {
       FaxTokenImAPI.web3.shh.post({
         pubKey,
-        payload: FaxTokenImAPI.web3.fromUtf8(message),
+        payload: FaxTokenImAPI.web3.utils.fromUtf8(message),
         ttl,
         topic,
         powTime,
@@ -798,13 +864,13 @@ export const FaxTokenImAPI = {
 
 
   getENSAddressByNameOld: (name) => {
-    return FaxTokenImAPI.ensContract.methods.resolver.call(namehash.hash(name)).then((resolverAddr) => {
+    return FaxTokenImAPI.ensContract.methods.resolver(namehash.hash(name)).call().then((resolverAddr) => {
       if (resolverAddr === '0x0000000000000000000000000000000000000000') {
         throw `no resolver address for name: ${name}`;
       } else if (resolverAddr.toLowerCase() !== FaxTokenImAPI.resolverContract._address.toLowerCase()) {
         throw `resolver not supported yet (only support .fax subdomain)`
       } else {
-        return FaxTokenImAPI.resolverContract.methods.addr.call(namehash.hash(name));
+        return FaxTokenImAPI.resolverContract.methods.addr(namehash.hash(name)).call();
       }
     })
   },
@@ -836,7 +902,7 @@ export const FaxTokenImAPI = {
         console.log(name,address);
         if (address=='0x0000000000000000000000000000000000000000'){
            if (FaxTokenImAPI.ensContract && FaxTokenImAPI.ensContract.methods)
-              FaxTokenImAPI.ensContract.methods.owner(namehash.hash(`${name}.fax`)).call.then(address=>resolve(address));
+              FaxTokenImAPI.ensContract.methods.owner(namehash.hash(`${name}.fax`)).call().then(address=>resolve(address));
            else
              resolve('');
         }
@@ -847,11 +913,11 @@ export const FaxTokenImAPI = {
   },
 
   registedReward: (address) => {
-    return FaxTokenImAPI.imContract.methods.registedReward.call(address);
+    return FaxTokenImAPI.imContract.methods.registedReward(address).call();
   },
 
   loginReward: (day, address) => {
-    return FaxTokenImAPI.imContract.methods.loginReward.call(day, address);
+    return FaxTokenImAPI.imContract.methods.loginReward(day, address).call();
   },
 
   getRegistedReward: (from, privateKey) => {
@@ -878,7 +944,7 @@ export const FaxTokenImAPI = {
         return name;
       else
       if (network_id==1515 && FaxTokenImAPI.shhDataContract)
-        return FaxTokenImAPI.shhDataContract.methods.shhNameMap.call(address);
+        return await FaxTokenImAPI.shhDataContract.methods.shhNameMap(address).call();
   },
   getEnsName: async (address) => {
     if (FaxTokenImAPI.web3EnsReverseRegistrar==null){
@@ -887,7 +953,7 @@ export const FaxTokenImAPI = {
       return '';
     }
     return new Promise((resolve,reject)=>{
-      if (FaxTokenImAPI.web3EnsReverseRegistrar.methods.node)
+      if (FaxTokenImAPI.web3EnsReverseRegistrar)
       FaxTokenImAPI.web3EnsReverseRegistrar.methods.node(address).call(null,function(error,mynode) {
         console.log(address+' node:',mynode);
         FaxTokenImAPI.web3EnsResolver.methods.name(mynode).call(null,function(error,name) {
@@ -911,7 +977,7 @@ export const FaxTokenImAPI = {
   },
 
   saveShhName: (name) => {
-    return FaxTokenImAPI.shhDataContract.methods.saveShhName.call(name);
+    return FaxTokenImAPI.shhDataContract.methods.saveShhName(name).call();
   },
 
   tokenContractInfo: () => {
@@ -926,26 +992,26 @@ export const FaxTokenImAPI = {
     };
     tokenContractInfo.address = FaxTokenImAPI.tokenContract._address;
 
-    return FaxTokenImAPI.tokenContract.methods.owner.call().then(ownerAddress => {
+    return FaxTokenImAPI.tokenContract.methods.owner().call().then(ownerAddress => {
       // console.log(`Get tokenContract Owner: ${ownerAddress}`);
       tokenContractInfo.owner = ownerAddress;
-      return FaxTokenImAPI.tokenContract.methods.name.call();
+      return FaxTokenImAPI.tokenContract.methods.name().call();
     }).then(name => {
       // console.log(`Get tokenContract name: ${name}`);
       tokenContractInfo.name = name;
-      return FaxTokenImAPI.tokenContract.methods.symbol.call();
+      return FaxTokenImAPI.tokenContract.methods.symbol().call();
     }).then(symbol => {
       // console.log(`Get tokenContract symbol: ${symbol}`);
       tokenContractInfo.symbol = symbol;
-      return FaxTokenImAPI.tokenContract.methods.standard.call();
+      return FaxTokenImAPI.tokenContract.methods.standard().call();
     }).then(standard => {
       // console.log(`Get tokenContract symbol: ${standard}`);
       tokenContractInfo.standard = standard;
-      return FaxTokenImAPI.tokenContract.methods.totalSupply.call();
+      return FaxTokenImAPI.tokenContract.methods.totalSupply().call();
     }).then(totalSupply => {
       // console.log(`Get tokenContract symbol: ${totalSupply}`);
       tokenContractInfo.totalSupply = totalSupply;
-      return FaxTokenImAPI.tokenContract.methods.balanceOf.call(tokenContractInfo.owner);
+      return FaxTokenImAPI.tokenContract.methods.balanceOf(tokenContractInfo.owner).call();
     }).then(balance => {
       // console.log(`Get tokenContract owner balance: ${balance}`);
       tokenContractInfo.ownerBalance = balance;
@@ -966,25 +1032,25 @@ export const FaxTokenImAPI = {
     };
     imContractInfo.address = FaxTokenImAPI.imContract._address;
 
-    return FaxTokenImAPI.imContract.methods.admin.call().then(ownerAddress => {
+    return FaxTokenImAPI.imContract.methods.admin().call().then(ownerAddress => {
       // console.log(`Get imContract Owner: ${ownerAddress}`);
       imContractInfo.owner = ownerAddress;
-      return FaxTokenImAPI.imContract.methods.tokenAdmin.call();
+      return FaxTokenImAPI.imContract.methods.tokenAdmin().call();
     }).then(tokenAdmin => {
       // console.log(`Get imContract TokenAdmin: ${tokenAdmin}`);
       imContractInfo.tokenAdmin = tokenAdmin;
-      return FaxTokenImAPI.imContract.methods.rewards.call();
+      return FaxTokenImAPI.imContract.methods.rewards().call();
     }).then(rewards => {
       // console.log(`Get imContract rewards: ${rewards}`);
       imContractInfo.rewards = rewards;
-      return FaxTokenImAPI.tokenContract.methods.allowance.call(imContractInfo.tokenAdmin, imContractInfo.address);
+      return FaxTokenImAPI.tokenContract.methods.allowance(imContractInfo.tokenAdmin, imContractInfo.address).call();
     }).then(allowance => {
-      const allowanceDecimal = FaxTokenImAPI.web3.toDecimal(allowance)
+      const allowanceDecimal = FaxTokenImAPI.web3.utils.toNumber(allowance)
       // console.log(`Get imContract allowance: ${allowanceDecimal}`);
       imContractInfo.allowance = allowanceDecimal;
-      return FaxTokenImAPI.imContract.methods.messageCount.call();
+      return FaxTokenImAPI.imContract.methods.messageCount().call();
     }).then(messageCount => {
-      const messageCountDecimal = FaxTokenImAPI.web3.toDecimal(messageCount)
+      const messageCountDecimal = FaxTokenImAPI.web3.utils.toNumber(messageCount)
       // console.log(`Get imContract messageCount: ${messageCountDecimal}`);
       imContractInfo.messageCount = messageCountDecimal;
       return new Promise((resolve) => {
@@ -1005,31 +1071,31 @@ export const FaxTokenImAPI = {
     };
     saleContractInfo.address = FaxTokenImAPI.saleContract._address;
 
-    return FaxTokenImAPI.saleContract.methods.admin.call().then(ownerAddress => {
+    return FaxTokenImAPI.saleContract.methods.admin().call().then(ownerAddress => {
       // console.log(`Get saleContract Owner: ${ownerAddress}`);
       saleContractInfo.owner = ownerAddress;
-      return FaxTokenImAPI.saleContract.methods.tokenAdmin.call();
+      return FaxTokenImAPI.saleContract.methods.tokenAdmin().call();
     }).then(tokenAdmin => {
       // console.log(`Get saleContract TokenAdmin: ${tokenAdmin}`);
       saleContractInfo.tokenAdmin = tokenAdmin;
-      return FaxTokenImAPI.saleContract.methods.tokenPrice.call();
+      return FaxTokenImAPI.saleContract.methods.tokenPrice().call();
     }).then(tokenPrice => {
-      const tokenPriceDecimal = FaxTokenImAPI.web3.toDecimal(tokenPrice)
+      const tokenPriceDecimal = FaxTokenImAPI.web3.utils.toNumber(tokenPrice)
       // console.log(`Get saleContract tokenPrice: ${tokenPriceDecimal}`);
       saleContractInfo.tokenPrice = tokenPriceDecimal;
-      return FaxTokenImAPI.saleContract.methods.tokensSold.call();
+      return FaxTokenImAPI.saleContract.methods.tokensSold().call();
     }).then(tokensSold => {
-      const tokensSoldDecimal = FaxTokenImAPI.web3.toDecimal(tokensSold)
+      const tokensSoldDecimal = FaxTokenImAPI.web3.utils.toNumber(tokensSold)
       // console.log(`Get saleContract tokensSold: ${tokensSoldDecimal}`);
       saleContractInfo.tokensSold = tokensSoldDecimal;
-      return FaxTokenImAPI.tokenContract.methods.allowance.call(saleContractInfo.tokenAdmin, saleContractInfo.address)
+      return FaxTokenImAPI.tokenContract.methods.allowance(saleContractInfo.tokenAdmin, saleContractInfo.address).call()
     }).then(allowance => {
-      const allowanceDecimal = FaxTokenImAPI.web3.toDecimal(allowance)
+      const allowanceDecimal = FaxTokenImAPI.web3.utils.toNumber(allowance)
       // console.log(`Get saleContract allowance: ${allowanceDecimal}`);
       saleContractInfo.allowance = allowanceDecimal;
       return FaxTokenImAPI.getEtherBalance(saleContractInfo.address)
     }).then(balance => {
-      const contractEtherDecimal = FaxTokenImAPI.web3.toDecimal(balance)
+      const contractEtherDecimal = FaxTokenImAPI.web3.utils.toBN(balance)
       saleContractInfo.contractEther = contractEtherDecimal;
       // console.log(`Get saleContract contractEther: ${contractEtherDecimal}`);
       return new Promise((resolve) => {
@@ -1045,7 +1111,7 @@ export const FaxTokenImAPI = {
     };
     ensContractInfo.ensAddress = FaxTokenImAPI.ensContract._address;
 
-    return FaxTokenImAPI.ensContract.methods.owner.call('0x0').then(ownerAddress => {
+    return FaxTokenImAPI.ensContract.methods.owner('0x0').call().then(ownerAddress => {
       // console.log(`Get ensContract Owner: ${ownerAddress}`);
       ensContractInfo.ensOwner = ownerAddress;
 
@@ -1064,7 +1130,7 @@ export const FaxTokenImAPI = {
     faxDomainInfo.faxDomainAddress = FaxTokenImAPI.faxDomainContract._address;
     faxDomainInfo.faxDomainResolver = FaxTokenImAPI.resolverContract._address;
 
-    return FaxTokenImAPI.ensContract.methods.owner.call(namehash.hash('fax')).then(ownerAddress => {
+    return FaxTokenImAPI.ensContract.methods.owner(namehash.hash('fax')).call().then(ownerAddress => {
       // console.log(`Get faxDomainContract Owner: ${ownerAddress}`);
       faxDomainInfo.faxDomainOwner = ownerAddress;
 
@@ -1081,7 +1147,7 @@ export const FaxTokenImAPI = {
     };
     resolverInfo.resolverAddress = FaxTokenImAPI.resolverContract._address;
 
-    return FaxTokenImAPI.ensContract.methods.owner.call(namehash.hash('fax')).then(ownerAddress => {
+    return FaxTokenImAPI.ensContract.methods.owner(namehash.hash('fax')).call().then(ownerAddress => {
       // console.log(`Get faxDomainResolver Owner: ${ownerAddress}`);
       resolverInfo.resolverOwner = ownerAddress;
 

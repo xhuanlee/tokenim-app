@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { AGORA_APP_ID } from '@/app/constant';
-import AgoraRTC from 'agora-rtc-sdk-ng';
+//import AgoraRTC from 'agora-rtc-sdk-ng';
 import {createToken} from '../pages/home/content/LicodeClient';
 
 //const Erizo = require('../pages/home/content/erizo');

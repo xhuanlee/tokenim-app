@@ -92,7 +92,7 @@ export async function connectMetamask() {
       window.App.saveShhKeypairToLocal(address, keypair);
     }
 
-    if (window.App.messageFilter) {
+    if (window.App.messageFilter && window.App.messageFilter.stopWatching) {
       window.App.messageFilter.stopWatching(window.App.newMessageArrive);
     }
     window.App.messageFilter = FaxTokenImAPI.setupShhMessageListener(keypair.id, window.App.newMessageArrive);
@@ -129,12 +129,12 @@ export async function transferEther(from ,to, value) {
   try {
     const nonce = await FaxTokenImAPI.getTransactionCount(from);
     const param = {
-      nonce: window.FaxTokenImAPI.web3.toHex(nonce),
+      nonce: window.FaxTokenImAPI.web3.utils.toHex(nonce),
       gas: '0x15f90',
       gasPrice: '0x4a817c800',
       from,
       to,
-      value: window.FaxTokenImAPI.web3.toHex(value),
+      value: window.FaxTokenImAPI.web3.utils.toHex(value),
       chainId: window.ethereum.chainId,
     };
     const txHash = await window.ethereum.request({
@@ -353,13 +353,16 @@ export async function saveShhName(name) {
         return newSubdomain(name,'beagles','eth');
     }
     const nonce = await FaxTokenImAPI.getTransactionCount(window.ethereum.selectedAddress);
-    const data = FaxTokenImAPI.web3ShhDataContract.saveShhName.getData(name);
+    // const gas = FaxTokenImAPI.web3EnsReverseRegistrar.methods.setName(name).estimateGas();
+    // const data = FaxTokenImAPI.web3EnsReverseRegistrar.methods.setName(name).encodeABI();
+//    const data = FaxTokenImAPI.web3ShhDataContract.saveShhName.getData(name);
+    const data = FaxTokenImAPI.web3ShhDataContract.methods.saveShhName(name).encodeABI();
     const param = {
-      nonce: window.FaxTokenImAPI.web3.toHex(nonce),
+      nonce: window.FaxTokenImAPI.web3.utils.toHex(nonce),
       gas: '0x15f90',
       gasPrice: '0x4a817c800',
       from: window.ethereum.selectedAddress,
-      to: FaxTokenImAPI.shhDataContract.address,
+      to: FaxTokenImAPI.shhDataContract._address,
       value: '0x0',
       data,
       chainId: window.ethereum.chainId,

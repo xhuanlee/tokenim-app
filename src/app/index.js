@@ -72,15 +72,23 @@ const IMApp = {
       IMApp.currentProvider = providerURL;
       window.g_app._store.dispatch({ type: 'init/saveInitState', payload: { providerOK: true, providerURL } });
 
+      console.log('initTokenContract ...');
       await IMApp.initTokenContract();
+      console.log('initIMContract ...');
       await IMApp.initIMContract();
-      IMApp.initSaleContract();
-      IMApp.initENSContract();
-      IMApp.initFaxDomainContract();
-      IMApp.initResolverContract();
-      IMApp.initUserDataContract();
+      console.log('initShhDataContract ...');
       IMApp.initShhDataContract();
-      IMApp.initInvestContract();
+      console.log('initSaleContract ...');
+      IMApp.initSaleContract();
+      console.log('initENSContract ...');
+      IMApp.initENSContract();
+      console.log('initFaxDomainContract ...');
+      IMApp.initFaxDomainContract();
+      console.log('initResolverContract ...');
+      IMApp.initResolverContract();
+      console.log('initUserDataContract ...');
+      IMApp.initUserDataContract();
+      // IMApp.initInvestContract();
 //weili, substrate not supported yet      IMApp.initSubstrate();
     }).catch(providerURL => {
       console.log(`provider error, can not connect to ${providerURL}!`)
@@ -512,13 +520,14 @@ const IMApp = {
     })
   },
 
-  newMessageArrive: (err, message) => {
+  newMessageArrive: (err, message,subscription) => {
     if (err) {
       console.log(`message error`);
-      console.log(err);
+      console.log(err,message);
     } else {
+      console.log('newMessageArrive:',message);
       if (message && message.payload) {
-        const payload = FaxTokenImAPI.web3.toUtf8(message.payload);
+        const payload = FaxTokenImAPI.web3.utils.toUtf8(message.payload);
         var msg = null;
         try {
           msg = JSON.parse(payload);
@@ -544,6 +553,11 @@ const IMApp = {
           window.g_app._store.dispatch({ type: 'user/receiveNewMessage', payload: msg })
         }
       }
+      else
+        FaxTokenImAPI.web3.shh.getFilterMessages(message)
+          .then(result=>{
+            console.log(message+':',result);
+          });
     }
   },
 
@@ -552,6 +566,7 @@ const IMApp = {
       console.log(`transaction error`);
       console.log(err);
     } else {
+      console.log(`transaction msg:`,msg);
       const {address, from, to , value } = msg;
       if (address === from) {
         const toAddress = shortenAddress(to, 18);
@@ -989,7 +1004,7 @@ const IMApp = {
 
   checkRegisterReward: (address) => {
     FaxTokenImAPI.registedReward(address).then((reward) => {
-      const rewardDecimal = FaxTokenImAPI.web3.toDecimal(reward);
+      const rewardDecimal = FaxTokenImAPI.web3.utils.toNumber(reward);
       window.g_app._store.dispatch({ type: 'user/saveUserState', payload: { registerRewardLoading: false, registerReward: rewardDecimal } })
     }).catch((err) => {
       console.log(`query ${address} register reward error`)
@@ -1002,7 +1017,7 @@ const IMApp = {
     const now = new Date();
     const dayCount = Math.floor(now.getTime() / 1000 / 86400);
     FaxTokenImAPI.loginReward(dayCount, address).then((reward) => {
-      const rewardDecimal = FaxTokenImAPI.web3.toDecimal(reward);
+      const rewardDecimal = FaxTokenImAPI.web3.utils.toNumber(reward);
       window.g_app._store.dispatch({ type: 'user/saveUserState', payload: { loginRewardLoading: false, loginReward: rewardDecimal } })
     }).catch((err) => {
       console.log(`query ${address} login reward at day ${dayCount} error`)

@@ -123,11 +123,28 @@ codec === 'ipfs-ns' // false
 记录好友的ens名字（如果有的话）或者地址
 - 给好友加备注（我给好友的名字或者标签）
 - 记录好友添加时间, 发其添加好友请求的时候就记录
-- To Be Done:
--- BAppChain上的智能合约
--- 钱包签字授权登录
+#### 2.5.1 保存方法
+- 合约:
+  - BAppChain上的智能合约
+  - 钱包签字授权登录
+  - https://cryptomarketpool.com/address-book-solidity-smart-contract/
+  - https://ethereum.stackexchange.com/questions/33166/ethereum-address-private-key-correspondance?rq=1
+- IPFS or SWARM
+#### 2.5.2 隐私问题
+- 加密和解密
+  - https://ethereum.stackexchange.com/questions/3092/how-to-encrypt-a-message-with-the-public-key-of-an-ethereum-address  
+  - https://github.com/pubkey/eth-crypto
+  - https://ethereum.stackexchange.com/questions/112937/public-private-key-encryption-decryption-with-wallet?rq=1
+  - https://ethereum.stackexchange.com/questions/2953/does-ethereum-offer-encrypted-peer-to-peer-communication-applications?noredirect=1&lq=1
+  - https://ethereum.stackexchange.com/questions/74739/how-can-i-encrypt-a-file-using-an-ethereum-public-address-and-decrypt-it-with-th?rq=1
+
+#### 2.5.3 压缩
+- https://stackoverflow.com/questions/53310514/is-there-a-way-to-compress-a-long-string-to-a-smaller-one-and-vise-versa-by-code?noredirect=1&lq=1
+- https://www.npmjs.com/package/js-string-compression
+
 
 ### 2.6 Meeting Rooms
+#### 2.6.1 会议室的内容
 会议室的名字、描述、所有者（可以是多个）和成员
 - 创建
 - 加入
@@ -140,6 +157,11 @@ codec === 'ipfs-ns' // false
 - - 钱包签字授权登录
 - 会议记录
 - 录音
+#### 2.6.2 会议室的类型
+基于资产的类型：提供以下两大类的房间（可以再根据资产分等级），创建这类房间的条件是必需有该类资产，对于级别更多的房间要求更多的资产拥有量
+- 币
+- NFT
+- 显示用户当前拥有的币和NFT
 
 ## 3. App前端开发
 ### 3.1. metamask support on Web

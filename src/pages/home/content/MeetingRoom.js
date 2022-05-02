@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from 'react';
 import { connect } from 'dva';
-import AgoraRTC from 'agora-rtc-sdk-ng';
+//import AgoraRTC from 'agora-rtc-sdk-ng';
 import style from '../../ClubHouse.less';
 import { AudioOutlined, AudioMutedOutlined, StopOutlined } from '@ant-design/icons';
 import ClubhouseUserItem from '@/components/ClubhouseUserItem';
