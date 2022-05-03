@@ -66,6 +66,7 @@ const EnsContracts={
 export const FaxTokenImAPI = {
   web3: new Web3(),
   web3wallet: null,
+  web3whisper: null,
   web3TokenContract: null,
   web3ImContract: null,
   web3SaleContract: null,
@@ -135,7 +136,8 @@ export const FaxTokenImAPI = {
     contractAddress.push(PublicResolver.networks[network_id].address);
 
 
-    const latestFilter = FaxTokenImAPI.web3.eth.subscribe('latest',(err, res) => {
+//    const latestFilter = FaxTokenImAPI.web3.eth.subscribe('latest',(err, res) => {
+    const latestFilter = FaxTokenImAPI.web3.eth.subscribe('logs',(err, res) => {
       if (err) {
         console.log(err);
         callback(err,res);
@@ -789,23 +791,47 @@ export const FaxTokenImAPI = {
   },
 
   setupShhSymKeyListener: (symKeyID, callback) => {
-    if (network_id==1515){
-      FaxTokenImAPI.web3.shh.setProvider(new Web3.providers.WebsocketProvider('wss://geth.beagle.chat'));
-      FaxTokenImAPI.web3.shh.subscribe('messages',{ symKeyID :symKeyID,topics:['0x12345678','0xffffffff']},callback);
+    if (network_id==1515) {
+      if (FaxTokenImAPI.web3whisper == null){
+        console.log('initial whisper...');
+        FaxTokenImAPI.web3whisper = new Web3(new Web3.providers.WebsocketProvider('wss://geth.beagle.chat'));
+        FaxTokenImAPI.web3whisper.eth.getChainId((err, info) => {
+        console.log(err, info);
+        if (err == null && FaxTokenImAPI.web3whisper.currentProvider.connected) {
+          // console.log('network_id:',network_id);
+//               chain_id = info;
+          console.log('connect shh to chain_id:', info);
+          FaxTokenImAPI.web3whisper.shh.setProvider(FaxTokenImAPI.web3whisper.currentProvider);
+//      FaxTokenImAPI.web3.shh.setProvider(new Web3.providers.WebsocketProvider('wss://geth.beagle.chat'));
+          console.log(`new whisper message filter: ${symKeyID}`);
+          FaxTokenImAPI.web3whisper.shh.subscribe('messages',{ symKeyID :symKeyID,topics:['0x12345678','0xffffffff']},callback);
+        }
+      }).catch(err => {
+        console.log(err);
+      });
+        return;
+    }
+      FaxTokenImAPI.web3whisper.shh.setProvider(FaxTokenImAPI.web3whisper.currentProvider);
+//      FaxTokenImAPI.web3.shh.setProvider(new Web3.providers.WebsocketProvider('wss://geth.beagle.chat'));
+      console.log(`new whisper message filter: ${symKeyID}`);
+      FaxTokenImAPI.web3whisper.shh.subscribe('messages',{ symKeyID :symKeyID,topics:['0x12345678','0xffffffff']},callback);
 //      return FaxTokenImAPI.web3.shh.newMessageFilter({ symKeyID }, callback);
     }
   },
   reconnectShh:()=>{
     if (FaxTokenImAPI.web3.shh.currentProvider.connected)
       return;
-    FaxTokenImAPI.web3.shh.currentProvider.connect().then(function() {
+    FaxTokenImAPI.web3.shh.currentProvider.connect();
+    // FaxTokenImAPI.web3.shh.currentProvider.connect().then(function()
+    {
       if (FaxTokenImAPI.web3.shh.currentProvider.connected){
         console.log('shh reconnectting ...');
         window.App.getShhKeyPair(window.App.loginAddress);
         window.App.getShhSymKey();
         console.log('shh reconnect');
       }
-    });
+    }
+    // );
   },
   sendSymMessage: ({ symKeyID, message, ttl = 7, topic = '0xffffffff', powTime = 2, powTarget = 2.01 }) => {
     console.log(message, FaxTokenImAPI.web3.utils.fromUtf8(message));
@@ -829,11 +855,16 @@ export const FaxTokenImAPI = {
   },
 
   setupShhMessageListener: (shhKeyId, callback) => {
-    console.log(`new message filter: ${shhKeyId}`);
     if (network_id==1515){
 //      FaxTokenImAPI.web3.shh.setProvider(FaxTokenImAPI.web3.currentProvider);
       FaxTokenImAPI.web3.shh.setProvider(new Web3.providers.WebsocketProvider('wss://geth.beagle.chat'));
-      FaxTokenImAPI.web3.shh.subscribe('messages',{ privateKeyID: shhKeyId},callback);
+      const localShhSymId = window.App.getShhSymId();
+      console.log(`new message filter: ${localShhSymId},${shhKeyId}`);
+//      FaxTokenImAPI.web3.shh.subscribe('messages',{ symKeyID :localShhSymId, privateKeyID: shhKeyId,topics:['0x12345678','0xffffffff']},callback);
+//      FaxTokenImAPI.web3.shh.subscribe('messages',{ symKeyID :localShhSymId, privateKeyID: shhKeyId},callback);
+//not work      FaxTokenImAPI.web3.shh.subscribe('messages',{  privateKeyID: shhKeyId,topics:['0x12345678','0xffffffff']},callback);
+      FaxTokenImAPI.web3.shh.subscribe('messages',{  privateKeyID: shhKeyId},callback);
+      FaxTokenImAPI.web3.shh.newMessageFilter({ symKeyID :localShhSymId,topics:['0x12345678','0xffffffff']});
 //      return FaxTokenImAPI.web3.shh.newMessageFilter({ privateKeyID: shhKeyId }, callback);
     }
   },

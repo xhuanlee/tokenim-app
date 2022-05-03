@@ -482,6 +482,19 @@ const IMApp = {
     localStorage.setItem('SymKey', JSON.stringify(SymKeyObj));
   },
 
+  getShhSymId:()=>{
+    // get shh sym key from local
+    const SymKeyStr = localStorage.getItem('SymKey') || '{}';
+    let SymKeyObj = {};
+    try {
+      SymKeyObj = JSON.parse(SymKeyStr);
+    } catch (e) {
+      console.log(e)
+    }
+    const SymKey = SymKeyObj[PROVIDER_URL] || {};
+    const localSymKeyId = SymKey && SymKey.id || '';
+    return localSymKeyId;
+  },
   getShhSymKey: () => {
     // get shh sym key from local
     const SymKeyStr = localStorage.getItem('SymKey') || '{}';
