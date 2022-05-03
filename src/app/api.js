@@ -795,9 +795,21 @@ export const FaxTokenImAPI = {
 //      return FaxTokenImAPI.web3.shh.newMessageFilter({ symKeyID }, callback);
     }
   },
-
+  reconnectShh:()=>{
+    if (FaxTokenImAPI.web3.shh.currentProvider.connected)
+      return;
+    FaxTokenImAPI.web3.shh.currentProvider.connect().then(function() {
+      if (FaxTokenImAPI.web3.shh.currentProvider.connected){
+        console.log('shh reconnectting ...');
+        window.App.getShhKeyPair(window.App.loginAddress);
+        window.App.getShhSymKey();
+        console.log('shh reconnect');
+      }
+    });
+  },
   sendSymMessage: ({ symKeyID, message, ttl = 7, topic = '0xffffffff', powTime = 2, powTarget = 2.01 }) => {
-    console.log(message, FaxTokenImAPI.web3.utils.fromUtf8(message))
+    console.log(message, FaxTokenImAPI.web3.utils.fromUtf8(message));
+    FaxTokenImAPI.reconnectShh();
     return new Promise((resolve, reject) => {
       FaxTokenImAPI.web3.shh.post({
         symKeyID,
