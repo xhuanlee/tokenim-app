@@ -232,6 +232,7 @@ export default {
   'home.export_pk_notice': '请妥善保管好您的私钥，这关系到您账户的所有数字资产安全，不要透露给任何人！',
   'home.input_password_notice': '请输入账户密码，然后点击下一步',
   'home.input_password': '请输入账户密码',
+  'home.publish': '发布我的信息',
 
   'user.visitor_reward_forbidden': '获取奖励失败，游客无法获取奖励',
   'user.account_error': '账号异常，请重新登陆',

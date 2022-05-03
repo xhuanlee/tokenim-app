@@ -51,7 +51,7 @@ import {
   WebrtcConfig,
 } from '@/app/webrtc';
 import NeedLogin from '@/pages/home/NeedLogin';
-import { saveShhName } from '@/app/metamask';
+import { saveShhName,publishName,newSubdomain,reverseRegister } from '@/app/metamask';
 import MiniProgramList from '@/components/MiniProgramList';
 import Defis from '@/pages/home/content/Defis';
 import Kademlia from '@/pages/home/content/Kademlia';
@@ -1120,6 +1120,7 @@ class HomePage extends Component {
         ether={etherBalance}
         loginEns={this.props.account.loginEns}
         avatar = {this.props.account.avatar}
+        registerName={()=>this.setState({nameModal:true})}
         substrateBalance={substrateBalance}
       />
     );

@@ -29,6 +29,7 @@ import detectEthereumProvider from '@metamask/detect-provider';
 // import resolverJSON from '../../abi/resolver/PublicResolver';
 // import reverseRegistrarJSON from '../../abi/ens/ReverseRegistrar';
 // import EnsSubdomainFactory from '../../ens/EnsSubdomainFactory';
+import {getNameText} from './metamask';
 const registryJSON = require('../../abi/ens/ENSRegistry');
 const resolverJSON = require('../../abi/resolver/PublicResolver');
 const reverseRegistrarJSON = require('../../abi/ens/ReverseRegistrar');
@@ -417,12 +418,10 @@ export const FaxTokenImAPI = {
        FaxTokenImAPI.web3EnsResolver= new Contract(resolverJSON.abi,EnsContracts[chainId].resolver);
 //       await FaxTokenImAPI.web3EnsResolver.deployed();
        FaxTokenImAPI.web3EnsReverseRegistrar = new Contract(reverseRegistrarJSON.abi, EnsContracts[chainId].reverseRegistrar);
-       if (provider.chainId==1515) {
          FaxTokenImAPI.web3EnsSubdomainFactory.setProvider(FaxTokenImAPI.web3wallet.currentProvider);
          FaxTokenImAPI.web3Ens.setProvider(FaxTokenImAPI.web3wallet.currentProvider);
          FaxTokenImAPI.web3EnsResolver.setProvider(FaxTokenImAPI.web3wallet.currentProvider);
          FaxTokenImAPI.web3EnsReverseRegistrar.setProvider(FaxTokenImAPI.web3wallet.currentProvider);
-       }
 //       await FaxTokenImAPI.web3EnsReverseRegistrar.deployed();
      };
       initialWalletConnect();
@@ -717,7 +716,13 @@ export const FaxTokenImAPI = {
     );
   },
 
-  getShhPublicKeyByAddress: (address) => {
+  getShhPublicKeyByAddress: async (address) => {
+    let name = await FaxTokenImAPI.getEnsName(address);
+    if (name){
+      let shhPubKey = await getNameText(name);
+      if (shhPubKey && shhPubKey.length>0)
+        return shhPubKey;
+    }
     return FaxTokenImAPI.dataContract.methods.shhPubKey(address).call()
   },
 
@@ -856,8 +861,8 @@ export const FaxTokenImAPI = {
 
   setupShhMessageListener: (shhKeyId, callback) => {
     if (network_id==1515){
-//      FaxTokenImAPI.web3.shh.setProvider(FaxTokenImAPI.web3.currentProvider);
-      FaxTokenImAPI.web3.shh.setProvider(new Web3.providers.WebsocketProvider('wss://geth.beagle.chat'));
+      FaxTokenImAPI.web3.shh.setProvider(FaxTokenImAPI.web3.currentProvider);
+//      FaxTokenImAPI.web3.shh.setProvider(new Web3.providers.WebsocketProvider('wss://geth.beagle.chat'));
       const localShhSymId = window.App.getShhSymId();
       console.log(`new message filter: ${localShhSymId},${shhKeyId}`);
 //      FaxTokenImAPI.web3.shh.subscribe('messages',{ symKeyID :localShhSymId, privateKeyID: shhKeyId,topics:['0x12345678','0xffffffff']},callback);

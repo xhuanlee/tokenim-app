@@ -6,6 +6,7 @@ import WalletConnectProvider from '@walletconnect/web3-provider';
 // This function detects most providers injected at window.ethereum
 import detectEthereumProvider from '@metamask/detect-provider';
 import IMApp from './index';
+const namehash = require('eth-ens-namehash');
 
 
 function isMetamask() {
@@ -253,7 +254,16 @@ export async function newSubdomain(name,domain,tld) {
         }
       }});
   else
-    alert(`ERROR:newSubdomain ${name}.beagles.eth is not registered`)
+    if (txHash && txHash.status && txHash.blockHash){
+      console.log(`newSubdomain ${name}.beagles.eth registered`);
+      await reverseRegister(`${name}.beagles.eth`);
+      window.g_app._store.dispatch({
+        type: 'account/saveAccountState',
+        payload: { loginEns: `${name}.beagles.eth` }
+      });
+    }
+    else
+      alert(`ERROR:newSubdomain ${name}.beagles.eth is not registered`)
   return;
 }
 
@@ -344,6 +354,107 @@ export async function reverseRegister(name) {
       }});
   else
     alert(`ERROR:newSubdomain ${name}.beagles.eth is not registered`)
+  return;
+}
+export async function getNameText(name,key) {
+  let nameNode = namehash.hash(name);
+  let value = await FaxTokenImAPI.web3EnsResolver.methods.text(nameNode,key).call();
+  return value;
+}
+export async function publishName(name,shhPubKey) {
+  let nameNode = namehash.hash(name);
+  let shhPubKeyOld = await FaxTokenImAPI.web3EnsResolver.methods.text(nameNode,'whisper').call();
+
+  if (shhPubKey==shhPubKeyOld){
+    console.log(`${name} whisper nt changed:${shhPubKeyOld}`);
+    return;
+  }
+  let selectedAddress,chainId;
+  if (window.App.connector) {
+    selectedAddress = window.App.connector.accounts[0];
+    chainId = window.App.connector.chainId;
+  }
+  else{
+    selectedAddress = window.ethereum.selectedAddress;
+    chainId=window.ethereum.chainId;
+  }
+  let nonce = await FaxTokenImAPI.getWalletTransactionCount(selectedAddress);
+//  const data = FaxTokenImAPI.web3EnsReverseRegistrar.setName.getData(name);
+  const gas = FaxTokenImAPI.web3EnsResolver.methods.setText(nameNode,'whisper',shhPubKey).estimateGas();
+  const data = FaxTokenImAPI.web3EnsResolver.methods.setText(nameNode,'whisper',shhPubKey).encodeABI();
+  console.log(`${nonce} addr:${selectedAddress},chainId:${chainId},gas:${gas}`);
+  // if (nonce<28)
+  //   nonce=28;
+  const param = {
+    nonce: FaxTokenImAPI.web3wallet.utils.toHex(nonce),
+    gas: '0x33450', // 210000
+//    gas: '0x64190', // 410000
+//    gas: FaxTokenImAPI.web3wallet.utils.toHex(gas),
+//    gas: '0x94ed0', //6100
+    gasPrice:'0x09502f9000',
+//      gasPrice: '0x77359400', //2,000,000,000
+    //gasPrice:'0x59682f00',//1,500,000,000
+    from: selectedAddress,
+    to: FaxTokenImAPI.web3EnsResolver._address,
+    value: '0x0',
+    data,
+    chainId: chainId,
+  };
+  let txHash;
+  console.log(JSON.stringify(param));
+  if (window.App.connector){
+    // Draft Custom Request
+    // const customRequest = {
+    //   id: 1337,
+    //   jsonrpc: "2.0",
+    //   method: "eth_signTransaction",
+    //   params: [
+    //     param,
+    //   ],
+    // };
+//    txHash = await window.App.connector.sendCustomRequest(customRequest);
+    txHash = await FaxTokenImAPI.web3wallet.eth.sendTransaction(param);
+//    txHash = await window.App.connector.sendTransaction(param);
+//    txHash = await window.App.connector.signTransaction(param);
+
+  }
+  else
+    txHash = await window.ethereum.request({
+      method: 'eth_sendTransaction',
+      params: [param],
+    });
+  console.log(`setName hash: ${txHash} nonce:${nonce}`);
+//  const provider = await detectEthereumProvider();
+//
+//   if (provider) {
+//     // From now on, this should always be true:
+//     // provider === window.ethereum
+// //        startApp(provider); // initialize your app
+//     FaxTokenImAPI.web3wallet.setProvider(provider);
+//   } else {
+//     console.log('Please install MetaMask!');
+//   }
+  if (txHash && txHash.length>0)
+    FaxTokenImAPI.web3wallet.eth.getTransactionReceipt(txHash, function (e, data) {
+      if (e !== null) {
+        alert("Could not find a transaction for your id! ID you provided was " + txHash);
+        console.log("Could not find a transaction for your id! ID you provided was " + txHash);
+      } else {
+        console.log(data);
+        if (data && data.status == '0x0') {
+          console.log("The contract execution was not successful, check your transaction !");
+          alert("The contract execution was not successful, check your transaction !");
+        } else {
+          console.log(`setText ${name}.beagles.eth registered`);
+          alert(`setText ${name} whisper public key to ${shhPubKey} from ${window.ethereum.selectedAddress}`);
+          // window.g_app._store.dispatch({
+          //   type: 'account/saveAccountState',
+          //   payload: { loginEns: `${name}.beagles.eth` }
+          // });
+        }
+      }});
+  else
+    alert(`ERROR:setText ${name}.beagles.eth failed`)
   return;
 }
 

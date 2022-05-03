@@ -229,6 +229,7 @@ export default {
   'home.export_pk_notice': ' Please take good care of your private key, which is related to the security of all digital assets of your account. Do not disclose it to anyone ！',
   'home.input_password_notice': 'please input password then click next',
   'home.input_password': 'please input password',
+  'home.publish': 'Publish',
 
   'user.visitor_reward_forbidden': 'reward is not available in visitor mode',
   'user.account_error': 'exception found, please login again',

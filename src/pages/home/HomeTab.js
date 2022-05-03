@@ -16,6 +16,9 @@ import ApproveContract from './content/component/ApproveContract'
 
 import { converEther } from '@/app/util'
 import accountType from '@/app/accountType';
+import { saveShhName,publishName } from '@/app/metamask';
+import {FaxTokenImAPI} from '@/app/api'
+
 
 const { Title } = Typography;
 
@@ -53,6 +56,19 @@ class HomeTab extends Component {
 
   openExportModal = () => {
     this.setState({ exportPk: true })
+  }
+  publish = () => {
+    if (this.props.account.loginEns && this.props.account.loginEns.indexOf('...')<0){
+      publishName(this.props.account.loginEns,this.props.account.shhPubKey);
+    }
+    else
+    {
+      let name = FaxTokenImAPI.getEnsName(this.props.account.loginAddress);
+      console.log(`${name}:${this.props.account.loginAddress}`);
+      // register a name first
+      this.props.registerName();
+    }
+    this.setState({ publied: true })
   }
 
   closeExportModal = () => {
@@ -153,6 +169,9 @@ class HomeTab extends Component {
               { key: 'carrier', row: 'Carrier', val: carrier },
             ]}
           />
+          <Button onClick={this.publish} type="primary">
+            {formatMessage({ id: 'home.publish' })}
+          </Button>
         </div>
 
         {
