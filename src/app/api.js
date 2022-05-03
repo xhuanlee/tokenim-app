@@ -791,7 +791,7 @@ export const FaxTokenImAPI = {
   setupShhSymKeyListener: (symKeyID, callback) => {
     if (network_id==1515){
       FaxTokenImAPI.web3.shh.setProvider(new Web3.providers.WebsocketProvider('wss://geth.beagle.chat'));
-      FaxTokenImAPI.web3.shh.subscribe('messages',{ symKeyID :symKeyID},callback);
+      FaxTokenImAPI.web3.shh.subscribe('messages',{ symKeyID :symKeyID,topics:['0x12345678','0xffffffff']},callback);
 //      return FaxTokenImAPI.web3.shh.newMessageFilter({ symKeyID }, callback);
     }
   },
