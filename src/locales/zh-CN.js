@@ -183,7 +183,7 @@ export default {
   'account.visitor_mode': '游客模式',
   'account.copy_address': '拷贝地址',
   'account.get_token': '领取代币',
-  'account.login_reward_token': '登陆奖励 5 App:',
+  'account.login_reward_token': '登陆奖励 5 App',
   'account.gotten_token': '已领取',
   'account.to_get_token': '领取',
   'account.register_reward_token': '注册奖励20 App:',

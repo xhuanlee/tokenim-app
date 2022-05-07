@@ -116,14 +116,14 @@ class HomeTab extends Component {
     let displayToken =<>
                         {`${token} `}
                         <Button loading={freeLoading} size="small" type="primary" style={{ marginLeft: 4 }} onClick={() => this.props.dispatch({ type: 'user/getLoginReward' })}>
-                          get login reward
+                          {formatMessage({ id: 'account.login_reward_token' })}
                         </Button>
                       </>;
     let displayEther = ether <= 0 ?
       <>
         {`${converEther(ether).value} ${converEther(ether).unit}`}
         <Button loading={freeLoading} size="small" type="primary" style={{ marginLeft: 4 }} onClick={() => this.props.dispatch({ type: 'user/getFreeEther' })}>
-          get free eth
+          {formatMessage({ id: 'account.get_token' })}
         </Button>
       </>
       :
