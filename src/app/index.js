@@ -295,7 +295,7 @@ const IMApp = {
         window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { queryShhLoading: false, queryShhPubKey: pubKey } })
       }
     }).catch((err) => {
-      console.log(err)
+      console.log('query shh public key ',err)
       if (err === `no resolver address for name: ${name}.fax`) {
         window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { queryENSLoading: false, queryENSAvaiable: false } })
       } else {
@@ -919,7 +919,7 @@ const IMApp = {
         window.g_app._store.dispatch({ type: 'user/saveUserState', payload: { balanceLoading: false, getBalanceError: true } })
       });
     } else {
-      window.g_app._store.dispatch({ type: 'user/saveUserState', payload: { balanceLoading: false, getBalanceError: true } })
+//      window.g_app._store.dispatch({ type: 'user/saveUserState', payload: { balanceLoading: false, getBalanceError: true } })
       console.log(`account formate error: ${address}`)
     }
   },

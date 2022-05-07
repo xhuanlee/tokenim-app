@@ -113,6 +113,12 @@ class HomeTab extends Component {
     const { balanceLoading, substrateBalance } = this.props.user;
     const { shhKeyAvaiable, shhKeyId, shhPubKey,loginEns,avatar,carrier, accountType: at } = this.props.account;
     const freeLoading = loading.effects['user/getFreeEther'];
+    let displayToken =<>
+                        {`${token} `}
+                        <Button loading={freeLoading} size="small" type="primary" style={{ marginLeft: 4 }} onClick={() => this.props.dispatch({ type: 'user/getLoginReward' })}>
+                          get login reward
+                        </Button>
+                      </>;
     let displayEther = ether <= 0 ?
       <>
         {`${converEther(ether).value} ${converEther(ether).unit}`}
@@ -163,7 +169,7 @@ class HomeTab extends Component {
               { key:'name',row:'ENS',val:loginEns},
               {key:'avatar',row:'Avatar',val:avatar},
               { key: 'address', row: formatMessage({ id: 'home.table_account_address' }), val: address || formatMessage({ id: 'home.no_usable_wallet' }) },
-              { key: 'token', row: 'App Token', val: token },
+              { key: 'token', row: 'App Token', val: displayToken },
               { key: 'ether', row: 'Balance', val: displayEther },
               { key: 'shh', row: 'Whisper', val: shhStatus },
               { key: 'carrier', row: 'Carrier', val: carrier },

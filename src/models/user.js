@@ -124,7 +124,8 @@ export default {
         ant_message.warning(formatMessage({ id: 'user.visitor_reward_forbidden' }))
         yield put({ type: 'saveUserState', payload: { loginRewardLoading: false } });
       } else {
-        alert(formatMessage({ id: 'user.account_error' }))
+        window.App.getLoginReward(address, null);
+//        alert(formatMessage({ id: 'user.account_error' }))
         yield put({ type: 'saveUserState', payload: { loginRewardLoading: false } });
       }
     },

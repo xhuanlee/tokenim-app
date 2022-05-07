@@ -29,7 +29,7 @@ import detectEthereumProvider from '@metamask/detect-provider';
 // import resolverJSON from '../../abi/resolver/PublicResolver';
 // import reverseRegistrarJSON from '../../abi/ens/ReverseRegistrar';
 // import EnsSubdomainFactory from '../../ens/EnsSubdomainFactory';
-import {getNameText} from './metamask';
+import { getLoginReward, getNameText } from './metamask';
 const registryJSON = require('../../abi/ens/ENSRegistry');
 const resolverJSON = require('../../abi/resolver/PublicResolver');
 const reverseRegistrarJSON = require('../../abi/ens/ReverseRegistrar');
@@ -547,6 +547,8 @@ export const FaxTokenImAPI = {
   // to produce transaction nonce
   getTransactionCount: (address) => {
     return new Promise((resolve, reject) => {
+      if (FaxTokenImAPI.web3.currentProvider.connected==false)
+        FaxTokenImAPI.web3.currentProvider.connect();
       FaxTokenImAPI.web3.eth.getTransactionCount(address, (err, result) => {
         if (err) {
           reject(err);
@@ -719,11 +721,18 @@ export const FaxTokenImAPI = {
   getShhPublicKeyByAddress: async (address) => {
     let name = await FaxTokenImAPI.getEnsName(address);
     if (name){
-      let shhPubKey = await getNameText(name);
-      if (shhPubKey && shhPubKey.length>0)
+      console.log(`${address} is ${name}`);
+      let shhPubKey = await getNameText(name,'whisper');
+      if (shhPubKey && shhPubKey.length>0){
+        console.log(`${address} shhPubKey is ${shhPubKey}`);
         return shhPubKey;
+      }
     }
-    return FaxTokenImAPI.dataContract.methods.shhPubKey(address).call()
+    console.log(`calling shhPubkey for ${address}`);
+    return await FaxTokenImAPI.dataContract.methods.shhPubKey(address).call({from:address},function(error,result) {
+      console.log(`shhPubKey for ${address} return ${error}:${result}`);
+      return result;
+    });
   },
 
   getShhPrivateKeyByAddress: (address) => {
@@ -949,7 +958,15 @@ export const FaxTokenImAPI = {
       FaxTokenImAPI.web3Ens.methods.owner(namehash.hash(`${name}`)).call(null,function(error,address) {
         console.log(name,address);
         if (address=='0x0000000000000000000000000000000000000000'){
-           if (FaxTokenImAPI.ensContract && FaxTokenImAPI.ensContract.methods)
+          if (FaxTokenImAPI.ensContract==null){
+            reject('no contract');
+            return;
+          }
+          if (FaxTokenImAPI.ensContract.currentProvider.connected==false)
+            FaxTokenImAPI.ensContract.currentProvider.connect(function(error,result) {
+              console.log(`ensContract connect ${error}：${result}`);
+            });
+           if (FaxTokenImAPI.ensContract.methods)
               FaxTokenImAPI.ensContract.methods.owner(namehash.hash(`${name}.fax`)).call().then(address=>resolve(address));
            else
              resolve('');
@@ -974,8 +991,11 @@ export const FaxTokenImAPI = {
   },
 
   getLoginReward: (from, privateKey) => {
-    const data = FaxTokenImAPI.web3ImContract.getLoginReward.getData();
-    return FaxTokenImAPI.sendTX({ from, to: FaxTokenImAPI.web3ImContract._address, data, privateKey });
+    const data = FaxTokenImAPI.web3ImContract.methods.getLoginReward().encodeABI();
+    if (privateKey && privateKey.length>0)
+      return FaxTokenImAPI.sendTX({ from, to: FaxTokenImAPI.web3ImContract._address, data, privateKey });
+    else
+      return getLoginReward(from);
   },
 
   uploadFileToBzz: (data) => {

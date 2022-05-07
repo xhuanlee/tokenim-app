@@ -51,7 +51,7 @@ import {
   WebrtcConfig,
 } from '@/app/webrtc';
 import NeedLogin from '@/pages/home/NeedLogin';
-import { saveShhName,publishName,newSubdomain,reverseRegister } from '@/app/metamask';
+import { saveShhName, publishName, newSubdomain, reverseRegister, switchToChainId } from '@/app/metamask';
 import MiniProgramList from '@/components/MiniProgramList';
 import Defis from '@/pages/home/content/Defis';
 import Kademlia from '@/pages/home/content/Kademlia';
@@ -959,11 +959,13 @@ class HomePage extends Component {
       }
     }
 
+    if (window.ethereum.chainId!=4)
+     await switchToChainId('0x4');
     // should call registerENS
     if (window.ethereum.chainId==4 || window.App.connector){
       this.setState({ confirmLoading: true });
-      saveShhName(nameValue)
-        .then(() => {
+      //saveShhName(nameValue)
+      newSubdomain(nameValue,'beagles','eth').then(() => {
           this.setState({ nameModal: false, confirmLoading: false });
         })
         .catch(e => {
