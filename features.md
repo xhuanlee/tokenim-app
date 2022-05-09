@@ -76,6 +76,8 @@ export const ETHEREUM_API = {
 - https://docs.ens.domains/dapp-developer-guide/resolving-names
 - TEXT metadata: 记录用户的显示名字或者别称nickname,也可以用来记录carrier地址或者email address (option)
 - did:elastos:ii7Tgr4tMKzeuYosetnAfPsjdbysRkzYf9
+- Lens Protocol
+  - https://docs.lens.dev/docs/overview
 ````
 ens.setText('iam.alice.eth', 'nickname', 'Test record', {from: ...});
 ens.setText('iam.alice.eth', 'carrieraddress', 'Test record', {from: ...});
@@ -130,6 +132,14 @@ codec === 'ipfs-ns' // false
   - https://cryptomarketpool.com/address-book-solidity-smart-contract/
   - https://ethereum.stackexchange.com/questions/33166/ethereum-address-private-key-correspondance?rq=1
 - IPFS or SWARM
+  - 可修改：tamper-proof,creation, update,query and verification, a mutable data stream storage system on top of IPFS, refer to cyberconnect and ceramic. 
+  -  we do enforce data signature with dag-jose codec so that data authenticity is guaranteed.
+  - Each update to the data is appended to the data stream in the form of an append-only commit log and the resulting data structure becomes a hash linked data structure called a Merkle DAG. To provide data authenticity, we utilize dag-jose IPLD codec so that each piece of data, whether the creation file or the individual updates is signed and optionally encrypted by the data owner.   
+  - 验证：authentication by a signature using a user's private key
+  - 授权：authorization is done with the help of pre-commit checks and dag-jose IPLD encoding to ensure correct signing after commit.
+  - 可用Availability:Data availability among nodes is achieved through libp2p pubsub so that as long as one node subscribed to the pubsub topic has the needed commit log, data will be available for query among all the nodes. 
+    - https://docs.cyberconnect.me/protocol/technical-framework/
+    - mutable stream of https://ceramic.network/
 #### 2.5.2 隐私问题
 - 加密和解密
   - https://ethereum.stackexchange.com/questions/3092/how-to-encrypt-a-message-with-the-public-key-of-an-ethereum-address  
@@ -157,11 +167,30 @@ codec === 'ipfs-ns' // false
 - - 钱包签字授权登录
 - 会议记录
 - 录音
+- REF
+  - Community NFT (2000) and Personal NFT (150) 
+    - https://www.linkkey.io/whitepaper
 #### 2.6.2 会议室的类型
 基于资产的类型：提供以下两大类的房间（可以再根据资产分等级），创建这类房间的条件是必需有该类资产，对于级别更多的房间要求更多的资产拥有量
 - 币
 - NFT
 - 显示用户当前拥有的币和NFT
+
+#### 2.6.3 参会资格和奖励
+- Lens Protocol
+  - https://docs.lens.dev/docs/primer
+- Galaxy
+  - https://mirror.xyz/gsandly.eth/-_Ur2mcIefC-up3ywVlIOOHoBQUBh4ipOrGtaVWzI5U
+#### 2.6.4 参会记录
+- POAP
+  - https://medium.com/poap/poap-inc-raises-10m-to-accelerate-human-development-a2e36783258d
+  - https://intercom.help/poap/en/articles/5855319-the-poap-glossary
+  - https://poap.xyz/
+  - https://www.chaincatcher.com/article/2067098
+
+  
+  
+  
 
 ## 3. App前端开发
 ### 3.1. metamask support on Web
