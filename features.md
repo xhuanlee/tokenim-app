@@ -154,19 +154,31 @@ codec === 'ipfs-ns' // false
 
 
 ### 2.6 Meeting Rooms
-#### 2.6.1 会议室的内容
-会议室的名字、描述、所有者（可以是多个）和成员
-- 创建
-- 加入
-- 添加合伙人（所有者）
-- 转让
-- 注销
-- 黑名单
+#### 2.6.1 会议室的功能需求
+会议室的名字、描述、所有者（可以是多个）和成员管理
+- 内容
+  - 名字
+  - 图标
+  - 描述
+  - 会议公告
+  - 事件
+  - 记录
+- 管理权限  
+  - 创建人
+  - 添加合伙人（所有者）
+  - 转让
+  - 注销
+  - 创建
+- 会员权限  
+  - 加入
+  - 退出
+  - 黑名单
+- 其他  
+  - 会议记录
+  - 录音
 - To Be Done:
 - - BAppChain上的智能合约
 - - 钱包签字授权登录
-- 会议记录
-- 录音
 - REF
   - Community NFT (2000) and Personal NFT (150) 
     - https://www.linkkey.io/whitepaper
@@ -176,22 +188,27 @@ codec === 'ipfs-ns' // false
 - NFT
 - 显示用户当前拥有的币和NFT
 
-#### 2.6.3 参会资格和奖励
-- Lens Protocol
-  - https://docs.lens.dev/docs/primer
-- Galaxy
-  - https://mirror.xyz/gsandly.eth/-_Ur2mcIefC-up3ywVlIOOHoBQUBh4ipOrGtaVWzI5U
+#### 2.6.3 会议室的创建、管理以及参会资格和奖励
+- Use Social Graph for users to create and manage Rooms
+  - Lens Protocol
+    - https://docs.lens.dev/docs/primer
+  - Galaxy
+    - https://mirror.xyz/gsandly.eth/-_Ur2mcIefC-up3ywVlIOOHoBQUBh4ipOrGtaVWzI5U
+- Support Social Token
+  - Community Tokens (FWB, Bankless, Apecoin)
+  - Brand Tokens (socialstack) 
+  - Creator Tokens($ALLIE,$RAC,$SPTM)
+  - Personal Tokens($ALEX,$JULIEN,$MACEDO) 
+  - https://www.defidaonews.com/article/6725274
+  - https://www.youtube.com/watch?v=GsHN7M-mxqw
+- Social Events
+  - https://app.rabbithole.gg/skills/intro-to-daos  
 #### 2.6.4 参会记录
 - POAP
   - https://medium.com/poap/poap-inc-raises-10m-to-accelerate-human-development-a2e36783258d
   - https://intercom.help/poap/en/articles/5855319-the-poap-glossary
   - https://poap.xyz/
   - https://www.chaincatcher.com/article/2067098
-
-  
-  
-  
-
 ## 3. App前端开发
 ### 3.1. metamask support on Web
 - login in by sign with metamask (maybe other ethereum main or test chain, 

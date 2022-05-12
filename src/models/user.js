@@ -3,6 +3,23 @@ import { formatMessage } from 'umi-plugin-locale';
 import { saveShhName, transferEther } from '@/app/metamask';
 import accountType from '@/app/accountType';
 import { getSubstrateBalance } from '@/app/substrate';
+import CyberConnect, { Env, Blockchain } from "@cyberlab/cyberconnect";
+
+const cyberConnect = new CyberConnect({
+  namespace: "CyberConnect",
+  env: Env.PRODUCTION,
+  chain: Blockchain.ETH,
+  provider: window.ethereum,
+});
+
+async function follow(address) {
+  try {
+    await cyberConnect.connect(address);
+    alert(`Success: you're following ${address}!`);
+  } catch (error) {
+    console.error(error.message);
+  }
+}
 export default {
   namespace: 'user',
 
@@ -359,6 +376,7 @@ export default {
       const PROVIDER_URL = init.providerURL;
       const { address } = account;
 
+      follow(friendAddress);
       // if address is already exist, push it to top
       const existFriends = friends.filter(i => i.address === friendAddress);
       let existNickName = undefined;

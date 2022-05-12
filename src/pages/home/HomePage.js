@@ -206,7 +206,14 @@ class HomePage extends Component {
       });
       this.setState({ newDialogModal: false });
       this.setChatToUser({ ensName, address: queryENSAddress, shhPubKey: queryShhPubKey, time });
-    } else {
+    } else if (queryENSAddress){
+      this.props.dispatch({
+        type: 'user/addFriend',
+        payload: { ensName, friendAddress: queryENSAddress, time },
+      });
+      this.setState({ newDialogModal: false });
+    }
+    else {
       alert(formatMessage({ id: 'home.shh_format_error' }));
     }
   };

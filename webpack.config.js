@@ -8,5 +8,10 @@ module.exports = {
     alias: {
       '@': require('path').resolve(__dirname, 'src'),
     },
+    configureWebpack:{
+      plugins,
+    },
+    transpileDependencies:['did-jwt'],
+    "plugins": ["@babel/plugin-proposal-nullish-coalescing-operator"],
   },
 };
