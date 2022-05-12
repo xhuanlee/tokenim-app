@@ -13,13 +13,14 @@ import TransEther from './content/component/TransEther'
 import TransFax from './content/component/TransFax'
 import BuyFax from './content/component/BuyFax'
 import ApproveContract from './content/component/ApproveContract'
+import GetConnections from './sider/GetConnections';
 
 import { converEther } from '@/app/util'
 import accountType from '@/app/accountType';
 import { saveShhName,publishName } from '@/app/metamask';
 import {FaxTokenImAPI} from '@/app/api'
-// import {GetConnections} from './sider/GetConnections';
-const {GetConnections} = require('./sider/GetConnections');
+//const {GetConnections} = require('./sider/GetConnections');
+import "../../layouts/cyberconnect.css";
 
 
 const { Title } = Typography;
@@ -181,7 +182,7 @@ class HomeTab extends Component {
             {formatMessage({ id: 'home.publish' })}
           </Button>
           <div>
-            {GetConnections(address)}
+            <GetConnections  address={address}/>
           </div>
         </div>
 
