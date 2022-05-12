@@ -18,6 +18,8 @@ import { converEther } from '@/app/util'
 import accountType from '@/app/accountType';
 import { saveShhName,publishName } from '@/app/metamask';
 import {FaxTokenImAPI} from '@/app/api'
+// import {GetConnections} from './sider/GetConnections';
+const {GetConnections} = require('./sider/GetConnections');
 
 
 const { Title } = Typography;
@@ -178,6 +180,9 @@ class HomeTab extends Component {
           <Button onClick={this.publish} type="primary">
             {formatMessage({ id: 'home.publish' })}
           </Button>
+          <div>
+            {GetConnections(address)}
+          </div>
         </div>
 
         {
