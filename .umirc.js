@@ -45,6 +45,7 @@ export default {
       },
     }],
   ],
+  extraBabelPlugins:[["@babel/plugin-proposal-nullish-coalescing-operator"]],
   proxy: {
     '/clubhouse-api': {
       'target': 'https://t.callt.net/',

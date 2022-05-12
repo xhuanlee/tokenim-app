@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
-    "@cyberlab/cyberconnect": "^4.4.1",
+    "@cyberlab/cyberconnect": "^4.4.2",
     "@cyberlab/social-verifier": "^2.0.1",
     "@ensdomains/ens-contracts": "0.0.8",
     "@ensdomains/ensjs": "^2.1.0",
@@ -80,7 +80,6 @@
       "git add"
     ]
   },
-  "plugins": ["@babel/plugin-proposal-nullish-coalescing-operator"],
   "engines": {
     "node": ">=8.0.0"
   }
