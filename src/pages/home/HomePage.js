@@ -66,6 +66,7 @@ import Web3 from 'web3';
 import { ReactComponent as svgSETTING } from '../../../public/image/SVG/SETTING.svg';
 import { ReactComponent as svgCONTACT } from '../../../public/image/SVG/CONTACT.svg';
 import {FaxTokenImAPI} from '../../app/api';
+import GetConnections from '@/pages/home/sider/GetConnections';
 const ensProvider = new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/00a80def04f248feafdc525179f89dbf');
 //const ens = new ENS({ ensProvider, ensAddress: getEnsAddress('1') });
 var ENS = require('ethereum-ens');
@@ -175,7 +176,22 @@ class HomePage extends Component {
   };
 
   openNewMessageModal = () => {
-    this.setState({ newDialogModal: true });
+    const { dispatch } = this.props;
+    // dispatch({ type: 'media/saveChatUser', payload: { chatUser: null } });
+    const {
+      location: {
+        query: { s },
+      },
+    } = this.props;
+    if (!s) {
+      router.push('/home?s=connect');
+    }
+//     else
+//       router.push('/home?s=connect');
+// //    this.setState({ newDialogModal: true });
+  };
+  addContact=()=>{
+     this.setState({ newDialogModal: true });
   };
   openNewTransferModal = () => {
     this.setState({ newTranferModal: true });
@@ -1143,6 +1159,9 @@ class HomePage extends Component {
       case 'contact':
         contentBody = <MyAccountRow dispatch={dispatch} loading={loading} meetingroom={meetingroom} server={'https://t.callt.net:3001/'} />;
         break;
+      case 'connect':
+        contentBody = <GetConnections dispatch={dispatch} loading={loading} address={loginAddress} addContact={this.addContact} />;
+        break;
       case 'kademlia':
 //        meetingroom.server='https://t.callt.net:3001/';
         contentBody = <RoomList dispatch={dispatch} loading={loading} meetingroom={meetingroom} server={'https://t.callt.net:3001/'} />;
@@ -1370,8 +1389,8 @@ class HomePage extends Component {
             {addFromEns ? (
               <div>
               <div style={{ display: 'flex', margin: '20px 20px 5px 20px' }}>
-                <label>ENS depolyed on <a href={'https://faucets.chain.link/rinkeby'} target={'_blank'}>Rinbeky</a> by
-                   <a href={'https://ens.dns3.xyz'} target={'_blank'}> the DNS3 team.</a>
+                <label>ENS depolyed on <a href={'https://faucets.chain.link/rinkeby'} target={'_blank'} rel="noreferrer">Rinbeky</a> by
+                   <a href={'https://ens.dns3.xyz'} target={'_blank'} rel="noreferrer"> the DNS3 team.</a>
                  </label>
                 </div>
                 <div style={{ display: 'flex', margin: '20px 20px 5px 20px' }}>

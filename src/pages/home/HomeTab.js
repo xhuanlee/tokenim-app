@@ -181,9 +181,9 @@ class HomeTab extends Component {
           <Button onClick={this.publish} type="primary">
             {formatMessage({ id: 'home.publish' })}
           </Button>
-          <div>
-            <GetConnections  address={address}/>
-          </div>
+          {/*<div>*/}
+          {/*  <GetConnections  address={address}/>*/}
+          {/*</div>*/}
         </div>
 
         {
