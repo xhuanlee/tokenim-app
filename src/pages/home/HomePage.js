@@ -183,7 +183,7 @@ class HomePage extends Component {
         query: { s },
       },
     } = this.props;
-    if (!s) {
+    if (!s || s!='connect') {
       router.push('/home?s=connect');
     }
 //     else

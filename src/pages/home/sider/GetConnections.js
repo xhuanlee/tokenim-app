@@ -106,7 +106,7 @@ const variables = {
           </div>
         ))}
       </div>
-      <h1><a onClick={clickAddContact}>Add Contact</a></h1>
+      <h3 className={styles.button} ><a  onClick={clickAddContact}>Add Contact</a></h3>
     </div>
   );
 }

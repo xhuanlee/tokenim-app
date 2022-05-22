@@ -189,9 +189,43 @@ codec === 'ipfs-ns' // false
 - 显示用户当前拥有的币和NFT
 
 #### 2.6.3 会议室的创建、管理以及参会资格和奖励
+- token gated
+  - On-chain conditions and credentials are things like:
+    - User is a member of a DAO
+    - User holds an NFT in a collection
+    - User holds at least 0.1 ETH
+    - The result of any smart contract function call
+    - User owns a specific wallet address
+    - Using boolean operations (AND + OR) for any of the above
+  - Threshold Cryptography
+  - decentralized access control
+    - Encryption: store permissions(aka encrypted) resources on public network that can only be decrypted based on selected on-chain conditions.
+    - JWT(aka network signature): use web3 credential to provision access resource on a server.
+  -  preferred storage solution including Ceramic, Tableland, IPFS/Filecoin, Arweave, Sia, Storj, or centralized storage
+  - https://blog.litprotocol.com/?p=what-is-decentralized-access-control
+  - https://developer.litprotocol.com/docs/howItWorks
+    - Static Content -Encrypting/locking
+      - https://developer.litprotocol.com/docs/SDK/staticContent
+    - Dynamic Content - Authorizing access to a resource via JWT
+      - https://developer.litprotocol.com/docs/SDK/dynamicContent 
+  - unlock
+    - https://unlock-protocol.com/#get-started
+    - https://docs.unlock-protocol.com/unlock/
+    - https://docs.unlock-protocol.com/unlock/developers/tutorials/building-token-gated-applications
+  - Orca protocol
+    - https://docs.orcaprotocol.org/orca/getting-started-with-pods/creating-a-pod
+  - Explore the Defi Universe
+    - https://app.shapeshift.com/#/connect-wallet?returnUrl=/dashboard
+  - SBT
+    - https://github.com/DanieleSalatti/SoulBoundNFT
 - Use Social Graph for users to create and manage Rooms
+  - Refs
+    - https://medium.com/1kxnetwork/organization-legos-the-state-of-dao-tooling-866b6879e93e
+    - https://coopahtroopa.mirror.xyz/_EDyn4cs9tDoOxNGZLfKL7JjLo5rGkkEfRa_a-6VEWw
+    - https://linda.mirror.xyz/Vh8K4leCGEO06_qSGx-vS5lvgUqhqkCz9ut81WwCP2o
   - Lens Protocol
     - https://docs.lens.dev/docs/primer
+    - https://lenster.xyz/
   - Galaxy
     - https://mirror.xyz/gsandly.eth/-_Ur2mcIefC-up3ywVlIOOHoBQUBh4ipOrGtaVWzI5U
 - Support Social Token
@@ -203,12 +237,28 @@ codec === 'ipfs-ns' // false
   - https://www.youtube.com/watch?v=GsHN7M-mxqw
 - Social Events
   - https://app.rabbithole.gg/skills/intro-to-daos  
+- snapshot
+  - https://docs.snapshot.org/graphql-api  
+  - https://docs.snapshot.org/spaces/what-is-a-space
+  - https://snapshot.org/#/ens.eth/about
+- DAO
+  - https://www.tally.xyz/  
+  - https://docs.tally.xyz/user-guides-1/supported-dao-frameworks
+  - https://www.tally.xyz/governance/eip155:1:0xc0Da02939E1441F497fd74F78cE7Decb17B66529/proposal/106
+- Governance
+  - https://compound.finance/docs/governance
+  - https://docs.openzeppelin.com/contracts/4.x/api/governance
+  
 #### 2.6.4 参会记录
 - POAP
   - https://medium.com/poap/poap-inc-raises-10m-to-accelerate-human-development-a2e36783258d
   - https://intercom.help/poap/en/articles/5855319-the-poap-glossary
   - https://poap.xyz/
   - https://www.chaincatcher.com/article/2067098
+  - jeevan@poap.io / reed@poap.io
+  - https://documentation.poap.tech/
+  - api-key: 427H0cApPofXsORN1w2iOBAPs5EVykJlF4iDiEECwN4xptx4t0DQv5UMaFfR5vyAZh3LT7aseLygjSXoqJ10BYEkWjDkW3jvSQzAClmq9EncUeAbLGqhewsvCfsAWMcL
+  -  curl -vvv -H "X-API-Key: 427H0cApPofXsORN1w2iOBAPs5EVykJlF4iDiEECwN4xptx4t0DQv5UMaFfR5vyAZh3LT7aseLygjSXoqJ10BYEkWjDkW3jvSQzAClmq9EncUeAbLGqhewsvCfsAWMcL"  https://api.poap.tech/paginated-events?limit=100&offset=0&sort_dir=asc&sort_field=name
 ## 3. App前端开发
 ### 3.1. metamask support on Web
 - login in by sign with metamask (maybe other ethereum main or test chain, 

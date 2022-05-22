@@ -20,7 +20,7 @@ import accountType from '@/app/accountType';
 import { saveShhName,publishName } from '@/app/metamask';
 import {FaxTokenImAPI} from '@/app/api'
 //const {GetConnections} = require('./sider/GetConnections');
-import "../../layouts/cyberconnect.css";
+// import "../../layouts/cyberconnect.css";
 
 
 const { Title } = Typography;
