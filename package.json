@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
+    "@apollo/client": "^3.6.4",
     "@cyberlab/cyberconnect": "^4.4.2",
     "@cyberlab/social-verifier": "^2.0.1",
     "@ensdomains/ens-contracts": "0.0.8",
@@ -41,7 +42,7 @@
     "ethereumjs-common": "^1.5.2",
     "ethereumjs-tx": "^2.1.2",
     "ethereumjs-wallet": "^1.0.1",
-    "graphql": "^14.3.1",
+    "graphql": "^14.7.0",
     "graphql-request": "^4.2.0",
     "qs": "^6.9.4",
     "react": "^17.0.2",

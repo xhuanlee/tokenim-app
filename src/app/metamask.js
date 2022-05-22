@@ -2,6 +2,7 @@ import { getLocalShhKeyPair, showNotification } from '@/app/util';
 import { FaxTokenImAPI } from '@/app/api';
 import { message } from 'antd';
 import accountType from '@/app/accountType';
+import Web3 from 'web3';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 // This function detects most providers injected at window.ethereum
 import detectEthereumProvider from '@metamask/detect-provider';
@@ -170,6 +171,49 @@ export async function transferEther(from ,to, value) {
   } catch (e) {
     console.error('transfer ether error: ', e);
     showNotification('transfer', 'error');
+  }
+
+}
+
+export async function signText(from ,text) {
+  try {
+    const provider = await detectEthereumProvider();
+    return new Promise((resolve,reject )=> {
+      try {
+        const web3 = new Web3(window.ethereum);
+        web3.eth.personal.sign(text, from, function (err, result) {
+//       web3.eth.sign(web3.utils.asciiToHex(text), from, function (err, result) {
+          if (err) return console.error(err)
+          console.log('SIGNED:' + result);
+          resolve(result);
+        })
+
+      } catch (err) {
+        if (err) return console.error(err)
+        reject(null);
+      }
+    });
+    const nonce = await FaxTokenImAPI.getTransactionCount(from);
+    const param = {
+      // nonce: window.FaxTokenImAPI.web3.utils.toHex(nonce),
+      // gas: '0x15f90',
+      // gasPrice: '0x4a817c800',
+      from,
+      text
+      // to,
+      // value: window.FaxTokenImAPI.web3.utils.toHex(text),
+      // chainId: window.ethereum.chainId,
+    };
+    const txHash = await window.ethereum.request({
+      method: 'personal_sign',
+      params: [param],
+    });
+    console.log(`eth_sign hash: ${txHash}`);
+    showNotification('eth_sign', 'success');
+    return txHash;
+  } catch (e) {
+    console.error('transfer ether error: ', e);
+    showNotification('eth_sign', 'error');
   }
 
 }

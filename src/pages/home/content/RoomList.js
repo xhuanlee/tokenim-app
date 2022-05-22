@@ -20,6 +20,7 @@ import style from '../../ClubHouse.less';
 //import { DEFAULT_AVATAR } from '@/app/constant';
 import NeedLogin from '@/pages/home/NeedLogin';
 import { ReactComponent as svgCONTACT } from '../../../../public/image/SVG/CONTACT.svg';
+import {login} from '../../../app/lens/lensclient'
 
 function addPreZero4(num) {
   return (`0000${num}`).slice(-4);
@@ -82,7 +83,7 @@ const RoomSummary = ({ room, goToRoom , defaultRoom}) => {
 };
 
 const RoomList = props => {
-  const { server, dispatch, loading, meetingroom,targetRoom } = props;
+  const { server, dispatch, loading, meetingroom,targetRoom,account } = props;
   const { rooms, totalRoom, hasMore, needCreate, newChatRoomModal, user } = meetingroom;
   const fetchingMore = loading.effects['meetingroom/fetchMore'];
   const savingUser = loading.effects['meetingroom/saveServerUser'];
@@ -98,7 +99,8 @@ const RoomList = props => {
   }, [dispatch, meetingroom.server, server]);
   useEffect(() => {
     dispatch({ type: 'meetingroom/fetchUser' });
-  }, [dispatch]);
+    login(account?account.loginAddress:null);
+  }, [account, dispatch]);
 
   const formItemLayout = {
     labelCol: { span: 6 },
@@ -281,6 +283,20 @@ const RoomList = props => {
       >
         <Form form={chatRoomForm} {...formItemLayout}>
           <Form.Item
+            name="Handle"
+            label="Handle"
+            rules={[{ required: true, message: 'Please input your profile handle' }]}
+          >
+            <Input placeholder="please input your profile handle" />
+          </Form.Item>
+          <Form.Item
+            name="Name"
+            label="Name"
+            rules={[{ required: true, message: 'Please input your name' }]}
+          >
+            <Input placeholder="please input your name" />
+          </Form.Item>
+          <Form.Item
             name="title"
             label="title"
             rules={[{ required: true, message: 'Please input room title' }]}
@@ -307,24 +323,24 @@ const RoomList = props => {
           <Form.Item
             name="dueTime"
             label="due time"
-            rules={[{ required: true, message: 'Please input due time' }]}
+            rules={[{ required: false, message: 'Please input due time' }]}
           >
             <DatePicker showTime />
           </Form.Item>
-          <Form.Item
-            name="moderators"
-            label="moderators"
-            rules={[{ required: true, message: 'Please input moderators' }]}
-          >
-            <Input.TextArea placeholder="please input moderators" />
-          </Form.Item>
-          <Form.Item
-            name="speakers"
-            label="speakers"
-            rules={[{ required: true, message: 'Please input speakers' }]}
-          >
-            <Input.TextArea placeholder="please input speakers" />
-          </Form.Item>
+          {/*<Form.Item*/}
+          {/*  name="moderators"*/}
+          {/*  label="moderators"*/}
+          {/*  rules={[{ required: true, message: 'Please input moderators' }]}*/}
+          {/*>*/}
+          {/*  <Input.TextArea placeholder="please input moderators" />*/}
+          {/*</Form.Item>*/}
+          {/*<Form.Item*/}
+          {/*  name="speakers"*/}
+          {/*  label="speakers"*/}
+          {/*  rules={[{ required: true, message: 'Please input speakers' }]}*/}
+          {/*>*/}
+          {/*  <Input.TextArea placeholder="please input speakers" />*/}
+          {/*</Form.Item>*/}
         </Form>
       </Modal>
     </div>
