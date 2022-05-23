@@ -1090,6 +1090,7 @@ class HomePage extends Component {
       onlineSpeakers,
       loading,
       meetingroom,
+      lensevent,
       meetingServer,
     } = this.props;
     const {
@@ -1161,6 +1162,10 @@ class HomePage extends Component {
         break;
       case 'connect':
         contentBody = <GetConnections dispatch={dispatch} loading={loading} address={loginAddress} addContact={this.addContact} />;
+        break;
+      case 'lens':
+//        meetingroom.server='https://t.callt.net:3001/';
+        contentBody = <RoomList dispatch={dispatch} loading={loading} lensevent={lensevent} lensprotocol={'https://api-mumbai.lens.dev/'} meetingroom={meetingroom} server={'https://t.callt.net:3001/'} />;
         break;
       case 'kademlia':
 //        meetingroom.server='https://t.callt.net:3001/';
@@ -1736,6 +1741,7 @@ const mapStateToProps = state => {
     media: state.media,
     loading: state.loading,
     meetingroom: state.meetingroom,
+    lensevent:state.lensevent,
     currentRoom: state.meetingroom.currentRoom,
     meetingServer:state.meetingroom.meetingServer,
     roomUser: state.meetingroom.user,

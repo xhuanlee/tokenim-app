@@ -7,6 +7,7 @@ import {ReactComponent as svgRoom} from '../../public/image/SVG/ROOM.svg';
 const miniProgramList = [
   // { name: 'Defi', synopsis: 'Defi', link: '/home?s=defi', tooltip: 'dapps' },
   // { name: '联系人', synopsis: '联系人', link: '/home?s=connect', tooltip: '联系人' },
+  { name: 'Lens Protocol', synopsis: 'Lens Protocol', link: '/home?s=lens', tooltip: 'Lens Protocol' },
   { name: '会议室', synopsis: '会议室', link: '/home?s=kademlia', tooltip: '会议室' },
   { name: 'Meeting Room', synopsis: 'Meeting Room', link: '/home?s=beagle', tooltip: 'Meeting Room' },
 ];

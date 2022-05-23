@@ -21,6 +21,7 @@ import style from '../../ClubHouse.less';
 import NeedLogin from '@/pages/home/NeedLogin';
 import { ReactComponent as svgCONTACT } from '../../../../public/image/SVG/CONTACT.svg';
 import {login} from '../../../app/lens/lensclient'
+import {explorePublications,getPublications,explore} from '../../../app/lens/explore-publications'
 
 function addPreZero4(num) {
   return (`0000${num}`).slice(-4);
@@ -31,9 +32,12 @@ const names=['snoopy','lou','alan','david','will','author','luis','frank','mary'
             ,'satoshi','baker','henry','steven','luke','bill','woody','fire','john','flower']
 
 const RoomSummary = ({ room, goToRoom , defaultRoom}) => {
-  const { name, _id, id, title, description, dueTime, moderators, speakers } = room;
+  const { name, picture, _id, id, title, description, dueTime, moderators, speakers,stats } = room;
+  let total = stats?stats.totalAmountOfCollects:0;
+  let totalComments = stats?stats.totalAmountOfComments:0;
   let randomname = addPreZero4(Math.round(Math.random() * 10000));
   let authors = [{avatar:`https://www.larvalabs.com/public/images/cryptopunks/punk${randomname}.png`,nickname:names[randomname%20]}];
+  const avatar = picture && picture.original?picture.original.url:`https://www.larvalabs.com/public/images/cryptopunks/punk${randomname}.png`;
   randomname = addPreZero4(Math.round(Math.random() * 10000));
   if (moderators && moderators.length > 0) {
     authors = authors.concat(moderators);
@@ -64,43 +68,72 @@ const RoomSummary = ({ room, goToRoom , defaultRoom}) => {
         <span style={{ fontWeight: fontWeight,color:fontColor}}>{name}</span>
         <span style={{ fontSize: 14, fontWeight: 'unset', marginLeft: '16px' }}>{dueTime}</span>
       </h2>
-      <Avatar.Group>
-        {authors.map(item => (
-          <Avatar
-            size="large" style={{border:0}}
-            src={item.avatar && item.avatar !== '' ? item.avatar : DEFAULT_AVATAR}
-          />
-        ))}
-      </Avatar.Group>
       <div>
-        <span style={{ fontStyle: 'italic' }}>
-          {authors.reduce((pre, item) => `${pre}${pre === '' ? '' : ' / '}${item.nickname}`, '')}
+      <Avatar
+        size="large" style={{border:0}}
+        src={avatar}
+      />
+        <span style={{ fontStyle: 'normal',padding:12 }}>
+          {description}
         </span>
       </div>
+      <div>
+        <span style={{ fontStyle: 'italic' }}>
+          {`memebers:${total}, comments:${totalComments}`}
+        </span>
+      </div>
+      {/*<Avatar.Group>*/}
+      {/*  {authors.map(item => (*/}
+      {/*    <Avatar*/}
+      {/*      size="large" style={{border:0}}*/}
+      {/*      src={item.avatar && item.avatar !== '' ? item.avatar : DEFAULT_AVATAR}*/}
+      {/*    />*/}
+      {/*  ))}*/}
+      {/*</Avatar.Group>*/}
+      {/*<div>*/}
+      {/*  <span style={{ fontStyle: 'italic' }}>*/}
+      {/*    {authors.reduce((pre, item) => `${pre}${pre === '' ? '' : ' / '}${item.nickname}`, '')}*/}
+      {/*  </span>*/}
+      {/*</div>*/}
       <Typography>{_id}</Typography>
     </div>
   );
 };
 
 const RoomList = props => {
-  const { server, dispatch, loading, meetingroom,targetRoom,account } = props;
-  const { rooms, totalRoom, hasMore, needCreate, newChatRoomModal, user } = meetingroom;
-  const fetchingMore = loading.effects['meetingroom/fetchMore'];
-  const savingUser = loading.effects['meetingroom/saveServerUser'];
-  const savingRoom = loading.effects['meetingroom/saveNewChatRoom'];
+  const { server, dispatch, loading, meetingroom,targetRoom,account,lensprotocol,lensevent } = props;
+  const { rooms, totalRoom, hasMore, needCreate, newChatRoomModal, user } = lensevent?lensevent:meetingroom;
+  const fetchingMore = lensevent?loading.effects['lensevent/fetchMore']:loading.effects['meetingroom/fetchMore'];
+  const savingUser = lensevent?loading.effects['lensevent/saveServerUser']:loading.effects['meetingroom/saveServerUser'];
+  const savingRoom = lensevent?loading.effects['lensevent/saveNewChatRoom']:loading.effects['meetingroom/saveNewChatRoom'];
   const [form] = Form.useForm();
   const [chatRoomForm] = Form.useForm();
 
   useEffect(() => {
-    dispatch({ type: 'meetingroom/setServer', payload: { meetingServer: server } });
-    console.log("meetingroom.server:"+meetingroom.server);
-    console.log("server:"+server);
-    dispatch({ type: 'meetingroom/fetchRooms',payload: { meetingServer: server } });
-  }, [dispatch, meetingroom.server, server]);
+    if (lensprotocol){
+//        explore();
+     dispatch({ type: 'lensevent/setServer', payload: { meetingServer: server } });
+      console.log("meetingroom.server:" + meetingroom.server);
+      console.log("server:" + server);
+      dispatch({ type: 'lensevent/fetchRooms', payload: { server: lensprotocol, meetingServer: server } });
+    }
+    else {
+      dispatch({ type: 'meetingroom/setServer', payload: { meetingServer: server } });
+      console.log("meetingroom.server:" + meetingroom.server);
+      console.log("server:" + server);
+      dispatch({ type: 'meetingroom/fetchRooms', payload: { meetingServer: server } });
+    }
+  }, [dispatch, lensprotocol, meetingroom.server, server]);
+//}, [dispatch, lensprotocol, meetingroom.server, server]);
   useEffect(() => {
-    dispatch({ type: 'meetingroom/fetchUser' });
-    login(account?account.loginAddress:null);
-  }, [account, dispatch]);
+    if (lensprotocol)
+        dispatch({ type: 'lensevent/fetchUser' });
+    else
+        dispatch({ type: 'meetingroom/fetchUser' });
+//   login(account?account.loginAddress:null);
+//    getPublications();
+//    explore();
+  }, [account, dispatch, lensprotocol]);
 
   const formItemLayout = {
     labelCol: { span: 6 },
