@@ -134,7 +134,7 @@ export async function connectMetamask() {
     window.g_app._store.dispatch({ type: 'user/readChatHistory' });
     window.g_app._store.dispatch({ type: 'user/getBalance' });
     window.g_app._store.dispatch({ type: 'media/saveChatUser', payload: { chatUser: null } });
-    showNotification('connect_metamask', 'success');
+    showNotification('connect_metamask', ' success');
 
     // should get free 1 Ether to new account
     // IMApp.getFreeEther(address).then(() => {

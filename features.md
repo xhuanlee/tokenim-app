@@ -223,9 +223,12 @@ codec === 'ipfs-ns' // false
     - https://medium.com/1kxnetwork/organization-legos-the-state-of-dao-tooling-866b6879e93e
     - https://coopahtroopa.mirror.xyz/_EDyn4cs9tDoOxNGZLfKL7JjLo5rGkkEfRa_a-6VEWw
     - https://linda.mirror.xyz/Vh8K4leCGEO06_qSGx-vS5lvgUqhqkCz9ut81WwCP2o
+    - https://polygonscan.com/tx/0x28c7d3a7098f54b57e5aa34d5ca4b90a57c73d85f73cdeea1fc7357171b79059
   - Lens Protocol
     - https://docs.lens.dev/docs/primer
     - https://lenster.xyz/
+    - https://polygonscan.com/address/0xdd7047d6a8b02595c55ddf01c5934b10d7e03873#code
+    
   - Galaxy
     - https://mirror.xyz/gsandly.eth/-_Ur2mcIefC-up3ywVlIOOHoBQUBh4ipOrGtaVWzI5U
 - Support Social Token
@@ -259,6 +262,21 @@ codec === 'ipfs-ns' // false
   - https://documentation.poap.tech/
   - api-key: 427H0cApPofXsORN1w2iOBAPs5EVykJlF4iDiEECwN4xptx4t0DQv5UMaFfR5vyAZh3LT7aseLygjSXoqJ10BYEkWjDkW3jvSQzAClmq9EncUeAbLGqhewsvCfsAWMcL
   -  curl -vvv -H "X-API-Key: 427H0cApPofXsORN1w2iOBAPs5EVykJlF4iDiEECwN4xptx4t0DQv5UMaFfR5vyAZh3LT7aseLygjSXoqJ10BYEkWjDkW3jvSQzAClmq9EncUeAbLGqhewsvCfsAWMcL"  https://api.poap.tech/paginated-events?limit=100&offset=0&sort_dir=asc&sort_field=name
+#### 2.6.5 用lens protocol实现会议室管理
+- 能够创建会议室的人需要先获得一个profile, 即xxxx.lens
+- 创建一个会议室相当于post一个Publication，会议信息的描述比较跟一般的Post无异
+  - Publications are posted directly to a user's ProfileNFTs; this ensures that all content created by a user remains user-owned and in their wallet.
+  - Publications have a ContentURI which points to the specific content the publication contains, this can point to text, an image, a video, or other arbitrary content stored on either a decentralized protocol such as IPFS or Arweave, or a centralized storage provider like AWS S3.
+  - Publications also have two attached modules, a Collect Module, and a Reference Module. The Collect Module contains the logic that allows other users to mint your publication into an NFT. This NFT will reference the original Publication's URI. The Reference Module controls references to the publication itself. It contains the logic that determines who can comment and mirror the publication.
+- 参与会议的人可能需要collect这个Publiction才能参加会议，collect可以用来收费 
+  - Collects allow creators to monetize their content. Because creators own their content via the Lens Protocol, they are able to allow their followers to purchase that content.
+  - When a user posts a publication to their Profile NFT they have the option to set a Collect Module. This module will allow other users to mint NFTs that link to the publication's ContentURI. This module can contain any arbitrary logic to apply to the minting process and the resulting NFT.    
+  - A creator can attach a collect module that allows collecting to be open for a certain amount of time or only allow a certain number of collects. Developers can also make their collect modules to add even more functionality!
+- 任何人可以follow某个profile，follow后能够看到该profile发布的会议信息
+  - Profiles NFTs can attach a particular Follow Module to each ProfileNFT, which contains all of the logic used to determine if a user attempting to follow the profile should be issued a Follow NFT. For example, a profile could attach a follow module that requires a user to pay 5 MATIC to receive a Follow NFT.
+  - The ID of each newly issued Follow NFT for given profile increments by 1, such that the first follower's NFT has an ID of 1; the tenth has an ID of 10, and so on.
+  - Additionally, Follow NFTs have built-in governance capabilities, such as vote delegation, to allow for the creation of Social DAOs using Lens Protocol. Creators, DAOs, or other organizations can create voting strategies using Follow NFTs and their various properties--for example: "The first 1000 follows have one vote each" or "The longer you have followed, the more voting power you have."
+ 
 ## 3. App前端开发
 ### 3.1. metamask support on Web
 - login in by sign with metamask (maybe other ethereum main or test chain, 

@@ -380,8 +380,9 @@ export const getPublications = async () => {
 export const explore = async () => {
   const result = await explorePublications({
     // switch for `TOP_COLLECTED` if you wanted collected!
-    sortCriteria: 'TOP_COMMENTED',
-    // sources: 'Lenster Community',
+//    sortCriteria: 'TOP_COMMENTED',
+    sortCriteria: 'LATEST',
+    sources: 'Lenster Community',
     limit: 10,
   });
 

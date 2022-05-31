@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import { connect } from 'dva';
 //import AgoraRTC from 'agora-rtc-sdk-ng';
 import style from '../../ClubHouse.less';
-import { AudioOutlined, AudioMutedOutlined, StopOutlined } from '@ant-design/icons';
+import { AudioOutlined, AudioMutedOutlined, StopOutlined,ShareAltOutlined } from '@ant-design/icons';
 import ClubhouseUserItem from '@/components/ClubhouseUserItem';
 import {
   createLocalAndPublishAudio,
@@ -18,6 +18,7 @@ import { Button, Tooltip } from 'antd';
 import NeedLogin from '@/pages/home/NeedLogin';
 import { isHost } from '@/service/licodeclient';
 import { enterRoom } from './LicodeClient';
+import { showNotification } from '@/app/util';
 
 const CHANNEL_PREFIX = 'meetingroom';
 
@@ -74,6 +75,21 @@ const MeetingRoom = props => {
     dispatch({ type: 'meetingroom/saveAudioEnable', payload: { audioEnable: !audioEnable } });
   }, [audioEnable, dispatch]);
 
+  const copyShareLink = ()=>{
+    let s='kademlia';
+    let sharelink = window.location.host+"?s="+s+"&room="+currentRoom._id+'&name='+currentRoom.name;
+    console.log(sharelink);
+    const input = document.createElement('input');
+    input.setAttribute('readonly', 'readonly');
+    input.setAttribute('value', sharelink);
+    document.body.appendChild(input);
+    input.setSelectionRange(0, 9999);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
+    showNotification(sharelink, ' copied');
+  };
+
   const stopConference = ()=>{
     leaveCall(agoraObject);
     dispatch({ type: 'meetingroom/stopConference', payload: { } });
@@ -86,15 +102,20 @@ const MeetingRoom = props => {
       <div style={{backgroundColor:'lightgrey'}}>
         <h1 style={{margin:10}}>
           {title}
+          <Tooltip title="Copy Meeting Link">
+            <Button size="large" type="link" onClick={copyShareLink}>
+              <ShareAltOutlined  style={{ fontSize: '24px' ,color:'green'}} />
+            </Button>
+          </Tooltip>
           {audioEnable ? (
             <Tooltip title="mute">
-              <Button size="large" type="link" onClick={toggleAudioEnable} style={{marginLeft:"70%" }}>
+              <Button size="large" type="link" onClick={toggleAudioEnable} style={{marginLeft:"40%" }}>
                 <AudioMutedOutlined style={{ fontSize: '24px'}} />
               </Button>
             </Tooltip>
           ) : (
             <Tooltip title="unmute">
-              <Button size="large" type="link" onClick={toggleAudioEnable} style={{marginLeft:"70%" }}>
+              <Button size="large" type="link" onClick={toggleAudioEnable} style={{marginLeft:"40%" }}>
                 <AudioOutlined style={{ fontSize: '24px'}} />
               </Button>
             </Tooltip>

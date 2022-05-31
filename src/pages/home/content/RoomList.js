@@ -32,7 +32,7 @@ const names=['snoopy','lou','alan','david','will','author','luis','frank','mary'
             ,'satoshi','baker','henry','steven','luke','bill','woody','fire','john','flower']
 
 const RoomSummary = ({ room, goToRoom , defaultRoom}) => {
-  const { name, picture, _id, id, title, description, dueTime, moderators, speakers,stats } = room;
+  const { name, picture, _id, id, title, handle,description, dueTime, moderators, speakers,stats } = room;
   let total = stats?stats.totalAmountOfCollects:0;
   let totalComments = stats?stats.totalAmountOfComments:0;
   let randomname = addPreZero4(Math.round(Math.random() * 10000));
@@ -79,7 +79,7 @@ const RoomSummary = ({ room, goToRoom , defaultRoom}) => {
       </div>
       <div>
         <span style={{ fontStyle: 'italic' }}>
-          {`memebers:${total}, comments:${totalComments}`}
+          {`${handle}, memebers:${total}, comments:${totalComments}`}
         </span>
       </div>
       {/*<Avatar.Group>*/}
@@ -101,13 +101,15 @@ const RoomSummary = ({ room, goToRoom , defaultRoom}) => {
 };
 
 const RoomList = props => {
-  const { server, dispatch, loading, meetingroom,targetRoom,account,lensprotocol,lensevent } = props;
+  const { server, dispatch, loading, meetingroom,targetRoom,account,lensprotocol,lensevent,targetName } = props;
   const { rooms, totalRoom, hasMore, needCreate, newChatRoomModal, user } = lensevent?lensevent:meetingroom;
   const fetchingMore = lensevent?loading.effects['lensevent/fetchMore']:loading.effects['meetingroom/fetchMore'];
   const savingUser = lensevent?loading.effects['lensevent/saveServerUser']:loading.effects['meetingroom/saveServerUser'];
   const savingRoom = lensevent?loading.effects['lensevent/saveNewChatRoom']:loading.effects['meetingroom/saveNewChatRoom'];
   const [form] = Form.useForm();
   const [chatRoomForm] = Form.useForm();
+  if (targetName && targetName.length>0)
+    console.log('targetName:',targetName);
 
   useEffect(() => {
     if (lensprotocol){
@@ -121,9 +123,12 @@ const RoomList = props => {
       dispatch({ type: 'meetingroom/setServer', payload: { meetingServer: server } });
       console.log("meetingroom.server:" + meetingroom.server);
       console.log("server:" + server);
-      dispatch({ type: 'meetingroom/fetchRooms', payload: { meetingServer: server } });
+      if (targetRoom && targetRoom.length>10)
+        dispatch({type:'meetingroom/saveRooms',payload:{rooms: [{_id:targetRoom,name:targetName?targetName:'Beagles'}]}});
+      else
+        dispatch({ type: 'meetingroom/fetchRooms', payload: { meetingServer: server } });
     }
-  }, [dispatch, lensprotocol, meetingroom.server, server]);
+  }, [dispatch, lensprotocol, meetingroom.server, server, targetName, targetRoom]);
 //}, [dispatch, lensprotocol, meetingroom.server, server]);
   useEffect(() => {
     if (lensprotocol)
@@ -152,7 +157,7 @@ const RoomList = props => {
       // room.speakers=[{address:'0xaaaddddeeee',nickName:'alan',avatar:'https://s2.loli.net/2021/12/16/UEdKoBsS3JNtfAy.jpg'}];
       dispatch({ type: 'meetingroom/saveCurrentRoom', payload: { currentRoom: room } });
       //router.push(`/meetingroom/${room._id}`);
-      router.push(`/home?s=chat&room=${room._id}`);
+      router.push(`/home?s=chat&room=${room._id}&name=${room.name}`);
       console.log('enter:' + room._id);
     },
     [dispatch],
@@ -230,7 +235,7 @@ const RoomList = props => {
         //avatar={<Icon component={svgCONTACT}>}
         className="site-page-header"
         backIcon={false}
-        title="Rooms"
+        title={lensprotocol?"Lenspace - Under Construction ...":"Rooms"}
         subTitle={`${totalRoom} rooms`}
         extra={[
           <Button type="primary" onClick={clickNewChatRoom}>

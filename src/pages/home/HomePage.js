@@ -1138,7 +1138,9 @@ class HomePage extends Component {
       )
     ) : null;
 
-    const { s, room } = this.props.location.query;
+    const { s, room,name } = this.props.location.query;
+    if (name && name.length>0)
+      console.log(name);
     let contentBody = (
       <HomeTab
         address={loginAddress}
@@ -1169,11 +1171,11 @@ class HomePage extends Component {
         break;
       case 'kademlia':
 //        meetingroom.server='https://t.callt.net:3001/';
-        contentBody = <RoomList dispatch={dispatch} loading={loading} meetingroom={meetingroom} server={'https://t.callt.net:3001/'} />;
+        contentBody = <RoomList dispatch={dispatch} loading={loading} meetingroom={meetingroom} targetRoom={room} targetName={name} server={'https://t.callt.net:3001/'} />;
         break;
       case 'beagle':
 //        meetingroom.server='https://meeting.kad.network:3001/';
-        contentBody = <RoomList dispatch={dispatch} loading={loading} meetingroom={meetingroom} server={'https://meeting.kad.network:3001/'} />;
+        contentBody = <RoomList dispatch={dispatch} loading={loading} meetingroom={meetingroom} targetRoom={room} targetName={name}   server={'https://meeting.kad.network:3001/'} />;
         break;
       case 'chat':
         if (roomUser && roomUser.address && roomUser.address.length>0

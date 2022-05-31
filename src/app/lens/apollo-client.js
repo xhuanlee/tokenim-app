@@ -3,7 +3,8 @@
 // @apollo/client/core!
 import { ApolloClient, InMemoryCache, HttpLink, ApolloLink } from '@apollo/client'
 
-const httpLink = new HttpLink({ uri: 'https://api-mumbai.lens.dev/' });
+//const httpLink = new HttpLink({ uri: 'https://api-mumbai.lens.dev/' });
+const httpLink = new HttpLink({ uri: 'https://api.lens.dev/' });
 
 // example how you can pass in the x-access-token into requests using `ApolloLink`
 const authLink = new ApolloLink((operation, forward) => {
