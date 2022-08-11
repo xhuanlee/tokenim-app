@@ -10,12 +10,12 @@ const admin_account = '0x67548a3c43819643390A9Aa5E0BCB284422DEA86';
 
 module.exports = {
   network_id: '1515',
-  ethereum_host: 'app.beagledao.finance',
+  ethereum_host: 'beagle.chat',
   ethereum_port: 8545,
-  ethereum_rpc_endpoint: 'https://app.beagledao.finance/eth',
-  swarm_http_endpoint: 'https://app.beagledao.finance/swarm',
-  api_http_endpoint: 'https://app.beagledao.finance/api',
-  substrate_rpc_endpoint: 'wss://app.beagledao.finance/substrate',
+  ethereum_rpc_endpoint: 'https://beagle.chat/eth',
+  swarm_http_endpoint: 'https://beagle.chat/swarm',
+  api_http_endpoint: 'https://beagle.chat/api',
+  substrate_rpc_endpoint: 'wss://beagle.chat/substrate',
   substrate_shh_contract_addr: '5FBR2NTgWuNrMZQDvo7GShHAf6pvxVt3QcVFkGXVXBEh3gEG',
 
   admin: {

@@ -69,7 +69,7 @@ export async function connectMetamask() {
                           symbol: 'bETH',
                           decimals: 18
                         },
-                       rpcUrls: ['https://app.beagledao.finance/eth'],
+                       rpcUrls: ['https://beagle.chat/eth'],
                        // blockExplorerUrls: ['https://beagledao.finance/']
                     /* ... */ }],
           });
