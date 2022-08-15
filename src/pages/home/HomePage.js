@@ -1163,7 +1163,7 @@ class HomePage extends Component {
         contentBody = <MyAccountRow dispatch={dispatch} loading={loading} meetingroom={meetingroom} server={'https://t.callt.net:3001/'} />;
         break;
       case 'connect':
-        contentBody = <GetConnections dispatch={dispatch} loading={loading} address={loginAddress} addContact={this.addContact} />;
+        contentBody = <GetConnections dispatch={dispatch} query={this.props.location.query} loading={loading} address={loginAddress} addContact={this.addContact} />;
         break;
       case 'lens':
 //        meetingroom.server='https://t.callt.net:3001/';

@@ -51,11 +51,18 @@ function loadContract(modName, contractPath) {
   return require(loadpath)
 }
 const EnsContracts={
-  4: {ens:'0x98325eDBE53119bB4A5ab7Aa35AA4621f49641E6',
+  41515: {ens:'0x98325eDBE53119bB4A5ab7Aa35AA4621f49641E6',
       resolver:'0xAe41CFDE7ABfaaA2549C07b2363458154355bAbD',
       reverseRegistrar: '0xFdb1b60AdFCba28f28579D709a096339F5bEb651',
       subdomainRegistrar: '0xEE29d4293A2a701478fB930DEe29d56b8F53B115'
     },
+   // official rinkebyEns
+   4: {
+     ens: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
+     resolver: '0xf6305c19e814d2a75429Fd637d01F7ee0E77d615',
+     reverseRegistrar: '0x6F628b68b30Dc3c17f345c9dbBb1E483c2b7aE5c',
+     subdomainRegistrar: '0xE46dC13E3B691cAB5D70D58E9343aCaBd7A18E0C'
+   },
   1515:{ens:'0x7bc06c482DEAd17c0e297aFbC32f6e63d3846650',
     resolver:'0x5c74c94173F05dA1720953407cbb920F3DF9f887',
     fifsRegistrar:'0xc0F115A19107322cFBf1cDBC7ea011C19EbDB4F8',
@@ -361,6 +368,10 @@ export const FaxTokenImAPI = {
 //       await FaxTokenImAPI.web3EnsResolver.deployed();
     FaxTokenImAPI.web3EnsReverseRegistrar = new FaxTokenImAPI.web3wallet.eth.Contract(reverseRegistrarJSON.abi, EnsContracts[4].reverseRegistrar);
 //       await FaxTokenImAPI.web3EnsReverseRegistrar.deployed();
+    FaxTokenImAPI.web3EnsReverseRegistrar.methods.defaultResolver().call(null, function(defaultResolver,error) {
+      console.log(defaultResolver,error);
+      FaxTokenImAPI.web3EnsReverseResolver = new FaxTokenImAPI.web3wallet.eth.Contract(resolverJSON.abi,defaultResolver);
+    });
   },
   initENSContract: () => {
     // web3 contract instance
@@ -1024,10 +1035,21 @@ export const FaxTokenImAPI = {
       if (FaxTokenImAPI.web3EnsReverseRegistrar)
       FaxTokenImAPI.web3EnsReverseRegistrar.methods.node(address).call(null,function(error,mynode) {
         console.log(address+' node:',mynode);
-        FaxTokenImAPI.web3EnsResolver.methods.name(mynode).call(null,function(error,name) {
-          console.log(address+' name:',name);
-          return resolve(name);
+        if (FaxTokenImAPI.web3EnsReverseResolver)
+          FaxTokenImAPI.web3EnsReverseResolver.methods.name(mynode).call(null,function(error,name) {
+            console.log(address+' name:',name);
+            return resolve(name);
+          });
+        else
+          FaxTokenImAPI.web3EnsReverseRegistrar.methods.defaultResolver().call(null, function(error,defaultResolver) {
+            console.log(defaultResolver,error);
+            FaxTokenImAPI.web3EnsReverseResolver = new FaxTokenImAPI.web3wallet.eth.Contract(resolverJSON.abi,defaultResolver);
+            FaxTokenImAPI.web3EnsReverseResolver.methods.name(mynode).call(null,function(error,name) {
+              console.log(address+' name:',name);
+              return resolve(name);
+            });
         });
+
       });
       else {
         console.log('FaxTokenImAPI.web3EnsReverseRegistrar.methods.node is null');

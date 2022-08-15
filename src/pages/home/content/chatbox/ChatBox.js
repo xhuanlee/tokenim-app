@@ -150,7 +150,7 @@ class ChatBox extends Component {
           <div id='chat' style={{ overflowY: 'auto', height: 'calc(100vh - 20px - 70px - 30px - 150px)', minHeight: 50, backgroundColor: 'rgb(238, 238, 238)', padding: 20 }}>
             {!isGroup
               ? <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <div style={{ textAlign: 'center', width: 180, backgroundColor: '#fff', borderRadius: 10 }}>{formatTime(time)}{formatMessage({ id: 'chat.join_chat' })}</div>
+                <div style={{ textAlign: 'center', width: 180, backgroundColor: '#fff', borderRadius: 10 }}>{formatTime(time)} {' '+formatMessage({ id: 'chat.join_chat' })}</div>
               </div>
               : null}
             {isGroup

@@ -48,6 +48,9 @@ h1 {
 
 .item {
   font-weight: 300;
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: 4fr 2fr;
 }
 
 .item:nth-child(2n + 1) {

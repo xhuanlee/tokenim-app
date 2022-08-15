@@ -12,6 +12,7 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { typesBundle, typesChain, typesSpec } from '@polkadot/apps-config';
 import { Abi, ContractPromise } from '@polkadot/api-contract';
 import webrtcDataAbi from '../../substrate-contracts/webrtc-data/webrtc_data.json';
+import { getNameText } from '@/app/metamask';
 
 const PROVIDER_URL = ethereum_rpc_endpoint;
 notification.config({ top: 78 })
@@ -289,10 +290,18 @@ const IMApp = {
         window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { queryENSLoading: false, queryENSAvaiable: false, queryENSAddress: addr } })
         return FaxTokenImAPI.getShhPublicKeyByAddress(addr)
       }
-    }).then((pubKey) => {
+    }).then(async (pubKey) => {
       console.log(`query shh public key result: ${pubKey}`)
       if (pubKey) {
         window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { queryShhLoading: false, queryShhPubKey: pubKey } })
+      }
+      else{
+        let shhPubKey = await getNameText(name,'whisper');
+        if (shhPubKey && shhPubKey.length>0){
+          console.log(`${name} shhPubKey is ${shhPubKey}`);
+          window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { queryShhLoading: false, queryShhPubKey: shhPubKey } })
+          return shhPubKey;
+        }
       }
     }).catch((err) => {
       console.log('query shh public key ',err)
