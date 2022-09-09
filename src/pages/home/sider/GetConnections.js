@@ -49,6 +49,7 @@ const variables = {
   const [error, setError] = useState("");
   const [followers, setFollowers] = useState([]);
   const [followings, setFollowings] = useState([]);
+  const [names,setNames]=useState([])
   console.log(JSON.stringify(props));
     const  setChatToUser = useCallback(user => {
       let address=user.target.getAttribute('address');
@@ -73,37 +74,58 @@ const variables = {
     client
       .request(GET_CONNECTIONS, {address:address?address:window.App.loginAddress,first:5})
       .then((res) => {
-        setLoading(false);
-        const followers =res?.identity?.followers?.list.map(async function(follower) {
+        const followersList =res?.identity?.followers?.list.map(async function(follower) {
             if (follower.domain)
               return follower;
-            else{
-              const domain = await FaxTokenImAPI.getEnsName(address);
-              console.log(follower.address,domain);
+            else
+              if (names[follower.address])
+                return {...follower,domain:names[follower.address]};
+            else {
+                const domain = await FaxTokenImAPI.getEnsName(address);
+                console.log(follower.address, domain);
+                names[follower.address] = domain;
+                setNames(names);
+                for (let i = 0; followers.length; i++)
+                  if (followers[i].address == follower.address){
+                    followers[i].domain = domain;
+                    setFollowers(followers);
+                    }
               return {...follower, domain:domain};
             }
           }
           );
         setFollowers(res?.identity?.followers?.list);
 //        setFollowers(followers);
-        const followings =  res?.identity?.followings?.list.map(async function(following) {
+        const followingsList =  res?.identity?.followings?.list.map(async function(following) {
             if (following.domain)
               return following;
+            else
+            if (names[following.address])
+              return {...following,domain:names[following.address]};
             else{
               const domain = await FaxTokenImAPI.getEnsName(address);
               console.log(following.address,domain);
+              names[following.address]=domain;
+              setNames(names);
+              for (let i = 0; followings.length; i++)
+                if (followings[i].address == following.address){
+                  followings[i].domain = domain;
+                  setFollowers(followings);
+                }
               return {...following,domain:domain};
             }
           }
         );
 //        setFollowings(followings);
         setFollowings(res?.identity?.followings?.list);
+        setLoading(false);
+
       })
       .catch((e) => {
         setLoading(false);
         setError(e.message);
       });
-  }, [address]);
+  }, [address, followers, followings, names]);
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error}`;
@@ -131,7 +153,7 @@ const variables = {
             }
             >
               {elem.address}</a></div>
-            <div>{elem.domain ? elem.domain : "-"}</div>
+            <div>{elem.domain && elem.domain.length>0 ? elem.domain :names[elem.address]?names[elem.address]:"-"}</div>
           </div>
         ))}
       </div>
@@ -152,7 +174,7 @@ const variables = {
             >{elem.address}
             </a>
             </div>
-            <div>{elem.domain ? elem.domain : "-"}</div>
+            <div>{elem.domain && elem.domain.length>0? elem.domain :names[elem.address]?names[elem.address]:"-"}</div>
           </div>
         ))}
       </div>

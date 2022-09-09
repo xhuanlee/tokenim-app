@@ -56,6 +56,7 @@ export default {
 
   'index.white_paper': '白皮书',
   'index.faq': 'FAQ',
+  'index.privacy': 'Privacy',
   'index.download': '下载',
   'index.quotation': '行情',
   'index.config_peer': '配置连接节点',

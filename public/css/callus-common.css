@@ -1,6 +1,6 @@
 body {
   background-color: #34363a;
-  font-family: 'Droid Sans Fallback', 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', 'Heiti SC', 'WenQuanYi Micro Hei', sans-serif;
+  /*font-family: 'Droid Sans Fallback', 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', 'Heiti SC', 'WenQuanYi Micro Hei', sans-serif;*/
 }
 
 .navbar {
@@ -162,7 +162,7 @@ p {
   .item-list>li {
     font-size: 15px;
   }
-  
+
   .question-title{
     font-size: 17px;
   }

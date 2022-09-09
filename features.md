@@ -424,3 +424,7 @@ ens名字和以太坊地址都可以作为唯一地址
 ### App本地好友数据 
 - 好友的ens名字或者address
 - 好友的Profile，可以重新获取好友的profile 
+
+### Beagle Toekn Contract
+- rinkeby
+BG token: 0xCA3Cdb1a0eb8F0522C247B4148818fc4af1138f7

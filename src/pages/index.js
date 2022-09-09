@@ -209,7 +209,8 @@ class LoginPage extends PureComponent {
     return (
       <div>
         <div className={styles.menu} style={{ textAlign: 'center' }}>
-          <a href={enLocale ? 'https://beagle.gitbook.io/beagle-dao/' : 'https://beagle.gitbook.io/beagle-dao/'} style={{color:'#989A9C', width:'25%',marginRight: "5%" }}>{formatMessage({ id: 'index.white_paper' })}</a>
+          <a href={enLocale ? 'pages/whitepaperEN.html' : 'pages/whitepaper.html'} style={{color:'#989A9C', width:'25%',marginRight: "5%" }}>{formatMessage({ id: 'index.white_paper' })}</a>
+          {/*<a href={enLocale ? 'https://beagle.gitbook.io/beagle-dao/' : 'https://beagle.gitbook.io/beagle-dao/'} style={{color:'#989A9C', width:'25%',marginRight: "5%" }}>{formatMessage({ id: 'index.white_paper' })}</a>*/}
           <a href={enLocale ? 'pages/faqEN.html' : 'pages/faq.html'} style={{ color:'#989A9C',  width:'20%', marginRight: '5%' }}>{formatMessage({ id: 'index.faq' })}</a>
           <a href={enLocale ? 'pages/downloadEN.html' : 'pages/download.html'} style={{ color:'#989A9C',  width:'20%',marginRight: '5%' }}>{formatMessage({ id: 'index.download' })}</a>
           <a href={`/?locale=${oLocale}`} style={{ color:'#989A9C',  width:'20%',marginRight: '5%' }}>{oLocaleDes}</a>
@@ -391,13 +392,15 @@ class LoginPage extends PureComponent {
         <p className={styles.copyright}>Copyright © 2020-2022 <a href="https://www.beagledao.finance" style={{color:'#352E50'}}>{formatMessage({ id: 'allcom' })}</a></p>
           {/*<p className={styles.beian}><a href="https://beian.miit.gov.cn/" target="_blank"> 沪ICP备14021271号-4</a></p>*/}
         <p className={styles.beian }> beagles.eth on
-          <a href="https://app.ens.domains/name/beagles.eth" target={'_blank'} style={{fontWeight:'bold'}} > ENS </a>
-          and <a href="https://ens.dns3.xyz/name/beagles.eth"  target={'_blank'} style={{fontWeight:'bold'} }> L2</a> </p>
+          <a href="https://app.ens.domains/name/beagles.eth" target={'_blank'} style={{fontWeight:'bold'}} rel="noreferrer" > ENS </a>
+          and <a href="https://ens.dns3.xyz/name/beagles.eth"  target={'_blank'} style={{fontWeight:'bold'} } rel="noreferrer"> L2</a>
+          <a href={enLocale ? 'pages/privacyEN.html' : 'pages/privacy.html'} style={{ color:'#989A9C'}}>  {formatMessage({ id: 'index.privacy' })}</a>
+        </p>
         <div className={styles.status} style={{ textAlign: 'center' }}>
           {/*<p style={{ marginBottom: 0 }}>{formatMessage({ id: 'index.encrypt_coin' })}</p>*/}
           {/*<p>{formatMessage({ id: 'index.digital_currency' })}</p>*/}
 
-          <a href="http://app.beagledao.finance:3000/" target="_blank" style={{color:'#352E50'}}>{formatMessage({ id: 'index.network_status' })}</a>
+          <a href="http://app.beagledao.finance:3000/" target="_blank" style={{color:'#352E50'}} rel="noreferrer">{formatMessage({ id: 'index.network_status' })}</a>
           <p style={{ marginBottom: 0 }}>
             {/*<span>{formatMessage({ id: 'index.contact' })}:</span>*/}
             {/*<PhoneOutlined style={{ transform: 'rotate(90deg)', color: '#5190ff' }} />*/}

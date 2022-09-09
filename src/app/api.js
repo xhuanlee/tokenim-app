@@ -63,11 +63,20 @@ const EnsContracts={
      reverseRegistrar: '0x6F628b68b30Dc3c17f345c9dbBb1E483c2b7aE5c',
      subdomainRegistrar: '0xE46dC13E3B691cAB5D70D58E9343aCaBd7A18E0C'
    },
+  // official goerli
+  5:{
+    ETHRegistrarController:'0x283Af0B28c62C092C9727F1Ee09c02CA627EB7F5',
+    ens:'0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
+    resolver:'0x4B1488B7a6B320d2D721406204aBc3eeAa9AD329',
+    reverseRegistrar:'0x6F628b68b30Dc3c17f345c9dbBb1E483c2b7aE5c',//addr.reverse
+    //https://app.ens.domains/name/addr.reverse/details
+    subdomainRegistrar: '0x09108608Ef7557669EA47F1073Ee56A7aB511c2f'
+  },
   1515:{ens:'0x7bc06c482DEAd17c0e297aFbC32f6e63d3846650',
     resolver:'0x5c74c94173F05dA1720953407cbb920F3DF9f887',
     fifsRegistrar:'0xc0F115A19107322cFBf1cDBC7ea011C19EbDB4F8',
     reverseRegistrar:'0x34B40BA116d5Dec75548a9e9A8f15411461E8c70',
-    subdomainRegistrar: null
+    subdomainRegistrar: '0x009F9da8047686de4c9cf1C6c8dF5Fec87Ae11ff'
 }
 };
 

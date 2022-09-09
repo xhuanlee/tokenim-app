@@ -53,6 +53,7 @@ export default {
 
   'index.white_paper': 'Whitepaper',
   'index.faq': 'FAQ',
+  'index.privacy': 'Privacy',
   'index.download': 'Download',
   'index.quotation': 'Quotation',
   'index.config_peer': 'config connect peer',
