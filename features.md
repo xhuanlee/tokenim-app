@@ -428,3 +428,8 @@ ens名字和以太坊地址都可以作为唯一地址
 ### Beagle Toekn Contract
 - rinkeby
 BG token: 0xCA3Cdb1a0eb8F0522C247B4148818fc4af1138f7
+BeagleIM: 0xE5Da59eE1f021a601F91B83735fd0d8b8753a84f
+- evmos testnet
+BG token:
+Beagle: 0xF03B3b68f7643EB3354D2098f30b00e02049b774
+BeagleIM: 0x4643429078a2363Bd1631bF8e2e8916a65371FA0
