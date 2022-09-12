@@ -36,6 +36,8 @@ const reverseRegistrarJSON = require('../../abi/ens/ReverseRegistrar');
 const EnsSubdomainFactory = require('../../ens/EnsSubdomainFactory');
 const FaxToken = require('../../abi/FaxToken');
 const FaxTokenIM = require('../../abi/FaxTokenIM.json');
+const BeagleToken = require('../../contracts/artifacts/BeagleToken.json');
+const BeagleIM = require('../../contracts/artifacts/BeagleIM.json');
 const {network_id} = require('../../config');
 
 var chain_id;
@@ -61,7 +63,9 @@ const EnsContracts={
      ens: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
      resolver: '0xf6305c19e814d2a75429Fd637d01F7ee0E77d615',
      reverseRegistrar: '0x6F628b68b30Dc3c17f345c9dbBb1E483c2b7aE5c',
-     subdomainRegistrar: '0xE46dC13E3B691cAB5D70D58E9343aCaBd7A18E0C'
+     subdomainRegistrar: '0xE46dC13E3B691cAB5D70D58E9343aCaBd7A18E0C',
+     beagleToken:'0xCA3Cdb1a0eb8F0522C247B4148818fc4af1138f7',
+     beagleIM: '0xE5Da59eE1f021a601F91B83735fd0d8b8753a84f',
    },
   // official goerli
   5:{
@@ -76,8 +80,19 @@ const EnsContracts={
     resolver:'0x5c74c94173F05dA1720953407cbb920F3DF9f887',
     fifsRegistrar:'0xc0F115A19107322cFBf1cDBC7ea011C19EbDB4F8',
     reverseRegistrar:'0x34B40BA116d5Dec75548a9e9A8f15411461E8c70',
-    subdomainRegistrar: '0x009F9da8047686de4c9cf1C6c8dF5Fec87Ae11ff'
-}
+    subdomainRegistrar: '0x009F9da8047686de4c9cf1C6c8dF5Fec87Ae11ff',
+    beagleToken:'0x2411801d08ba5db0ea6416e6640452287777ecf5',
+    beagleIM: '0x5cA7c294578C9222A1C91d026545514DE3E8D2e5',
+},
+  9000:{ens:'0x7bc06c482DEAd17c0e297aFbC32f6e63d3846650',
+    resolver:'0x5c74c94173F05dA1720953407cbb920F3DF9f887',
+    fifsRegistrar:'0xc0F115A19107322cFBf1cDBC7ea011C19EbDB4F8',
+    reverseRegistrar:'0x34B40BA116d5Dec75548a9e9A8f15411461E8c70',
+    subdomainRegistrar: '0x009F9da8047686de4c9cf1C6c8dF5Fec87Ae11ff',
+    beagleToken:'0xF03B3b68f7643EB3354D2098f30b00e02049b774',
+    beagleIM: '0x4643429078a2363Bd1631bF8e2e8916a65371FA0',
+  }
+
 };
 
 export const FaxTokenImAPI = {
@@ -232,8 +247,10 @@ export const FaxTokenImAPI = {
     // FaxTokenImAPI.web3ImContract = c.at(FaxTokenIM.networks[network_id].address);
 
     // truffle contract instance
-    const faxTokenIMContract = new Contract(FaxTokenIM.abi,FaxTokenIM.networks[network_id].address);
-    faxTokenIMContract.setProvider(FaxTokenImAPI.web3.currentProvider);
+//    const faxTokenIMContract = new Contract(FaxTokenIM.abi,FaxTokenIM.networks[network_id].address);
+    const faxTokenIMContract = new Contract(BeagleIM.abi,EnsContracts[network_id].beagleIM);
+
+    faxTokenIMContract.setProvider(FaxTokenImAPI.web3wallet.currentProvider);
     FaxTokenImAPI.web3ImContract = faxTokenIMContract;
 
     return new Promise((resolve, reject) => {

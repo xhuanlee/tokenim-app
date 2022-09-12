@@ -1719,7 +1719,7 @@ class HomePage extends Component {
           visible={this.state.nameModal}
           cancelText="Cancel"
           okText="Ok"
-          onCancel={() => this.setState({ nameModal: false })}
+          onCancel={() => this.setState({ nameModal: false,confirmLoading: false  })}
           onOk={()=>this.modifyEnsName(this.state.nameValue)}
           okButtonProps={{ loading: this.state.confirmLoading }}
         >

@@ -617,11 +617,13 @@ const IMApp = {
   getFreeEther: (address) => {
     return new Promise((resolve, reject) => {
       sendRequest(`${IMApp.API_URL}${ETHEREUM_API.GET_FREE_ETHER}${address}`, (err, res) => {
-        if (err || !res ||  res.err !== 0) {
+        if (err || res &&  res.err !== 0) {
           console.log(`get free ether error`);
           console.log(err);
-          console.log(res.msg)
-          reject(res.msg)
+          if (res) {
+            console.log(res.msg)
+            reject(res.msg)
+          }
         } else {
           resolve()
           console.log(`get free ether success`)
