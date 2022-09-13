@@ -25,7 +25,7 @@ contract UserData {
 
     event Announcement(string _type, string _message);
 
-    function UserData () public {
+    constructor() public {
         owner = msg.sender;
     }
 
@@ -37,7 +37,7 @@ contract UserData {
 
     function sendAnnouncement(string _type, string _message) public returns(bool success){
         require(msg.sender == owner);
-        Announcement(_type, _message);
+        emit Announcement(_type, _message);
         return true;
     }
 
@@ -65,7 +65,7 @@ contract UserData {
         return true;
     }
 
-    function getShhPriKey() public returns(bytes32 priKey){
+    function getShhPriKey() view public returns(bytes32 priKey){
         return shhPriKey[msg.sender];
     }
 
