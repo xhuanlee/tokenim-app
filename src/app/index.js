@@ -71,6 +71,8 @@ const IMApp = {
     FaxTokenImAPI.setProvider(PROVIDER_URL).then(async providerURL => {
       console.log(`provider OK!`)
       IMApp.currentProvider = providerURL;
+      console.log('initENSContract ...');
+      IMApp.initENSContract();
       window.g_app._store.dispatch({ type: 'init/saveInitState', payload: { providerOK: true, providerURL } });
 
       console.log('initTokenContract ...');
@@ -81,8 +83,6 @@ const IMApp = {
       IMApp.initShhDataContract();
       console.log('initSaleContract ...');
       IMApp.initSaleContract();
-      console.log('initENSContract ...');
-      IMApp.initENSContract();
       console.log('initFaxDomainContract ...');
       IMApp.initFaxDomainContract();
       console.log('initResolverContract ...');
