@@ -28,8 +28,11 @@ contract ApiConfig{
     uint public pushNodeCount;
     uint public socketioNodeCount;
 
+    constructor() public{
+      owner = msg.sender;
+    }
 
-    function ApiConfig(
+    function setApiConfig(
         address _ether_account,
         string _ether_prikey,
         uint256 _ether_number,
@@ -37,8 +40,8 @@ contract ApiConfig{
         string _ens_fax_prikey,
         address _user_data_owner,
         string _user_data_prikey
-    ) public {
-        owner = msg.sender;
+    ) public returns(bool success){
+        require(owner == msg.sender);
 
         ethereum_account = _ether_account;
         ethereum_account_prikey = _ether_prikey;
@@ -49,6 +52,7 @@ contract ApiConfig{
 
         user_data_owner = _user_data_owner;
         user_data_prikey = _user_data_prikey;
+        return success;
     }
 
     function addLicodeServer(string _service_id, string _service_key, string _url, string _domainorip, uint256 _port) public returns(bool success){
@@ -71,17 +75,17 @@ contract ApiConfig{
     return true;
   }
 
-  function removeLicodeServer(unit num) public returns (bool success){
+  function removeLicodeServer(uint256 num) public returns (bool success){
     require(msg.sender == owner);
     delete licodeServers[num];
     return true;
   }
-  function removeSocketioNode(unit num) public returns (bool success){
+  function removeSocketioNode(uint256 num) public returns (bool success){
     require(msg.sender == owner);
     delete socketioNodes[num];
     return true;
   }
-  function removePushNode(unit num) public returns (bool success){
+  function removePushNode(uint num) public returns (bool success){
     require(msg.sender == owner);
     delete pushNodes[num];
     return true;
