@@ -247,8 +247,19 @@ export const FaxTokenImAPI = {
     // FaxTokenImAPI.web3ImContract = c.at(FaxTokenIM.networks[network_id].address);
 
     // truffle contract instance
-//    const faxTokenIMContract = new Contract(FaxTokenIM.abi,FaxTokenIM.networks[network_id].address);
-    const faxTokenIMContract = new Contract(BeagleIM.abi,EnsContracts[network_id].beagleIM);
+    let faxTokenIMContract;
+    switch (network_id) {
+      case '1515':
+        faxTokenIMContract = new Contract(FaxTokenIM.abi,FaxTokenIM.networks[network_id].address);
+        break
+      case '4':
+        faxTokenIMContract = new Contract(BeagleIM.abi,EnsContracts[network_id].beagleIM);
+        break;
+      default:
+        console.log('not support for chain:'+network_id);
+        return ;
+        break;
+    }
 
     faxTokenIMContract.setProvider(FaxTokenImAPI.web3wallet.currentProvider);
     FaxTokenImAPI.web3ImContract = faxTokenIMContract;

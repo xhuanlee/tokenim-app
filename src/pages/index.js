@@ -359,12 +359,12 @@ class LoginPage extends PureComponent {
                 onChange={(e) => this.setState({ apiNode: e.target.value })}
               />
             </FormItem>
-            <FormItem label={formatMessage({ id: 'index.substrate_rpc_peer' })}>
-              <Input
-                defaultValue={substrateProviderUrl}
-                onChange={(e) => this.setState({ substrateProviderUrl: e.target.value })}
-              />
-            </FormItem>
+            {/*<FormItem label={formatMessage({ id: 'index.substrate_rpc_peer' })}>*/}
+            {/*  <Input*/}
+            {/*    defaultValue={substrateProviderUrl}*/}
+            {/*    onChange={(e) => this.setState({ substrateProviderUrl: e.target.value })}*/}
+            {/*  />*/}
+            {/*</FormItem>*/}
           </Modal>
           <Modal
             title="Choose account"
