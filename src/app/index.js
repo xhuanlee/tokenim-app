@@ -13,9 +13,11 @@ import { typesBundle, typesChain, typesSpec } from '@polkadot/apps-config';
 import { Abi, ContractPromise } from '@polkadot/api-contract';
 import webrtcDataAbi from '../../substrate-contracts/webrtc-data/webrtc_data.json';
 import { getNameText } from '@/app/metamask';
-
+import detectEthereumProvider from '@metamask/detect-provider';
+import {chain_id}  from '../../config';
 const PROVIDER_URL = ethereum_rpc_endpoint;
 notification.config({ top: 78 })
+
 
 const IMApp = {
   PROVIDER_URL: '',
@@ -34,7 +36,7 @@ const IMApp = {
   signalCallback: null,
   connector: null, //wallet connector
 
-  init: () => {
+  init:  () => {
     window.App = IMApp;
     window.Wallet = Wallet;
 
@@ -68,6 +70,7 @@ const IMApp = {
       window.g_app._store.dispatch({ type: 'init/saveMetamaskOk', payload: { metamaskOk: true } });
     }
     window.g_app._store.dispatch({ type: 'init/resetTestState' });
+
     FaxTokenImAPI.setProvider(PROVIDER_URL).then(async providerURL => {
       console.log(`provider OK!`)
       IMApp.currentProvider = providerURL;

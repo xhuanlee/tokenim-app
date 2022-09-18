@@ -30,6 +30,8 @@ import detectEthereumProvider from '@metamask/detect-provider';
 // import reverseRegistrarJSON from '../../abi/ens/ReverseRegistrar';
 // import EnsSubdomainFactory from '../../ens/EnsSubdomainFactory';
 import { getLoginReward, getNameText } from './metamask';
+import {network_id} from '../../config';
+//import {chain_id} from './index'
 const registryJSON = require('../../abi/ens/ENSRegistry');
 const resolverJSON = require('../../abi/resolver/PublicResolver');
 const reverseRegistrarJSON = require('../../abi/ens/ReverseRegistrar');
@@ -38,7 +40,7 @@ const FaxToken = require('../../abi/FaxToken');
 const FaxTokenIM = require('../../abi/FaxTokenIM.json');
 const BeagleToken = require('../../contracts/artifacts/BeagleToken.json');
 const BeagleIM = require('../../contracts/artifacts/BeagleIM.json');
-const {network_id} = require('../../config');
+//const {network_id} = require('../../config');
 
 var chain_id;
 function loadContract(modName, contractPath) {
@@ -216,14 +218,31 @@ export const FaxTokenImAPI = {
 //     })
   },
 
-  initTokenContract: () => {
+  initTokenContract: async () => {
     // web3 contract instance
 //    const c = FaxTokenImAPI.web3.eth.contract(FaxToken.abi)
-    FaxTokenImAPI.web3TokenContract = new Contract(FaxToken.abi, FaxToken.networks[chain_id].address);
+    let provider = await detectEthereumProvider();
+
+    let chain_id= parseInt(provider.chainId);
+    switch (chain_id) {
+      case 1515:
+        FaxTokenImAPI.web3TokenContract = new Contract(FaxToken.abi, FaxToken.networks[chain_id].address);
+        break;
+      case 4:
+        FaxTokenImAPI.web3TokenContract = new Contract(BeagleToken.abi,EnsContracts[chain_id].beagleToken);
+//        faxTokenIMContract.setProvider(FaxTokenImAPI.web3wallet.currentProvider);
+        break;
+      default:
+        console.log('not support for chain:'+chain_id);
+        return ;
+        break;
+
+    }
 
     // truffle contract instance
     const faxTokenContract = FaxTokenImAPI.web3TokenContract;//contract(FaxToken);
-    faxTokenContract.setProvider(FaxTokenImAPI.web3.currentProvider);
+//    faxTokenContract.setProvider(FaxTokenImAPI.web3.currentProvider);
+    faxTokenContract.setProvider(provider);
 
     return new Promise((resolve, reject) => {
       if (FaxTokenImAPI.web3TokenContract._address){
@@ -248,28 +267,27 @@ export const FaxTokenImAPI = {
 
     // truffle contract instance
     let faxTokenIMContract;
-    let provider = await detectEthereumProvider();
+   let provider = await detectEthereumProvider();
 
-//    let chainId= provider.chainId;
+   let chain_id= parseInt(provider.chainId);
 //    console.log("chainid:"+chainId);
-    if (provider)
-    switch (provider.chainId){
+//     if (provider)
+//     switch (provider.chainId){
 //    switch (network_id) {
-      case '1515':
-        faxTokenIMContract = new Contract(FaxTokenIM.abi,FaxTokenIM.networks[network_id].address);
+    switch (chain_id) {
+      case 1515:
+        faxTokenIMContract = new Contract(FaxTokenIM.abi,FaxTokenIM.networks[chain_id].address);
         faxTokenIMContract.setProvider(FaxTokenImAPI.web3.currentProvider);
         break
-      case '4':
-        faxTokenIMContract = new Contract(BeagleIM.abi,EnsContracts[network_id].beagleIM);
+      case 4:
+        faxTokenIMContract = new Contract(BeagleIM.abi,EnsContracts[chain_id].beagleIM);
         faxTokenIMContract.setProvider(FaxTokenImAPI.web3wallet.currentProvider);
         break;
       default:
-        console.log('not support for chain:'+network_id);
+        console.log('not support for chain:'+chain_id);
         return ;
         break;
     }
-    else
-      return ;
 
     FaxTokenImAPI.web3ImContract = faxTokenIMContract;
 

@@ -10,6 +10,7 @@ const admin_account = '0x67548a3c43819643390A9Aa5E0BCB284422DEA86';
 
 module.exports = {
   network_id: '1515',
+  chain_id:'0x4',
   ethereum_host: 'beagle.chat',
   ethereum_port: 8545,
   ethereum_rpc_endpoint: 'https://beagle.chat/eth',
