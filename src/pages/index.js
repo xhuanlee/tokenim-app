@@ -212,7 +212,8 @@ class LoginPage extends PureComponent {
           <a href={enLocale ? 'pages/whitepaperEN.html' : 'pages/whitepaper.html'} style={{color:'#989A9C', width:'25%',marginRight: "5%" }}>{formatMessage({ id: 'index.white_paper' })}</a>
           {/*<a href={enLocale ? 'https://beagle.gitbook.io/beagle-dao/' : 'https://beagle.gitbook.io/beagle-dao/'} style={{color:'#989A9C', width:'25%',marginRight: "5%" }}>{formatMessage({ id: 'index.white_paper' })}</a>*/}
           <a href={enLocale ? 'pages/faqEN.html' : 'pages/faq.html'} style={{ color:'#989A9C',  width:'20%', marginRight: '5%' }}>{formatMessage({ id: 'index.faq' })}</a>
-          <a href={enLocale ? 'pages/downloadEN.html' : 'pages/download.html'} style={{ color:'#989A9C',  width:'20%',marginRight: '5%' }}>{formatMessage({ id: 'index.download' })}</a>
+          {/*<a href={enLocale ? 'pages/downloadEN.html' : 'pages/download.html'} style={{ color:'#989A9C',  width:'20%',marginRight: '5%' }}>{formatMessage({ id: 'index.download' })}</a>*/}
+          <a href="https://apps.apple.com/us/app/beagle/id1597429120"  target="_blank" style={{ color:'#989A9C',  width:'20%',marginRight: '5%' }} rel="noreferrer">{formatMessage({ id: 'index.download' })}</a>
           <a href={`/?locale=${oLocale}`} style={{ color:'#989A9C',  width:'20%',marginRight: '5%' }}>{oLocaleDes}</a>
           <a href={this.openSetting}  onClick={this.openSetting} style={{ color:'#989A9C',  width:'20%',marginRight: '5%' }}>OPT</a>
         </div>
