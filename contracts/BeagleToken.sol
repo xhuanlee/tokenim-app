@@ -1,12 +1,12 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.26;
 
 /*
-*   A smart contract for Fax Token(ERC20 Standard Token).
-*   Fax Token was a digital token that published in Ethereum Network (Main/Test network).
-*   Fax Token has a total fixed number of 210,000,000.
+*   A smart contract for Beagle Token(ERC20 Standard Token).
+*   Beagle Token was a digital token that published in Ethereum Network (Main/Test network).
+*   Beagle Token has a total fixed number of 210,000,000.
 *
 *   Version: 1.0.0
-*   Update Time: 2019/04/17
+*   Update Time: 2022/10/09
 *
 */
 contract BeagleToken {

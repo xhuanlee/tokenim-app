@@ -44,6 +44,15 @@ export async function switchToChainId(chainid) {
 
   }
 
+  export function isSupportedNatwork() {
+    if (window.ethereum.chainId!='0x4'
+      && window.ethereum.chainId!='0x5eb'
+        && window.ethereum.chainId!='0x1'
+        && window.ethereum.chainId!='0x5')
+      return false;
+    else
+      return true;
+  }
 export async function connectMetamask() {
   if (!isMetamask()) {
     return false;
@@ -51,7 +60,7 @@ export async function connectMetamask() {
 
   try {
     try {
-      if (window.ethereum.chainId!='0x4')
+      if (!isSupportedNatwork())
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: '0x5eb' }],

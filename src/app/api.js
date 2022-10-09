@@ -60,6 +60,12 @@ const EnsContracts={
       reverseRegistrar: '0xFdb1b60AdFCba28f28579D709a096339F5bEb651',
       subdomainRegistrar: '0xEE29d4293A2a701478fB930DEe29d56b8F53B115'
     },
+  1:{
+    ens: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
+    resolver: '0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41',
+    reverseRegistrar: '0x084b1c3C81545d370f3634392De611CaaBFf8148',
+    subdomain: '0xe38bCAE0fb14dD33784389ba76757591fc16BbBD'
+  },
    // official rinkebyEns
    4: {
      ens: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
@@ -76,7 +82,11 @@ const EnsContracts={
     resolver:'0x4B1488B7a6B320d2D721406204aBc3eeAa9AD329',
     reverseRegistrar:'0x6F628b68b30Dc3c17f345c9dbBb1E483c2b7aE5c',//addr.reverse
     //https://app.ens.domains/name/addr.reverse/details
-    subdomainRegistrar: '0x09108608Ef7557669EA47F1073Ee56A7aB511c2f'
+    subdomainRegistrar:'0x2058fAaad4DE0663BB71E7B1925Fd72F37b872Fc',
+//    subdomainRegistrar: '0x09108608Ef7557669EA47F1073Ee56A7aB511c2f'
+    beagleToken:'0x025eAA712D2A8a78F1f4153C7ed29437cab8a7a0',
+    beagleIM:'0xCde5ad1dB6204a94Af1E0f898794B6E9b1A4C55b',
+    beagleTokenSale:'0x861b1e58Bc40DB544bc06790D7Be3Cf9eb6100b6',
   },
   1515:{ens:'0x7bc06c482DEAd17c0e297aFbC32f6e63d3846650',
     resolver:'0x5c74c94173F05dA1720953407cbb920F3DF9f887',

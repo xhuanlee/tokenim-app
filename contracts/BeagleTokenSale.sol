@@ -1,10 +1,10 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.26;
 
 /*
-*   A smart contract for sale Fax Token with Ether.
+*   A smart contract for sale Beagle Token with Ether.
 *
 *   Version: 1.0.0
-*   Update Time: 2019/05/06
+*   Update Time: 2022/10/09
 *
 */
 import  './BeagleToken.sol';

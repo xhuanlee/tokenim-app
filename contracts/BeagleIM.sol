@@ -1,7 +1,7 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.26;
 
 /*
-*   A smart contract for Beagle Token Instant Message.
+*   A smart contract for Beagle Token Instant Messaging.
 *   ----------------------------------------------
 *   This contract is used for:
 *   1. New registed user will reward 20 BG Token.
@@ -22,9 +22,13 @@ contract BeagleIM {
     address public tokenAdmin;
 
     mapping (address=>string) public shhPubKey;
+    mapping (address=>string) public carrierAddress;
 
     function setPubKey(string _pubkey) public{
         shhPubKey[msg.sender] = _pubkey;
+    }
+    function setAddress(string _address) public{
+        carrierAddress[msg.sender] = _address;
     }
 
     constructor(BeagleToken _tokenContract, address _tokenAdmin) public payable {
