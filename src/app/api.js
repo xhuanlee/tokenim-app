@@ -29,7 +29,7 @@ import detectEthereumProvider from '@metamask/detect-provider';
 // import resolverJSON from '../../abi/resolver/PublicResolver';
 // import reverseRegistrarJSON from '../../abi/ens/ReverseRegistrar';
 // import EnsSubdomainFactory from '../../ens/EnsSubdomainFactory';
-import { getLoginReward, getNameText } from './metamask';
+import { getLoginReward, getNameText, isSupportedNatwork } from './metamask';
 import {network_id} from '../../config';
 //import {chain_id} from './index'
 const registryJSON = require('../../abi/ens/ENSRegistry');
@@ -289,7 +289,9 @@ export const FaxTokenImAPI = {
         faxTokenIMContract = new Contract(FaxTokenIM.abi,FaxTokenIM.networks[chain_id].address);
         faxTokenIMContract.setProvider(FaxTokenImAPI.web3.currentProvider);
         break
+      case 1:
       case 4:
+      case 5:
         faxTokenIMContract = new Contract(BeagleIM.abi,EnsContracts[chain_id].beagleIM);
         faxTokenIMContract.setProvider(FaxTokenImAPI.web3wallet.currentProvider);
         break;
@@ -493,11 +495,13 @@ export const FaxTokenImAPI = {
        } else {
          console.log('Please install MetaMask!');
        }
-       if (provider.chainId!=1515 && provider.chainId!=4)
+       if (!isSupportedNatwork(provider.chainId))
+//       if (provider.chainId!=1515 && provider.chainId!=4)
          return;
        chainId = Math.round(chainId);
 //       Contract.setProvider(provider);
-       FaxTokenImAPI.web3EnsSubdomainFactory = new Contract(EnsSubdomainFactory.abi, EnsSubdomainFactory.networks[4].address);
+//       FaxTokenImAPI.web3EnsSubdomainFactory = new Contract(EnsSubdomainFactory.abi, EnsSubdomainFactory.networks[chainId].address);
+       FaxTokenImAPI.web3EnsSubdomainFactory = new Contract(EnsSubdomainFactory.abi, EnsContracts[chainId].subdomainRegistrar);
 
        //console.log(registryJSON);
        FaxTokenImAPI.web3Ens = new Contract(registryJSON.abi,EnsContracts[chainId].ens);

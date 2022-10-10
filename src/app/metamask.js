@@ -44,7 +44,12 @@ export async function switchToChainId(chainid) {
 
   }
 
-  export function isSupportedNatwork() {
+  export function isSupportedNatwork(chainId) {
+    if (chainId)
+      if (chainId!=4 && chainId!=5 && chainId!=1515 && chainId!=1)
+        return false;
+      else
+        return true;
     if (window.ethereum.chainId!='0x4'
       && window.ethereum.chainId!='0x5eb'
         && window.ethereum.chainId!='0x1'
