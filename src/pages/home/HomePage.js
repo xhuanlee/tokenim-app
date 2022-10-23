@@ -982,8 +982,9 @@ class HomePage extends Component {
       }
     }
 
-    if (window.ethereum.chainId!=4)
-     await switchToChainId('0x4');
+    if (window.ethereum.chainId!=4 && window.ethereum.chainId!=5 && window.ethereum.chainId!=1)
+      // popup menu selection of chain
+     await switchToChainId('0x5');
     // should call registerENS
     if (window.ethereum.chainId==4 || window.App.connector){
       this.setState({ confirmLoading: true });

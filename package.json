@@ -1,6 +1,7 @@
 {
   "private": true,
   "scripts": {
+    "start18": "NODE_OPTIONS=\"--openssl-legacy-provider\" umi dev",
     "start": "umi dev",
     "build": "umi build",
     "test": "umi test",

@@ -225,7 +225,7 @@ class LoginPage extends PureComponent {
           {/*</div>*/}
           <div style={{ textAlign: 'center' }}>
             <img src="../image/happy_beagles.jpg" alt="" width="200" style={{ marginBottom: 5 }} />
-            <h2 style={{ marginBottom: 0, marginTop:0, fontWeight: 900 }}>Beagle DAO</h2>
+            <h2 style={{ marginBottom: 0, marginTop:0, fontWeight: 900 }}>Beagle Chat</h2>
             <p style={{ marginBottom: 30,color:'#989A9C' }}>Connect people in the metaverse</p>
             {/*<p>{formatMessage({ id: 'index.description' })}</p>*/}
           </div>
