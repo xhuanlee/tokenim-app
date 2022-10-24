@@ -134,9 +134,14 @@ export async function connectMetamask() {
     if (window.App.messageFilter && window.App.messageFilter.stopWatching) {
       window.App.messageFilter.stopWatching(window.App.newMessageArrive);
     }
-    window.App.messageFilter = FaxTokenImAPI.setupShhMessageListener(keypair.id, window.App.newMessageArrive);
-    window.g_app._store.dispatch({ type: 'account/saveAccountState', payload: { shhKeyId: keypair.id, shhPubKey: keypair.pubKey, shhPriKey: keypair.priKey, shhKeyAvaiable: true } });
-    window.App.getShhSymKey();
+    if (keypair && keypair.id) {
+      window.App.messageFilter = FaxTokenImAPI.setupShhMessageListener(keypair.id, window.App.newMessageArrive);
+      window.g_app._store.dispatch({
+        type: 'account/saveAccountState',
+        payload: { shhKeyId: keypair.id, shhPubKey: keypair.pubKey, shhPriKey: keypair.priKey, shhKeyAvaiable: true }
+      });
+      window.App.getShhSymKey();
+    }
 
     FaxTokenImAPI.setupNewTransactionListener(address, (filter) => { window.App.transactionFilter = filter }, window.App.newTransactionArrive);
     let loginEns = await FaxTokenImAPI.getShhNameByAddress(address);

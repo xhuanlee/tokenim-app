@@ -901,7 +901,7 @@ export const FaxTokenImAPI = {
   },
 
   setupShhSymKeyListener: (symKeyID, callback) => {
-    if (network_id==1515) {
+    // if (network_id==1515) {
       if (FaxTokenImAPI.web3whisper == null){
         console.log('initial whisper...');
         FaxTokenImAPI.web3whisper = new Web3(new Web3.providers.WebsocketProvider('wss://geth.beagle.chat'));
@@ -926,7 +926,7 @@ export const FaxTokenImAPI = {
       console.log(`new whisper message filter: ${symKeyID}`);
       FaxTokenImAPI.web3whisper.shh.subscribe('messages',{ symKeyID :symKeyID,topics:['0x12345678','0xffffffff']},callback);
 //      return FaxTokenImAPI.web3.shh.newMessageFilter({ symKeyID }, callback);
-    }
+//    }
   },
   reconnectShh:()=>{
     if (FaxTokenImAPI.web3.shh.currentProvider.connected)
@@ -973,8 +973,16 @@ export const FaxTokenImAPI = {
 //      FaxTokenImAPI.web3.shh.subscribe('messages',{ symKeyID :localShhSymId, privateKeyID: shhKeyId,topics:['0x12345678','0xffffffff']},callback);
 //      FaxTokenImAPI.web3.shh.subscribe('messages',{ symKeyID :localShhSymId, privateKeyID: shhKeyId},callback);
 //not work      FaxTokenImAPI.web3.shh.subscribe('messages',{  privateKeyID: shhKeyId,topics:['0x12345678','0xffffffff']},callback);
-      FaxTokenImAPI.web3.shh.subscribe('messages',{  privateKeyID: shhKeyId},callback);
-      FaxTokenImAPI.web3.shh.newMessageFilter({ symKeyID :localShhSymId,topics:['0x12345678','0xffffffff']});
+      FaxTokenImAPI.web3.shh.subscribe('messages',{  privateKeyID: shhKeyId},callback)
+      if (FaxTokenImAPI.web3.currentProvider.connected)
+        FaxTokenImAPI.web3.shh.newMessageFilter({ symKeyID :localShhSymId,topics:['0x12345678','0xffffffff']});
+      else
+        FaxTokenImAPI.web3.currentProvider.connect(()=>{
+          console.log('reconnect')
+          FaxTokenImAPI.web3.shh.newMessageFilter({ symKeyID :localShhSymId,topics:['0x12345678','0xffffffff']});
+        });
+
+
 //      return FaxTokenImAPI.web3.shh.newMessageFilter({ privateKeyID: shhKeyId }, callback);
     }
   },

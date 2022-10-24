@@ -986,7 +986,7 @@ class HomePage extends Component {
       // popup menu selection of chain
      await switchToChainId('0x5');
     // should call registerENS
-    if (window.ethereum.chainId==4 || window.App.connector){
+    if (window.ethereum.chainId==4 || window.ethereum.chainId==5 || window.ethereum.chainId==1 || window.ethereum.chainId==9000 || window.App.connector){
       this.setState({ confirmLoading: true });
       //saveShhName(nameValue)
       newSubdomain(nameValue,'beagles','eth').then(() => {
