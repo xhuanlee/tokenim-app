@@ -1,5 +1,5 @@
 import { getLocalShhKeyPair, showNotification } from '@/app/util';
-import { FaxTokenImAPI } from '@/app/api';
+import { FaxTokenImAPI, defaultEnsChainId} from '@/app/api';
 import { message } from 'antd';
 import accountType from '@/app/accountType';
 import Web3 from 'web3';
@@ -535,8 +535,8 @@ export async function publishName(name,shhPubKey) {
     console.log(`${name} whisper nt changed:${shhPubKeyOld}`);
     return;
   }
-  if (window.ethereum.chainId!='0x4')
-    await switchToChainId('0x4');
+  if (window.ethereum.chainId!=defaultEnsChainId)
+    await switchToChainId(defaultEnsChainId);
 
   let selectedAddress,chainId;
   if (window.App.connector) {
@@ -629,9 +629,9 @@ export async function publishName(name,shhPubKey) {
 
 export async function saveShhName(name) {
   try {
-    if (window.ethereum.chainId!='0x4')
-      await switchToChainId('0x4');
-    if (window.ethereum.chainId==4 || window.ethereum.chainId=='0x4' || window.App.connector){
+    if (window.ethereum.chainId!=defaultEnsChainId)
+      await switchToChainId(defaultEnsChainId);
+    if (window.ethereum.chainId==defaultEnsChainId || window.ethereum.chainId=='0x5' || window.App.connector){
         return newSubdomain(name,'beagles','eth');
     }
     const nonce = await FaxTokenImAPI.getTransactionCount(window.ethereum.selectedAddress);

@@ -67,7 +67,8 @@ import { ReactComponent as svgSETTING } from '../../../public/image/SVG/SETTING.
 import { ReactComponent as svgCONTACT } from '../../../public/image/SVG/CONTACT.svg';
 import {FaxTokenImAPI} from '../../app/api';
 import GetConnections from '@/pages/home/sider/GetConnections';
-const ensProvider = new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/00a80def04f248feafdc525179f89dbf');
+//const ensProvider = new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/00a80def04f248feafdc525179f89dbf');
+const ensProvider = new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/84ae00fec54f4d65bd1c0505b0e96383");
 //const ens = new ENS({ ensProvider, ensAddress: getEnsAddress('1') });
 var ENS = require('ethereum-ens');
 //var Web3 = require('web3');
@@ -1216,7 +1217,8 @@ class HomePage extends Component {
 
     return (
       <NeedLogin location={this.props.location}>
-        <div style={{ height: '100vh', backgroundColor: 'rgb(213,216,225)' }}>
+        {/*<div style={{ height: '100vh', backgroundColor: 'rgb(213,216,225)' }}>*/}
+          <div style={{ height: '100vh', backgroundColor: '#D8D8D8' }}>
           <Layout style={{ height: '100vh', margin: 'auto', backgroundColor: 'rgb(213,216,225)' }}>
             <Sider
               width={200}

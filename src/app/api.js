@@ -54,7 +54,13 @@ function loadContract(modName, contractPath) {
   }
   return require(loadpath)
 }
-const EnsContracts={
+export const defaultEnsChainId = 5;
+export const apiProviders={
+  1:{infura:"https://mainnet.infura.io/v3/00a80def04f248feafdc525179f89dbf"},
+  5:{ infura: "https://goerli.infura.io/v3/84ae00fec54f4d65bd1c0505b0e96383"},
+  4:{infura:'https://rinkeby.infura.io/v3/84ae00fec54f4d65bd1c0505b0e96383'}
+};
+export const EnsContracts={
   41515: {ens:'0x98325eDBE53119bB4A5ab7Aa35AA4621f49641E6',
       resolver:'0xAe41CFDE7ABfaaA2549C07b2363458154355bAbD',
       reverseRegistrar: '0xFdb1b60AdFCba28f28579D709a096339F5bEb651',
@@ -80,7 +86,7 @@ const EnsContracts={
     ETHRegistrarController:'0x283Af0B28c62C092C9727F1Ee09c02CA627EB7F5',
     ens:'0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
     resolver:'0x4B1488B7a6B320d2D721406204aBc3eeAa9AD329',
-    reverseRegistrar:'0x6F628b68b30Dc3c17f345c9dbBb1E483c2b7aE5c',//addr.reverse
+    reverseRegistrar:'0xD5610A08E370051a01fdfe4bB3ddf5270af1aA48',//'0x6F628b68b30Dc3c17f345c9dbBb1E483c2b7aE5c',//addr.reverse
     //https://app.ens.domains/name/addr.reverse/details
     subdomainRegistrar:'0x2058fAaad4DE0663BB71E7B1925Fd72F37b872Fc',
 //    subdomainRegistrar: '0x09108608Ef7557669EA47F1073Ee56A7aB511c2f'
@@ -293,6 +299,7 @@ export const FaxTokenImAPI = {
         faxTokenIMContract.setProvider(FaxTokenImAPI.web3.currentProvider);
         break
       case 1:
+        break;
       case 4:
       case 5:
         faxTokenIMContract = new Contract(BeagleIM.abi,EnsContracts[chain_id].beagleIM);
@@ -442,14 +449,15 @@ export const FaxTokenImAPI = {
      accounts = provider.accounts;
     window.App.loginAddress = accounts[0];
 //    console.log('web3wallet provider:',JSON.stringify(provider));
-    FaxTokenImAPI.web3EnsSubdomainFactory = new FaxTokenImAPI.web3wallet.eth.Contract(EnsSubdomainFactory.abi,EnsSubdomainFactory.networks[4].address);
+//    FaxTokenImAPI.web3EnsSubdomainFactory = new FaxTokenImAPI.web3wallet.eth.Contract(EnsSubdomainFactory.abi,EnsSubdomainFactory.networks[4].address);
+    FaxTokenImAPI.web3EnsSubdomainFactory = new FaxTokenImAPI.web3wallet.eth.Contract(EnsSubdomainFactory.abi,EnsContracts[defaultEnsChainId].subdomainRegistrar);
     //console.log(registryJSON);
-    FaxTokenImAPI.web3Ens = new FaxTokenImAPI.web3wallet.eth.Contract(registryJSON.abi, EnsContracts[4].ens);
+    FaxTokenImAPI.web3Ens = new FaxTokenImAPI.web3wallet.eth.Contract(registryJSON.abi, EnsContracts[defaultEnsChainId].ens);
 //       await FaxTokenImAPI.web3Ens.deployed();
     //console.log(resolverJSON);
-    FaxTokenImAPI.web3EnsResolver= new FaxTokenImAPI.web3wallet.eth.Contract(resolverJSON.abi,EnsContracts[4].resolver);
+    FaxTokenImAPI.web3EnsResolver= new FaxTokenImAPI.web3wallet.eth.Contract(resolverJSON.abi,EnsContracts[defaultEnsChainId].resolver);
 //       await FaxTokenImAPI.web3EnsResolver.deployed();
-    FaxTokenImAPI.web3EnsReverseRegistrar = new FaxTokenImAPI.web3wallet.eth.Contract(reverseRegistrarJSON.abi, EnsContracts[4].reverseRegistrar);
+    FaxTokenImAPI.web3EnsReverseRegistrar = new FaxTokenImAPI.web3wallet.eth.Contract(reverseRegistrarJSON.abi, EnsContracts[defaultEnsChainId].reverseRegistrar);
 //       await FaxTokenImAPI.web3EnsReverseRegistrar.deployed();
     FaxTokenImAPI.web3EnsReverseRegistrar.methods.defaultResolver().call(null, function(defaultResolver,error) {
       console.log(defaultResolver,error);
@@ -479,8 +487,8 @@ export const FaxTokenImAPI = {
          // provider === window.ethereum
 //        startApp(provider); // initialize your app
          if (provider.chainId==1515){
-           FaxTokenImAPI.web3wallet = new Web3(new Web3.providers.HttpProvider('https://rinkeby.infura.io/v3/84ae00fec54f4d65bd1c0505b0e96383'));
-           chainId = 4;
+           FaxTokenImAPI.web3wallet = new Web3(new Web3.providers.HttpProvider(apiProviders[defaultEnsChainId].infura));
+           chainId = defaultEnsChainId;
            FaxTokenImAPI.web3wallet.eth.getChainId((err,info)=>{
              console.log(err,info);
              if (err==null && FaxTokenImAPI.web3.currentProvider.connected){

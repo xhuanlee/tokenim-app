@@ -21,6 +21,16 @@ module.exports = {
       gasPrice: 10000000000,
       accounts: ['0x71c0d36a9152e48738d378d6adb04611c53e5d5a552221c69ad89fa7a8aba598'],
       from: admin.token_admin,
+    },
+    goerli: {
+      provider: function() {
+        return new HDWalletProvider('0x71c0d36a9152e48738d378d6adb04611c53e5d5a552221c69ad89fa7a8aba598', "https://goerli.infura.io/v3/84ae00fec54f4d65bd1c0505b0e96383");
+      },
+      network_id: 4,
+      gas: 4500000,
+      gasPrice: 10000000000,
+      accounts: ['0x71c0d36a9152e48738d378d6adb04611c53e5d5a552221c69ad89fa7a8aba598'],
+      from: admin.token_admin,
     }
   },
   compilers: {
