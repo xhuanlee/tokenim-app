@@ -1,10 +1,18 @@
 ## FaxToken-IM
+### 0. 开发环境
+```
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+nvm -v
+nvm use 18
+```
 ### 1. 安装项目
 克隆代码到本地并安装包依赖
 ```shell script
 git clone http://192.168.0.91/liwang/FaxToken-IM.git
 cd FaxToken-IM
-npm install
+npm install --legacy-peer-deps
+export NODE_OPTIONS=--openssl-legacy-provider
+npm start
 ```
 
 ### 2. 安装Truffle
